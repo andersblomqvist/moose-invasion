@@ -12,5 +12,5 @@ As the best hunter of your village your task is to defend the citizens from hoar
 1. Clone this repo
 2. Import files `/src/` and `/assets/` into your favourite IDE and run `MooseInvasion.java`.
 
-#### Build
+#### Build - not yet available
 Inside `/build/` run the `MooseInvaison.jar`, either by clicking on it or via command line with `java -jar MooseInvasion.jar`.
