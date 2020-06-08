@@ -1,9 +1,9 @@
 package com.andblomqdasberg.mooseinvasion.particle;
 
 import com.andblomqdasberg.mooseinvasion.Assets;
-import com.andblomqdasberg.mooseinvasion.AudioPlayer;
-import com.andblomqdasberg.mooseinvasion.Sprite;
+import com.andblomqdasberg.mooseinvasion.audio.AudioPlayer;
 import com.andblomqdasberg.mooseinvasion.util.GameRandom;
+import com.andblomqdasberg.mooseinvasion.util.Sprite;
 import com.andblomqdasberg.mooseinvasion.util.Vector2D;
 
 public class AmmoParticle extends AbstractParticle {

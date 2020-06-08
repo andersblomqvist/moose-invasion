@@ -1,7 +1,7 @@
 package com.andblomqdasberg.mooseinvasion.entity;
 
 import com.andblomqdasberg.mooseinvasion.MooseInvasion;
-import com.andblomqdasberg.mooseinvasion.Sprite;
+import com.andblomqdasberg.mooseinvasion.util.Sprite;
 import com.andblomqdasberg.mooseinvasion.util.Vector2D;
 
 import java.awt.*;
@@ -74,10 +74,10 @@ public class Entity implements Comparable<Entity> {
         int frame = gameTick / 15 % sprite.anim.length;
         Image img = sprite.img[sprite.anim[frame]];
         g.drawImage(img,
-                (int)x*MooseInvasion.SCALE,
-                (int)y*MooseInvasion.SCALE,
-                MooseInvasion.SCALE*MooseInvasion.SPRITE_SIZE,
-                MooseInvasion.SCALE*MooseInvasion.SPRITE_SIZE,
+                (int)x*MooseInvasion.X_SCALE,
+                (int)y*MooseInvasion.Y_SCALE,
+                MooseInvasion.X_SCALE*MooseInvasion.SPRITE_SIZE,
+                MooseInvasion.Y_SCALE*MooseInvasion.SPRITE_SIZE,
                 null
         );
     }

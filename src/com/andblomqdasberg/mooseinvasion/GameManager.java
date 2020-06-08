@@ -5,6 +5,7 @@ import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import com.andblomqdasberg.mooseinvasion.audio.AudioPlayer;
 import com.andblomqdasberg.mooseinvasion.entity.Entity;
 import com.andblomqdasberg.mooseinvasion.entity.Moose;
 import com.andblomqdasberg.mooseinvasion.entity.Player;
@@ -16,6 +17,7 @@ import com.andblomqdasberg.mooseinvasion.particle.AmmoParticle;
 import com.andblomqdasberg.mooseinvasion.particle.BloodAndMeatParticle;
 import com.andblomqdasberg.mooseinvasion.particle.BloodParticle;
 import com.andblomqdasberg.mooseinvasion.particle.ParticleType;
+import com.andblomqdasberg.mooseinvasion.util.GameState;
 import com.andblomqdasberg.mooseinvasion.weapon.Weapon;
 import com.andblomqdasberg.mooseinvasion.weapon.WeaponUpgrade;
 
@@ -32,12 +34,9 @@ public class GameManager {
     public static void awake() {
         sInstance = new GameManager();
     }
-
-    // Different game states where 
-    // 		0 = intro
-    //		1 = game
-    //		2 = game over
-    private int gameState;
+    
+    // Track game states
+    private GameState gameState;
     
     private int gameTick;
     
@@ -60,6 +59,7 @@ public class GameManager {
     private ArrayList<GUIText> buyMenu = new ArrayList<GUIText>();
     
     private StartScreen startScreen;
+    private MenuScreen menuScreen;
     private WaveSpawner waveSpawner;
     
     // Show/hide buy menu for rendering
@@ -72,7 +72,7 @@ public class GameManager {
      */
     public GameManager() {
         gameTick = 0;
-        gameState = 0;
+        gameState = GameState.INTRO;
     }
     
     /**
@@ -86,6 +86,7 @@ public class GameManager {
         initBuyMenuText();
         
         startScreen = new StartScreen();
+        menuScreen = new MenuScreen();
         waveSpawner = new WaveSpawner();
         healthText = new GUIText("HP:" + health, 128, MooseInvasion.HEIGHT-6);
         //starts intro wind when game starts
@@ -154,18 +155,21 @@ public class GameManager {
      */
     public void tick(int ticks) {
     	
-    	if(gameState == 0) {
-    		// Start screen state
+    	if(gameState == GameState.INTRO) {
     		startScreen.tick(ticks);
     		return;
-    	} else if (gameState == 2) {
-    		// Game over screen
+    	} 
+    	else if(gameState == GameState.MENU) {
+    		menuScreen.tick(ticks);
+    		return;
+    	} 
+    	else if (gameState == GameState.GAME_OVER) {
     		if(InputHandler.reload())
     			restartGame();
     		return;
     	}
 
-        //fades out intro wind once game actually starts
+        // Fades out intro wind once game actually starts
     	if(audioPlayer.getVolume() > -50)
     	    audioPlayer.setVolume(audioPlayer.getVolume()-0.1f);
     	else{
@@ -191,7 +195,10 @@ public class GameManager {
         	particles.get(i).animationTick();
         }
         
-        // Sort entity list once a tick for depth rendering
+        // TODO remove this and replace with a new system where the moose blood is stored
+        // TODO in a different list which we just render earlier than the entities. We need to create a
+        // TODO new game object which is just the blood sprite and instantiate it when a moose dies.
+        // TODO Sort entity list once a tick for depth rendering
         if(gameTick % 60 == 0)
         	Collections.sort(entities);
     }
@@ -201,21 +208,28 @@ public class GameManager {
      */
     public void render(Graphics g) {
 
-    	if(gameState == 0) {
+    	// Intro screen animation
+    	if(gameState == GameState.INTRO) {
     		startScreen.render(g);
     		return;
     	}
     	
+    	// Menu screen
+    	if(gameState == GameState.MENU) {
+    		menuScreen.render(g);
+    		return;
+    	}
+    	
     	// Render ground
-        for (int x = 0; x < MooseInvasion.WIDTH/16; x++) {
-            for (int y = 0; y < MooseInvasion.HEIGHT/16; y++) {
+        for (int x = 0; x < MooseInvasion.WIDTH/MooseInvasion.SPRITE_SIZE; x++) {
+            for (int y = 0; y <= MooseInvasion.HEIGHT/MooseInvasion.SPRITE_SIZE; y++) {
             	// Fake random distribution of tiles
             	int tile = x*2*y / 3 % 4;
                 g.drawImage(Assets.sInstance.sprites[1][tile],
-                        x*16*MooseInvasion.SCALE,
-                        y*16*MooseInvasion.SCALE,
-                        16*MooseInvasion.SCALE,
-                        16*MooseInvasion.SCALE,
+                        x*MooseInvasion.SPRITE_SIZE*MooseInvasion.X_SCALE,
+                        y*MooseInvasion.SPRITE_SIZE*MooseInvasion.Y_SCALE,
+                        MooseInvasion.SPRITE_SIZE*MooseInvasion.X_SCALE,
+                        MooseInvasion.SPRITE_SIZE*MooseInvasion.Y_SCALE,
                         null);
             }
         }
@@ -236,20 +250,20 @@ public class GameManager {
         if(toggleBuyMenu) {
         	for(int i = 0; i < 4; i++) {
     			g.drawImage(Assets.sInstance.sprites[4][i],
-                        16*MooseInvasion.SCALE + i*128 + MooseInvasion.SCALE*85,
-                        64*MooseInvasion.SCALE,
-                        16*MooseInvasion.SCALE,
-                        16*MooseInvasion.SCALE,
+                        16*MooseInvasion.X_SCALE + i*128 + MooseInvasion.X_SCALE*85,
+                        64*MooseInvasion.Y_SCALE,
+                        16*MooseInvasion.X_SCALE,
+                        16*MooseInvasion.Y_SCALE,
                         null);
         	}
         }
         
-        // Game over state black over lay
-        if(gameState == 2) {
+        // Game over state black overlay
+        if(gameState == GameState.GAME_OVER) {
     		g.setColor(new Color(0,0,0,100));
     		g.fillRect(0,0, 
-    				MooseInvasion.WIDTH*MooseInvasion.SCALE, 
-    				MooseInvasion.HEIGHT*MooseInvasion.SCALE);
+    				MooseInvasion.RENDER_WIDTH, 
+    				MooseInvasion.RENDER_HEIGHT);
     	}
         
         // Render GUI text elements
@@ -282,10 +296,11 @@ public class GameManager {
 	}
 	
 	/**
-	 * 	Starts the game when player hits enter from {@link StartScreen}
+	 * 	Starts the game when player hits enter from {@link StartScreen} or start game
+	 * 	from menu screen.
 	 */
-	public void startGame() {
-		gameState = 1;
+	public void setGameState(GameState state) {
+		gameState = state;
 	}
 	
 	/**
@@ -318,7 +333,7 @@ public class GameManager {
 	 * 	Game Over.
 	 */
 	private void setGameOverState() {
-		gameState = 2;
+		gameState = GameState.GAME_OVER;
 		guiText.clear();
 		
 		GUIText gameOverText = new GUIText("Game Over!", 102, 64, 1);
@@ -340,7 +355,7 @@ public class GameManager {
 		buyMenu.clear();
 		
 		gameTick = 0;
-        gameState = 1;
+        gameState = GameState.GAME;
         
         initBuyMenuText();
         

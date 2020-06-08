@@ -14,11 +14,16 @@ public class MooseInvasion extends JFrame implements Runnable {
 	private static final long serialVersionUID = 1L;
 	
 	// Render settings
-	public static final int WIDTH = 320;
-    public static final int HEIGHT = 240;
-    public static final int SCALE = 4;
-    public static final int SPRITE_SIZE = 16;
+	public static int WIDTH = 320;
+    public static int HEIGHT = 240;
+    public static int X_SCALE = 4;
+    public static int Y_SCALE = 4;
+    public static int SPRITE_SIZE = 16;
+    public static boolean FULLSCREEN = false;
 
+    public static int RENDER_WIDTH = WIDTH*X_SCALE;
+    public static int RENDER_HEIGHT = HEIGHT*Y_SCALE;
+    
     // Display for rendering
     private Display display;
     
@@ -32,16 +37,38 @@ public class MooseInvasion extends JFrame implements Runnable {
 
     public MooseInvasion(String title) {
         super(title);
-
-        display = new Display(WIDTH, HEIGHT, SCALE);
-        setResizable(false);
+        
+        // Monitor resolution
+        Dimension monitor = Toolkit.getDefaultToolkit().getScreenSize();
+        
+        if(FULLSCREEN) {
+            setExtendedState(JFrame.MAXIMIZED_BOTH);
+            setUndecorated(true);
+            X_SCALE = monitor.width / WIDTH;
+            HEIGHT = monitor.height / (X_SCALE-1);
+            Y_SCALE = monitor.height / HEIGHT;
+            RENDER_WIDTH = WIDTH*X_SCALE;
+            RENDER_HEIGHT = HEIGHT*Y_SCALE;
+        }
+        
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setVisible(true);
+        display = new Display(WIDTH, HEIGHT, X_SCALE, Y_SCALE);
+        setResizable(false);
         add(display);
         pack();
         setLocationRelativeTo(null);
         setIconImage(new ImageIcon("assets\\" + "moose-invasion-icon-64.png").getImage());
-
+        setVisible(true);
+        
+        System.out.println("-- Window setup --");
+        System.out.println("Monitor: " + monitor);
+        System.out.println("X-Scale: " + X_SCALE);
+        System.out.println("Y-Scale: " + Y_SCALE);
+        System.out.println("Render-width: " + RENDER_WIDTH);
+        System.out.println("Render-height: " + RENDER_HEIGHT);
+        System.out.println("Fullscreen: " + FULLSCREEN);
+        System.out.println("--     Done     --");
+        
         new InputHandler(this);
         new Thread(this).start();
     }
@@ -81,7 +108,9 @@ public class MooseInvasion extends JFrame implements Runnable {
 
             unprocessedTime += passedTime;
 
-            /** Update */
+            /** 
+             * 	Update 
+             */
             boolean render = false;
             while (unprocessedTime > 1) {
                 ticks++;
@@ -89,13 +118,16 @@ public class MooseInvasion extends JFrame implements Runnable {
                 render = true;
                 unprocessedTime -= 1;
                 
+                // TODO Hard quit, replace with pause screen!
                 if(InputHandler.exit()) {
                 	running = false;
                 	System.exit(0);
                 }
             }
             
-            /** Render */
+            /** 
+             * 	Render 
+             */
             render = true;
             if (render) {
                 display.repaint();

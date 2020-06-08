@@ -1,7 +1,7 @@
 package com.andblomqdasberg.mooseinvasion.weapon;
 
-import com.andblomqdasberg.mooseinvasion.AudioPlayer;
 import com.andblomqdasberg.mooseinvasion.GameManager;
+import com.andblomqdasberg.mooseinvasion.audio.AudioPlayer;
 import com.andblomqdasberg.mooseinvasion.entity.Projectile;
 import com.andblomqdasberg.mooseinvasion.particle.ParticleType;
 

@@ -1,4 +1,4 @@
-package com.andblomqdasberg.mooseinvasion;
+package com.andblomqdasberg.mooseinvasion.audio;
 
 import javax.sound.sampled.*;
 import java.io.File;

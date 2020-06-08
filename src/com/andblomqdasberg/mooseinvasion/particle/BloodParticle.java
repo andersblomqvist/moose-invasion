@@ -1,7 +1,7 @@
 package com.andblomqdasberg.mooseinvasion.particle;
 
 import com.andblomqdasberg.mooseinvasion.Assets;
-import com.andblomqdasberg.mooseinvasion.Sprite;
+import com.andblomqdasberg.mooseinvasion.util.Sprite;
 
 public class BloodParticle extends AbstractParticle {	
 	

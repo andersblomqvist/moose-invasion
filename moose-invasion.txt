@@ -1,0 +1,46 @@
+
+	MOOSE INVASION
+=======================
+	
+Stages
+========================
+- Ett system där man progressar genom att klara ett steg och man rör sig 
+  längre och längre in i skogen (åt vänster) för att sedam sluta där älgbossen 
+  finns. Ett steg består av olika waves med minibossar och kanske olika teman?
+  Skapa känslan "vad kommer nu", eller "undra vad som kommer sen :O"
+
+Gör om vapensystemet
+========================
+- shop med upgrades
+- olika vapen istället för att uppgradera ett vapen
+talent points?
+
+Mechanics
+========================
+- Kanske gör så att man kan sikta med musen - blir annan gameplay
+
+Nya enimies
+========================
+- En slö björn
+- En snabb varg
+Andra djur från skogen?
+
+MISC
+========================
+- Pause screen
+
+FIXES
+========================
+- Screen size, för liten skärm gör att fönstret är för stort. Anpassa! - på gång
+	- settings file
+	- settings menu
+	- Fixa offset för UI (behövs ändå göras om)
+
+- Ta bort en övre rad för att ge plats åt stats och andra saker. Detta löser även så att man ser
+  hur mycket damage man gör på en älg som befinner sig längst upp.
+  - Ändra i for-loopen för att rita ut tiles
+  - Ändra vart älgar kan spawna
+  - Ändra bounds för player
+  
+- Blodbuggen?
+- FPS drop?

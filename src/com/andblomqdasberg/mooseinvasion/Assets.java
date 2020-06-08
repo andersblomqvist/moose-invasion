@@ -28,6 +28,7 @@ public class Assets
 	
 	public BufferedImage[][] intro_screen = loadAndCut("assets\\intro-screen.png", 320, 240);
 	public BufferedImage[][] intro_screen_start = loadAndCut("assets\\intro-screen-2.png", 320, 240);
+	public BufferedImage[][] menu_screen = loadAndCut("assets\\menu-screen.png", 320, 240);
 
 	public Font pressstart2p = loadFont("pressstart2p.ttf");
 	

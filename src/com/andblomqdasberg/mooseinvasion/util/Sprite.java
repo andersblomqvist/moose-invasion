@@ -1,6 +1,8 @@
-package com.andblomqdasberg.mooseinvasion;
+package com.andblomqdasberg.mooseinvasion.util;
 
 import java.awt.image.BufferedImage;
+
+import com.andblomqdasberg.mooseinvasion.Assets;
 
 /**
  * 	Template for various game objects which needs to be rendered.	

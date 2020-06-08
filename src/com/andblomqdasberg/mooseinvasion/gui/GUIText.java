@@ -107,10 +107,10 @@ public class GUIText {
 		
 		// Drop shadow
 		g.setColor(Color.BLACK);
-		g.drawString(this.text, (int)x*MooseInvasion.SCALE + 4, (int)y*MooseInvasion.SCALE + 4);
+		g.drawString(this.text, (int)x*MooseInvasion.X_SCALE + 4, (int)y*MooseInvasion.Y_SCALE + 4);
 		
 		g.setColor(style.color);
-		g.drawString(this.text, (int) x*MooseInvasion.SCALE, (int) (y*MooseInvasion.SCALE));
+		g.drawString(this.text, (int) x*MooseInvasion.X_SCALE, (int) (y*MooseInvasion.Y_SCALE));
 	}
 
 	public void removeFromRender() {

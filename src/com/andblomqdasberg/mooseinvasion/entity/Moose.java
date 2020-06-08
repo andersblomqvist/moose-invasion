@@ -4,9 +4,9 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.util.ArrayList;
 
-import com.andblomqdasberg.mooseinvasion.AudioPlayer;
 import com.andblomqdasberg.mooseinvasion.GameManager;
 import com.andblomqdasberg.mooseinvasion.MooseInvasion;
+import com.andblomqdasberg.mooseinvasion.audio.AudioPlayer;
 import com.andblomqdasberg.mooseinvasion.gui.GUIText;
 import com.andblomqdasberg.mooseinvasion.particle.ParticleType;
 import com.andblomqdasberg.mooseinvasion.util.GameRandom;
@@ -170,10 +170,10 @@ public class Moose extends Entity
 			if(hit) {
 				Image img = sprite.img[7];
 				g.drawImage(img,
-		                (int)x*MooseInvasion.SCALE,
-		                (int)y*MooseInvasion.SCALE,
-		                MooseInvasion.SCALE*MooseInvasion.SPRITE_SIZE,
-		                MooseInvasion.SCALE*MooseInvasion.SPRITE_SIZE,
+		                (int)x*MooseInvasion.X_SCALE,
+		                (int)y*MooseInvasion.Y_SCALE,
+		                MooseInvasion.X_SCALE*MooseInvasion.SPRITE_SIZE,
+		                MooseInvasion.Y_SCALE*MooseInvasion.SPRITE_SIZE,
 		                null);
 			} else
 				super.render(g, gameTick);
@@ -189,10 +189,10 @@ public class Moose extends Entity
 			
 			img = sprite.img[sprite.anim[deadFrame]];
 			g.drawImage(img,
-	                (int)x*MooseInvasion.SCALE,
-	                (int)y*MooseInvasion.SCALE,
-	                MooseInvasion.SCALE*MooseInvasion.SPRITE_SIZE,
-	                MooseInvasion.SCALE*MooseInvasion.SPRITE_SIZE,
+	                (int)x*MooseInvasion.X_SCALE,
+	                (int)y*MooseInvasion.Y_SCALE,
+	                MooseInvasion.X_SCALE*MooseInvasion.SPRITE_SIZE,
+	                MooseInvasion.Y_SCALE*MooseInvasion.SPRITE_SIZE,
 	                null);
 		}
 	}
