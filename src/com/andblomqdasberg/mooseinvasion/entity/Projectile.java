@@ -64,19 +64,19 @@ public class Projectile extends Entity
 		// Render muzzleflash
 		if(muzzle < maxFrames) {
 			g.drawImage(sprite.img[0],
-					(int)x*MooseInvasion.SCALE,
-					(int)y*MooseInvasion.SCALE,
-					16*MooseInvasion.SCALE,
-					16*MooseInvasion.SCALE,
+					(int)x*MooseInvasion.X_SCALE,
+					(int)y*MooseInvasion.Y_SCALE,
+					16*MooseInvasion.X_SCALE,
+					16*MooseInvasion.Y_SCALE,
 					null
 			);
 			muzzle += 1;
 		} else {
 			g.drawImage(sprite.img[1],
-					(int)x*MooseInvasion.SCALE,
-					(int)y*MooseInvasion.SCALE,
-					16*MooseInvasion.SCALE,
-					16*MooseInvasion.SCALE,
+					(int)x*MooseInvasion.X_SCALE,
+					(int)y*MooseInvasion.Y_SCALE,
+					16*MooseInvasion.X_SCALE,
+					16*MooseInvasion.Y_SCALE,
 					null
 			);
 		}

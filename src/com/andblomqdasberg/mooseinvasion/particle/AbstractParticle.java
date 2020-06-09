@@ -4,8 +4,8 @@ import java.awt.Graphics;
 import java.awt.Image;
 
 import com.andblomqdasberg.mooseinvasion.MooseInvasion;
-import com.andblomqdasberg.mooseinvasion.Sprite;
 import com.andblomqdasberg.mooseinvasion.util.GameRandom;
+import com.andblomqdasberg.mooseinvasion.util.Sprite;
 import com.andblomqdasberg.mooseinvasion.util.Vector2D;
 
 /**
@@ -63,10 +63,10 @@ public abstract class AbstractParticle {
 		}
         
         g.drawImage(img,
-                (int)x*MooseInvasion.SCALE,
-                (int)y*MooseInvasion.SCALE,
-                MooseInvasion.SCALE*MooseInvasion.SPRITE_SIZE,
-                MooseInvasion.SCALE*MooseInvasion.SPRITE_SIZE,
+                (int)x*MooseInvasion.X_SCALE,
+                (int)y*MooseInvasion.Y_SCALE,
+                MooseInvasion.X_SCALE*MooseInvasion.SPRITE_SIZE,
+                MooseInvasion.Y_SCALE*MooseInvasion.SPRITE_SIZE,
                 null
         );
 	}

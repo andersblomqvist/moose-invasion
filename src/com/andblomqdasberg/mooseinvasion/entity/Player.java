@@ -117,11 +117,11 @@ public class Player extends Entity {
 		if(InputHandler.reload())
 			currentWeapon.reload();
     
-		if(InputHandler.up())
+		if(InputHandler.up(false))
 			if(velocity.y > -maxSpeed)
 				velocity.y -= accel/weight;
 		
-		if(InputHandler.down())
+		if(InputHandler.down(false))
 			if(velocity.y < maxSpeed)
 				velocity.y += accel/weight;
 
@@ -147,10 +147,10 @@ public class Player extends Entity {
 		// temp reloading indicator
 		if(currentWeapon.isReloading()){
 			g.setColor(Color.GRAY);
-			g.fillArc((int)(x+15)*MooseInvasion.SCALE
-					, (int)(y-5)*MooseInvasion.SCALE
-					, 8*MooseInvasion.SCALE
-					, 8*MooseInvasion.SCALE
+			g.fillArc((int)(x+15)*MooseInvasion.X_SCALE
+					, (int)(y-5)*MooseInvasion.Y_SCALE
+					, 8*MooseInvasion.X_SCALE
+					, 8*MooseInvasion.Y_SCALE
 					, 0
 					, (int)(currentWeapon.reloadPercentage()/1 * 360));
 		}

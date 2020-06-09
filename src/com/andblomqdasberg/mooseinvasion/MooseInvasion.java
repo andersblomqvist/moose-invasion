@@ -1,7 +1,12 @@
 package com.andblomqdasberg.mooseinvasion;
 
 import javax.swing.*;
+
+import com.andblomqdasberg.mooseinvasion.audio.AudioPlayer;
+import com.andblomqdasberg.mooseinvasion.config.ConfigHandler;
+
 import java.awt.*;
+import java.io.IOException;
 
 /**
  * 	Main class with game loop
@@ -13,12 +18,17 @@ public class MooseInvasion extends JFrame implements Runnable {
 	
 	private static final long serialVersionUID = 1L;
 	
-	// Render settings
-	public static final int WIDTH = 320;
-    public static final int HEIGHT = 240;
-    public static final int SCALE = 4;
-    public static final int SPRITE_SIZE = 16;
+	// Standard Render settings
+	public static int WIDTH = 320;
+    public static int HEIGHT = 240;
+    public static int X_SCALE = 3;
+    public static int Y_SCALE = 3;
+    public static int SPRITE_SIZE = 16;
+    public static boolean FULLSCREEN = false;
 
+    public static int RENDER_WIDTH = WIDTH*X_SCALE;
+    public static int RENDER_HEIGHT = HEIGHT*Y_SCALE;
+    
     // Display for rendering
     private Display display;
     
@@ -32,16 +42,64 @@ public class MooseInvasion extends JFrame implements Runnable {
 
     public MooseInvasion(String title) {
         super(title);
+        
+        // Monitor resolution
+        Dimension monitor = Toolkit.getDefaultToolkit().getScreenSize();
 
-        display = new Display(WIDTH, HEIGHT, SCALE);
-        setResizable(false);
+        System.out.println("-- Loading config --");
+        String prop = "";
+        try {
+        	prop = ConfigHandler.getPropertiesValues();
+            System.out.println("Properties string: " + prop);
+		} catch (IOException e) {
+			System.out.println("Reading newly created config file.");
+        	try {
+				prop = ConfigHandler.getPropertiesValues();
+			} catch (IOException e1) {
+				System.out.println("Total failiure");
+				e1.printStackTrace();
+			}
+		}
+        
+        String[] values = prop.split(",");
+        int f = Integer.parseInt(values[0]);
+        int s = Integer.parseInt(values[1]);
+        int v = Integer.parseInt(values[2]);
+        
+        AudioPlayer.setGlobalVolume(v);
+        FULLSCREEN = (f == 0) ? false : true;
+        
+        if(FULLSCREEN) {
+            setExtendedState(JFrame.MAXIMIZED_BOTH);
+            setUndecorated(true);
+            X_SCALE = monitor.width / WIDTH;
+            HEIGHT = monitor.height / (X_SCALE-1);
+            Y_SCALE = monitor.height / HEIGHT;
+        } else {
+        	X_SCALE = s;
+        	Y_SCALE = s;	
+        }
+        
+        RENDER_WIDTH = WIDTH*X_SCALE;
+        RENDER_HEIGHT = HEIGHT*Y_SCALE;
+        
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setVisible(true);
+        display = new Display(WIDTH, HEIGHT, X_SCALE, Y_SCALE);
+        setResizable(false);
         add(display);
         pack();
         setLocationRelativeTo(null);
         setIconImage(new ImageIcon("assets\\" + "moose-invasion-icon-64.png").getImage());
-
+        setVisible(true);
+        
+        System.out.println("-- Window setup --");
+        System.out.println("Monitor: " + monitor);
+        System.out.println("X-Scale: " + X_SCALE);
+        System.out.println("Y-Scale: " + Y_SCALE);
+        System.out.println("Render-width: " + RENDER_WIDTH);
+        System.out.println("Render-height: " + RENDER_HEIGHT);
+        System.out.println("Fullscreen: " + FULLSCREEN);
+        
         new InputHandler(this);
         new Thread(this).start();
     }
@@ -81,7 +139,9 @@ public class MooseInvasion extends JFrame implements Runnable {
 
             unprocessedTime += passedTime;
 
-            /** Update */
+            /** 
+             * 	Update 
+             */
             boolean render = false;
             while (unprocessedTime > 1) {
                 ticks++;
@@ -89,13 +149,16 @@ public class MooseInvasion extends JFrame implements Runnable {
                 render = true;
                 unprocessedTime -= 1;
                 
+                // TODO Hard quit, replace with pause screen!
                 if(InputHandler.exit()) {
                 	running = false;
                 	System.exit(0);
                 }
             }
             
-            /** Render */
+            /** 
+             * 	Render 
+             */
             render = true;
             if (render) {
                 display.repaint();

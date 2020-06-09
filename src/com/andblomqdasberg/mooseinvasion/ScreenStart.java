@@ -3,13 +3,15 @@ package com.andblomqdasberg.mooseinvasion;
 import java.awt.Color;
 import java.awt.Graphics;
 
+import com.andblomqdasberg.mooseinvasion.util.GameState;
+
 /**
  * 	Handle start screen title animation and game start.
  * 
  * 	@author Anders Blomqvist
  * 	@author David Åsberg
  */
-public class StartScreen
+public class ScreenStart
 {
 	private Color introFadeColor = new Color(0, 0, 0, 255);
 	private int fadeAmount = 10;
@@ -19,9 +21,12 @@ public class StartScreen
     private int textBlinkSpeed = 8;
 	
 	public void tick(int ticks) {
-		if(InputHandler.enter())
-			GameManager.sInstance.startGame();
 		
+		// Start game when we hit enter
+		if(InputHandler.enter())
+			GameManager.sInstance.setGameState(GameState.MENU);
+		
+		// Intro screen animation control
 		if(ticks % 5 == 0) {
 			if(fadeIn) {
 				// Slight delay before animation starts
@@ -56,11 +61,11 @@ public class StartScreen
 			g.drawImage(Assets.sInstance.intro_screen[0][0],
 					0,
 					0,
-					320*MooseInvasion.SCALE,
-					240*MooseInvasion.SCALE,
+					MooseInvasion.RENDER_WIDTH,
+					MooseInvasion.RENDER_HEIGHT,
 					null);
 			g.setColor(introFadeColor);
-			g.fillRect(0, 0, 320*MooseInvasion.SCALE, 240*MooseInvasion.SCALE);
+			g.fillRect(0, 0, MooseInvasion.RENDER_WIDTH, MooseInvasion.RENDER_HEIGHT);
 		}
 		
 		else {
@@ -68,15 +73,15 @@ public class StartScreen
 				g.drawImage(Assets.sInstance.intro_screen[0][0],
 						0,
 						0,
-						320*MooseInvasion.SCALE,
-						240*MooseInvasion.SCALE,
+						MooseInvasion.RENDER_WIDTH,
+						MooseInvasion.RENDER_HEIGHT,
 						null);
 			} else {
 				g.drawImage(Assets.sInstance.intro_screen_start[0][0],
 						0,
 						0,
-						320*MooseInvasion.SCALE,
-						240*MooseInvasion.SCALE,
+						MooseInvasion.RENDER_WIDTH,
+						MooseInvasion.RENDER_HEIGHT,
 						null);
 			}
 		}

@@ -31,11 +31,18 @@ public class InputHandler implements KeyListener, MouseListener {
     	public static final int DOWN = 83;
     	public static final int RIGHT = 68;
     	public static final int LEFT = 65;
+    	
+    	public static final int ARROW_DOWN = 40;
+    	public static final int ARROW_RIGHT = 39;
+    	public static final int ARROW_UP = 38;
+    	public static final int ARROW_LEFT = 37;
+    	
     	public static final int SPACE = 32;
     	public static final int ESC = 27;
     	public static final int R = 82;
     	public static final int Q = 81;
     	public static final int ENTER = 10;
+    	
     	public static final int ONE = 49;
 		public static final int TWO = 50;
 		public static final int THREE = 51;
@@ -55,20 +62,38 @@ public class InputHandler implements KeyListener, MouseListener {
 		return (keysPressed.contains(Keys.SPACE) || leftMouse);
 	}
 	
-	public static boolean up() {
-		return keysPressed.contains(Keys.UP);
+	public static boolean up(boolean hold) {
+		if(hold) {
+			if(keysPressed.contains(Keys.UP) || keysPressed.contains(Keys.ARROW_UP)) {
+				keysPressed.remove(Keys.ARROW_UP);
+				keysPressed.remove(Keys.UP);
+				return true;
+			} else
+				return false;
+		} else {
+			return keysPressed.contains(Keys.UP) || keysPressed.contains(Keys.ARROW_UP);	
+		}
 	}
 	
-	public static boolean down() {
-		return keysPressed.contains(Keys.DOWN);
+	public static boolean down(boolean hold) {
+		if(hold) {
+			if(keysPressed.contains(Keys.DOWN) || keysPressed.contains(Keys.ARROW_DOWN)) {
+				keysPressed.remove(Keys.ARROW_DOWN);
+				keysPressed.remove(Keys.DOWN);
+				return true;
+			} else
+				return false;
+		} else {
+			return keysPressed.contains(Keys.DOWN) || keysPressed.contains(Keys.ARROW_DOWN);	
+		}
 	}
 	
 	public static boolean left() {
-		return keysPressed.contains(Keys.LEFT);
+		return keysPressed.contains(Keys.LEFT) || keysPressed.contains(Keys.ARROW_LEFT);
 	}
 	
 	public static boolean right() {
-		return (keysPressed.contains(Keys.RIGHT));
+		return (keysPressed.contains(Keys.RIGHT)) || keysPressed.contains(Keys.ARROW_RIGHT);
 	}
 	
 	public static boolean exit() {
@@ -76,7 +101,11 @@ public class InputHandler implements KeyListener, MouseListener {
 	}
 	
 	public static boolean enter() {
-		return (keysPressed.contains(Keys.ENTER));
+		if(keysPressed.contains(Keys.ENTER)) {
+			keysPressed.remove(Keys.ENTER);
+			return true;
+		}
+		return false;
 	}
 	
 	public static boolean nextWave() {
