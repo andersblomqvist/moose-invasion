@@ -11,7 +11,7 @@ import com.andblomqdasberg.mooseinvasion.util.GameState;
  * 	@author Anders Blomqvist
  * 	@author David Åsberg
  */
-public class StartScreen
+public class ScreenStart
 {
 	private Color introFadeColor = new Color(0, 0, 0, 255);
 	private int fadeAmount = 10;

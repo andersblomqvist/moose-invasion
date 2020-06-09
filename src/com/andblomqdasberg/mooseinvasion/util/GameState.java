@@ -7,5 +7,6 @@ public enum GameState {
 	INTRO,
 	MENU,
 	GAME,
-	GAME_OVER
+	GAME_OVER,
+	SETTINGS,
 }

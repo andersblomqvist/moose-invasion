@@ -58,8 +58,9 @@ public class GameManager {
     // creation and modifying. NOT FOR RENDERING.
     private ArrayList<GUIText> buyMenu = new ArrayList<GUIText>();
     
-    private StartScreen startScreen;
-    private MenuScreen menuScreen;
+    private ScreenStart startScreen;
+    private ScreenMenu menuScreen;
+    private ScreenSettings settingsScreen;
     private WaveSpawner waveSpawner;
     
     // Show/hide buy menu for rendering
@@ -85,18 +86,19 @@ public class GameManager {
         health = 5;
         initBuyMenuText();
         
-        startScreen = new StartScreen();
-        menuScreen = new MenuScreen();
+        startScreen = new ScreenStart();
+        menuScreen = new ScreenMenu();
+        settingsScreen = new ScreenSettings();
         waveSpawner = new WaveSpawner();
         healthText = new GUIText("HP:" + health, 128, MooseInvasion.HEIGHT-6);
-        //starts intro wind when game starts
+        
+        // Starts intro wind when game starts
         try {
             audioPlayer = new AudioPlayer("wind.wav");
         }
         catch (Exception e) {
             e.printStackTrace();
-        }
-        audioPlayer.play();
+        }        audioPlayer.play();
     }
 
     private void initBuyMenuText() {
@@ -162,7 +164,11 @@ public class GameManager {
     	else if(gameState == GameState.MENU) {
     		menuScreen.tick(ticks);
     		return;
-    	} 
+    	}
+    	else if(gameState == GameState.SETTINGS) {
+    		settingsScreen.tick(ticks);
+    		return;
+    	}
     	else if (gameState == GameState.GAME_OVER) {
     		if(InputHandler.reload())
     			restartGame();
@@ -208,20 +214,21 @@ public class GameManager {
      */
     public void render(Graphics g) {
 
-    	// Intro screen animation
     	if(gameState == GameState.INTRO) {
     		startScreen.render(g);
     		return;
     	}
-    	
-    	// Menu screen
     	if(gameState == GameState.MENU) {
     		menuScreen.render(g);
     		return;
     	}
+    	if(gameState == GameState.SETTINGS) {
+    		settingsScreen.render(g);
+    		return;
+    	}
     	
     	// Render ground
-        for (int x = 0; x < MooseInvasion.WIDTH/MooseInvasion.SPRITE_SIZE; x++) {
+        for (int x = 0; x <= MooseInvasion.WIDTH/MooseInvasion.SPRITE_SIZE; x++) {
             for (int y = 0; y <= MooseInvasion.HEIGHT/MooseInvasion.SPRITE_SIZE; y++) {
             	// Fake random distribution of tiles
             	int tile = x*2*y / 3 % 4;
@@ -296,7 +303,7 @@ public class GameManager {
 	}
 	
 	/**
-	 * 	Starts the game when player hits enter from {@link StartScreen} or start game
+	 * 	Starts the game when player hits enter from {@link ScreenStart} or start game
 	 * 	from menu screen.
 	 */
 	public void setGameState(GameState state) {

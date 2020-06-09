@@ -9,15 +9,19 @@ import java.io.IOException;
  * 
  * 	@author David Åsberg
  */
-public class AudioPlayer{
+public class AudioPlayer {
 
+	public static float globalVolume = -20f;
+	
+	public static void setGlobalVolume(int v) {
+		float dv = (100 - v) / 100;
+		globalVolume -= 60*dv;
+	}
+	
     private Clip clip;
     private AudioInputStream audioInputStream;
     private String filePath;
     private FloatControl gainControl;
-
-    // Main volume control
-    private float globalVolume = -30f;
     
     public AudioPlayer(String filePath) throws UnsupportedAudioFileException, IOException, LineUnavailableException {
         this.filePath = "assets\\audio\\" + filePath;

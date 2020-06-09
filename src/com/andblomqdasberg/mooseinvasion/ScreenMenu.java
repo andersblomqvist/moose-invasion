@@ -10,7 +10,7 @@ import com.andblomqdasberg.mooseinvasion.util.GameState;
  * 
  * 	@author Anders Blomqvist
  */
-public class MenuScreen 
+public class ScreenMenu 
 {
 	private int startButton = 0;
 	private int settingsButton = 1;
@@ -21,12 +21,11 @@ public class MenuScreen
 	
 	public void tick(int ticks) {
 		
-		if(ticks % 6 == 0) {
+		if(ticks % 6 == 0)
 			if(iconFrame == 7)
 				iconFrame = 0;
 			else
 				iconFrame++;
-		}
 		
 		if(InputHandler.down(true))
 			if(currentButton < 2)
@@ -46,7 +45,7 @@ public class MenuScreen
 					GameManager.sInstance.setGameState(GameState.GAME);
 					break;
 				case 1:
-					// Goto settings
+					GameManager.sInstance.setGameState(GameState.SETTINGS);
 					break;
 				case 2:
 					System.exit(0);

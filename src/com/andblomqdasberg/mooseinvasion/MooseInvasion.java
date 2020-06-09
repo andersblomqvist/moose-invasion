@@ -1,7 +1,12 @@
 package com.andblomqdasberg.mooseinvasion;
 
 import javax.swing.*;
+
+import com.andblomqdasberg.mooseinvasion.audio.AudioPlayer;
+import com.andblomqdasberg.mooseinvasion.config.ConfigHandler;
+
 import java.awt.*;
+import java.io.IOException;
 
 /**
  * 	Main class with game loop
@@ -13,11 +18,11 @@ public class MooseInvasion extends JFrame implements Runnable {
 	
 	private static final long serialVersionUID = 1L;
 	
-	// Render settings
+	// Standard Render settings
 	public static int WIDTH = 320;
     public static int HEIGHT = 240;
-    public static int X_SCALE = 4;
-    public static int Y_SCALE = 4;
+    public static int X_SCALE = 3;
+    public static int Y_SCALE = 3;
     public static int SPRITE_SIZE = 16;
     public static boolean FULLSCREEN = false;
 
@@ -40,6 +45,29 @@ public class MooseInvasion extends JFrame implements Runnable {
         
         // Monitor resolution
         Dimension monitor = Toolkit.getDefaultToolkit().getScreenSize();
+
+        System.out.println("-- Loading config --");
+        String prop = "";
+        try {
+        	prop = ConfigHandler.getPropertiesValues();
+            System.out.println("Properties string: " + prop);
+		} catch (IOException e) {
+			System.out.println("Reading newly created config file.");
+        	try {
+				prop = ConfigHandler.getPropertiesValues();
+			} catch (IOException e1) {
+				System.out.println("Total failiure");
+				e1.printStackTrace();
+			}
+		}
+        
+        String[] values = prop.split(",");
+        int f = Integer.parseInt(values[0]);
+        int s = Integer.parseInt(values[1]);
+        int v = Integer.parseInt(values[2]);
+        
+        AudioPlayer.setGlobalVolume(v);
+        FULLSCREEN = (f == 0) ? false : true;
         
         if(FULLSCREEN) {
             setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -47,9 +75,13 @@ public class MooseInvasion extends JFrame implements Runnable {
             X_SCALE = monitor.width / WIDTH;
             HEIGHT = monitor.height / (X_SCALE-1);
             Y_SCALE = monitor.height / HEIGHT;
-            RENDER_WIDTH = WIDTH*X_SCALE;
-            RENDER_HEIGHT = HEIGHT*Y_SCALE;
+        } else {
+        	X_SCALE = s;
+        	Y_SCALE = s;	
         }
+        
+        RENDER_WIDTH = WIDTH*X_SCALE;
+        RENDER_HEIGHT = HEIGHT*Y_SCALE;
         
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         display = new Display(WIDTH, HEIGHT, X_SCALE, Y_SCALE);
@@ -67,7 +99,6 @@ public class MooseInvasion extends JFrame implements Runnable {
         System.out.println("Render-width: " + RENDER_WIDTH);
         System.out.println("Render-height: " + RENDER_HEIGHT);
         System.out.println("Fullscreen: " + FULLSCREEN);
-        System.out.println("--     Done     --");
         
         new InputHandler(this);
         new Thread(this).start();
