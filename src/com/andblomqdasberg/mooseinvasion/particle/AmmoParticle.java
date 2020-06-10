@@ -51,17 +51,15 @@ public class AmmoParticle extends AbstractParticle {
 		this.y += velocity.y;
 	}
 
-	private void playShellDrop(){
+	/**
+	 * 	Play shell drop sound
+	 */
+	private void playShellDrop() {
 		if(!soundPlayed){
-			try {
-				audioPlayer = new AudioPlayer("shelldrop.wav");
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-			}
+			try { audioPlayer = new AudioPlayer("weapon-shell-drop.wav"); }
+			catch (Exception e) { e.printStackTrace(); }
 			audioPlayer.play();
 			soundPlayed = true;
 		}
 	}
-
 }

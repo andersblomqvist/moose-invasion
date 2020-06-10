@@ -11,11 +11,12 @@ import java.io.IOException;
  */
 public class AudioPlayer {
 
-	public static float globalVolume = -20f;
+	public static float globalVolume = -10f;
 	
 	public static void setGlobalVolume(int v) {
 		float dv = (100 - v) / 100;
-		globalVolume -= 60*dv;
+		globalVolume -= 60f*dv;
+		System.out.println("Global volume: " + globalVolume);
 	}
 	
     private Clip clip;
@@ -29,7 +30,7 @@ public class AudioPlayer {
         clip = AudioSystem.getClip();
         clip.open(audioInputStream);
         gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
-        setVolume(getVolume() + globalVolume);
+        gainControl.setValue(globalVolume);
     }
     
     public void play() {
@@ -45,23 +46,11 @@ public class AudioPlayer {
     	});
     }
 
+    /*
     public void pause() {
         clip.stop();
     }
-
-    public void restart() throws IOException, LineUnavailableException, UnsupportedAudioFileException {
-        clip.stop();
-        clip.close();
-        resetAudioStream();
-        clip.setMicrosecondPosition(0);
-        this.play();
-    }
-
-    public void stop() throws UnsupportedAudioFileException, IOException, LineUnavailableException {
-        clip.stop();
-        clip.close();
-    }
-
+    
     public void setVolume(float change) {
         gainControl.setValue(change);
     }
@@ -70,9 +59,25 @@ public class AudioPlayer {
         return gainControl.getValue();
     }
 
+    public void stop() throws UnsupportedAudioFileException, IOException, LineUnavailableException {
+        clip.stop();
+        clip.close();
+    }
+    */
+    
+    /*
+    public void restart() throws IOException, LineUnavailableException, UnsupportedAudioFileException {
+        clip.stop();
+        clip.close();
+        resetAudioStream();
+        clip.setMicrosecondPosition(0);
+        this.play();
+    }
+    
     public void resetAudioStream() throws UnsupportedAudioFileException, IOException, LineUnavailableException {
         audioInputStream = AudioSystem.getAudioInputStream(new File(filePath).getAbsoluteFile());
         clip.open(audioInputStream);
         clip.loop(Clip.LOOP_CONTINUOUSLY);
     }
+    */
 }

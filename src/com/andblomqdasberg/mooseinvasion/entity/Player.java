@@ -1,14 +1,14 @@
 package com.andblomqdasberg.mooseinvasion.entity;
 
+import java.awt.Color;
+import java.util.ArrayList;
+
 import com.andblomqdasberg.mooseinvasion.InputHandler;
 import com.andblomqdasberg.mooseinvasion.MooseInvasion;
 import com.andblomqdasberg.mooseinvasion.gui.GUIText;
 import com.andblomqdasberg.mooseinvasion.util.GameRandom;
-import com.andblomqdasberg.mooseinvasion.weapon.Rifle;
-import com.andblomqdasberg.mooseinvasion.weapon.Weapon;
-
-import java.awt.*;
-import java.util.ArrayList;
+import com.andblomqdasberg.mooseinvasion.weapon.AbstractWeapon;
+import com.andblomqdasberg.mooseinvasion.weapon.WeaponList;
 
 /**
  * 	Player entity
@@ -23,9 +23,6 @@ public class Player extends Entity {
 	private static int[] igor = {2, 3};
 	private static int[] pcmr = {4, 5};
 	private static int[] scout = {6, 7};
-	
-	// Offset projectile spawning
-	private int offset = 1;
 
 	// Movement
 	private float friction = 0.9f;
@@ -33,8 +30,8 @@ public class Player extends Entity {
 	private float maxSpeed = 2.0f;
 	private float accel = 1.8f;
 	
-	private ArrayList<Weapon> weapons;
-	private Weapon currentWeapon;
+	private ArrayList<AbstractWeapon> weapons;
+	private AbstractWeapon currentWeapon;
 
 	private int gold;
 
@@ -49,11 +46,13 @@ public class Player extends Entity {
 		weight = 10;
 		friction = 0.9f;
 		maxSpeed = 2.0f;
-		weapons.add(new Rifle(8, 34, 20, 4*60));
+		weapons.add(WeaponList.PISTOL);
 		currentWeapon = weapons.get(0);
 		
+		/*
 		ammoText = new GUIText(currentWeapon.getBulletsInMag() + 
 				"/" + currentWeapon.getMagazineCapacity(), MooseInvasion.WIDTH-140, MooseInvasion.HEIGHT-6);
+		*/
 		goldText =  new GUIText("$"+String.valueOf(gold), MooseInvasion.WIDTH - 13, MooseInvasion.HEIGHT-6);
 		goldText.setColor(new Color(255, 205, 85));
 	}
@@ -61,7 +60,7 @@ public class Player extends Entity {
 	@Override
 	public void tick() {
 		applyFriction();
-		currentWeapon.tick();
+		currentWeapon.tick(x, y);
 		checkInput();
 
 		x += velocity.x;
@@ -77,7 +76,6 @@ public class Player extends Entity {
 		else if(y > MooseInvasion.HEIGHT-16)
 			y = MooseInvasion.HEIGHT-16;
 		
-		updateAmmoText();
 		updateGoldText();
 	}
 
@@ -111,12 +109,7 @@ public class Player extends Entity {
 	 * 	and fires weapon on left mouse click
 	 */
  	private void checkInput() {
-		if(InputHandler.shoot())
-			shoot();
-    
-		if(InputHandler.reload())
-			currentWeapon.reload();
-    
+ 		
 		if(InputHandler.up(false))
 			if(velocity.y > -maxSpeed)
 				velocity.y -= accel/weight;
@@ -134,27 +127,12 @@ public class Player extends Entity {
 				velocity.x -= accel/weight;
 	}
 
-	private void shoot() {
- 		if(currentWeapon.isFireReady()) {
- 			currentWeapon.fire(x + offset, y);
- 		}
-	}
-
+ 	/*
 	@Override
 	public void render(Graphics g, int gameTick) {
 		super.render(g, gameTick);
-
-		// temp reloading indicator
-		if(currentWeapon.isReloading()){
-			g.setColor(Color.GRAY);
-			g.fillArc((int)(x+15)*MooseInvasion.X_SCALE
-					, (int)(y-5)*MooseInvasion.Y_SCALE
-					, 8*MooseInvasion.X_SCALE
-					, 8*MooseInvasion.Y_SCALE
-					, 0
-					, (int)(currentWeapon.reloadPercentage()/1 * 360));
-		}
 	}
+	*/
 
 	/**
 	 * 	Randomizes a player model
@@ -181,11 +159,6 @@ public class Player extends Entity {
 				break;
 		}
 	}
-
-	private void updateAmmoText() {
-		ammoText.text = currentWeapon.getBulletsInMag() + "/" +
-					currentWeapon.getMagazineCapacity();
-	}
 	
 	private void updateGoldText() {
 		goldText.x = MooseInvasion.WIDTH - goldText.text.length() * 13;
@@ -199,9 +172,5 @@ public class Player extends Entity {
 		this.gold = gold;
 		goldText.text = "$"+String.valueOf(gold);
 
-	}
-
-	public Weapon getCurrentWeapon(){
-		return currentWeapon;
 	}
 }

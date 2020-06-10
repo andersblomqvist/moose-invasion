@@ -170,16 +170,16 @@ public class ScreenSettings
 					(int)(MooseInvasion.RENDER_WIDTH/2 - MooseInvasion.RENDER_WIDTH/10),
 					(int)(MooseInvasion.RENDER_HEIGHT/2 +
 							currentButton*MooseInvasion.RENDER_WIDTH*0.05f - MooseInvasion.Y_SCALE*12),
-					MooseInvasion.SPRITE_SIZE*MooseInvasion.X_SCALE,
-					MooseInvasion.SPRITE_SIZE*MooseInvasion.Y_SCALE,
+					MooseInvasion.SPRITE_X_SIZE*MooseInvasion.X_SCALE,
+					MooseInvasion.SPRITE_Y_SIZE*MooseInvasion.Y_SCALE,
 					null);	
 		} else {
 			g.drawImage(Assets.sInstance.sprites[5][iconFrame],
 					(int)(MooseInvasion.RENDER_WIDTH/2 - MooseInvasion.RENDER_WIDTH/4),
 					(int)(MooseInvasion.RENDER_HEIGHT/3.1 + 
 							currentButton*MooseInvasion.RENDER_WIDTH*0.05f - MooseInvasion.Y_SCALE*12),
-					MooseInvasion.SPRITE_SIZE*MooseInvasion.X_SCALE,
-					MooseInvasion.SPRITE_SIZE*MooseInvasion.Y_SCALE,
+					MooseInvasion.SPRITE_X_SIZE*MooseInvasion.X_SCALE,
+					MooseInvasion.SPRITE_Y_SIZE*MooseInvasion.Y_SCALE,
 					null);	
 		}
 	}

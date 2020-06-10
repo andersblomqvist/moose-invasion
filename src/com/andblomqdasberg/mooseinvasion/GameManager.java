@@ -18,15 +18,13 @@ import com.andblomqdasberg.mooseinvasion.particle.BloodAndMeatParticle;
 import com.andblomqdasberg.mooseinvasion.particle.BloodParticle;
 import com.andblomqdasberg.mooseinvasion.particle.ParticleType;
 import com.andblomqdasberg.mooseinvasion.util.GameState;
-import com.andblomqdasberg.mooseinvasion.weapon.Weapon;
-import com.andblomqdasberg.mooseinvasion.weapon.WeaponUpgrade;
 
 /**
  * 	Manager class which controls all the game objects and
  * 	game states. Also handles update and render for the game objects
  *
  * 	@author Anders Blomqvist
- * 	@author David Ã…sberg
+ * 	@author David Åsberg
  */
 public class GameManager {
     public static GameManager sInstance;
@@ -54,17 +52,11 @@ public class GameManager {
     // GUI list for rendering
     public ArrayList<GUIText> guiText = new ArrayList<GUIText>();
     
-    // Bundle all weapon upgrade texts into one list for easier
-    // creation and modifying. NOT FOR RENDERING.
-    private ArrayList<GUIText> buyMenu = new ArrayList<GUIText>();
-    
+    // Specific game components
     private ScreenStart startScreen;
     private ScreenMenu menuScreen;
     private ScreenSettings settingsScreen;
     private WaveSpawner waveSpawner;
-    
-    // Show/hide buy menu for rendering
-    private boolean toggleBuyMenu = true;
     
     private GUIText healthText;
     
@@ -84,7 +76,6 @@ public class GameManager {
     	player = new Player(64, 128);
         entities.add(player);
         health = 5;
-        initBuyMenuText();
         
         startScreen = new ScreenStart();
         menuScreen = new ScreenMenu();
@@ -92,30 +83,16 @@ public class GameManager {
         waveSpawner = new WaveSpawner();
         healthText = new GUIText("HP:" + health, 128, MooseInvasion.HEIGHT-6);
         
+        /*
         // Starts intro wind when game starts
         try {
             audioPlayer = new AudioPlayer("wind.wav");
         }
         catch (Exception e) {
             e.printStackTrace();
-        }        audioPlayer.play();
-    }
-
-    private void initBuyMenuText() {
-    	for(int i = 0; i < 8; i++) {
-        	int x0 = 100;
-        	int x1 = 103;
-        	int y0 = 90;
-        	int y1 = 62;
-        	int dx = 32;
-        	
-        	if(i >= 4) {
-        		buyMenu.add(new GUIText("", x1 + (i-4)*dx, y1, 2));
-        		buyMenu.get(i).setColor(new Color(255, 205, 85));
-        	} else {
-        		buyMenu.add(new GUIText("", x0 + i*dx, y0, 2));	
-        	}
         }
+        audioPlayer.play();
+        */
     }
     
     /**
@@ -175,16 +152,21 @@ public class GameManager {
     		return;
     	}
 
+    	/*
+    	 * 
+    	 
         // Fades out intro wind once game actually starts
     	if(audioPlayer.getVolume() > -50)
     	    audioPlayer.setVolume(audioPlayer.getVolume()-0.1f);
-    	else{
+    	else {
             try {
                 audioPlayer.stop();
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
+        
+        */
     	
     	waveSpawner.tick();
     	
@@ -228,15 +210,15 @@ public class GameManager {
     	}
     	
     	// Render ground
-        for (int x = 0; x <= MooseInvasion.WIDTH/MooseInvasion.SPRITE_SIZE; x++) {
-            for (int y = 0; y <= MooseInvasion.HEIGHT/MooseInvasion.SPRITE_SIZE; y++) {
+        for (int x = 0; x < 20; x++) {
+            for (int y = 1; y <= 14; y++) {
             	// Fake random distribution of tiles
             	int tile = x*2*y / 3 % 4;
                 g.drawImage(Assets.sInstance.sprites[1][tile],
-                        x*MooseInvasion.SPRITE_SIZE*MooseInvasion.X_SCALE,
-                        y*MooseInvasion.SPRITE_SIZE*MooseInvasion.Y_SCALE,
-                        MooseInvasion.SPRITE_SIZE*MooseInvasion.X_SCALE,
-                        MooseInvasion.SPRITE_SIZE*MooseInvasion.Y_SCALE,
+                        x*MooseInvasion.SPRITE_X_SIZE*MooseInvasion.X_SCALE,
+                        y*MooseInvasion.SPRITE_Y_SIZE*MooseInvasion.Y_SCALE,
+                        MooseInvasion.SPRITE_X_SIZE*MooseInvasion.X_SCALE,
+                        MooseInvasion.SPRITE_Y_SIZE*MooseInvasion.Y_SCALE,
                         null);
             }
         }
@@ -252,18 +234,6 @@ public class GameManager {
         // Render projectiles
         for(int i = 0; i < projectiles.size(); i++)
         	projectiles.get(i).render(g, gameTick);
-        
-        // Render buy menu
-        if(toggleBuyMenu) {
-        	for(int i = 0; i < 4; i++) {
-    			g.drawImage(Assets.sInstance.sprites[4][i],
-                        16*MooseInvasion.X_SCALE + i*128 + MooseInvasion.X_SCALE*85,
-                        64*MooseInvasion.Y_SCALE,
-                        16*MooseInvasion.X_SCALE,
-                        16*MooseInvasion.Y_SCALE,
-                        null);
-        	}
-        }
         
         // Game over state black overlay
         if(gameState == GameState.GAME_OVER) {
@@ -308,6 +278,13 @@ public class GameManager {
 	 */
 	public void setGameState(GameState state) {
 		gameState = state;
+	}
+	
+	/**
+	 * 	@returns current state of the game
+	 */
+	public GameState getGameState() {
+		return gameState;
 	}
 	
 	/**
@@ -359,121 +336,15 @@ public class GameManager {
 		projectiles.clear();
 		particles.clear();
 		guiText.clear();
-		buyMenu.clear();
 		
 		gameTick = 0;
         gameState = GameState.GAME;
-        
-        initBuyMenuText();
         
 		player = new Player(64, 128);
         entities.add(player);
         health = 5;
         
-        toggleBuyMenu = true;
         waveSpawner = new WaveSpawner();
         healthText = new GUIText("HP:" + health, 128, MooseInvasion.HEIGHT-6);
-	}
-  
-	/**
-	 * 	Buys increasing ammo capacity based on how many times ammo capacity has been bought
-	 */
-	public void buyAmmoCap() {
-		Weapon w = player.getCurrentWeapon();
-		int goldNeeded = w.getUpgradeCost(WeaponUpgrade.AMMO);
-		if (player.getGold() >= goldNeeded) {
-			playBuySound();
-			w.upgrade(WeaponUpgrade.AMMO);
-			player.setGold(player.getGold()-goldNeeded);
-			updateUpgradeCostText(4, w.getUpgradeCost(WeaponUpgrade.AMMO));
-		}
-	}
-	
-	/**
-	 * 	Buys increasing damage based on how many times damage has been bought
-	 */
-	public void buyDamage() {
-		Weapon w = player.getCurrentWeapon();
-		int goldNeeded = w.getUpgradeCost(WeaponUpgrade.DAMAGE);
-		if (player.getGold() >= goldNeeded && goldNeeded > 0) {
-			playBuySound();
-			w.upgrade(WeaponUpgrade.DAMAGE);
-			player.setGold(player.getGold() - goldNeeded);
-			updateUpgradeCostText(5, w.getUpgradeCost(WeaponUpgrade.DAMAGE));
-		}
-	}
-
-	/**
-	 * 	Buys decreasing reload time based on how many times reload time has been bought
-	 */
-	public void buyFastReload() {
-		Weapon w = player.getCurrentWeapon();
-		int goldNeeded = w.getUpgradeCost(WeaponUpgrade.RELOAD);
-		if (player.getGold() >= goldNeeded) {
-			playBuySound();
-			w.upgrade(WeaponUpgrade.RELOAD);
-			player.setGold(player.getGold() - goldNeeded);
-			updateUpgradeCostText(6, w.getUpgradeCost(WeaponUpgrade.RELOAD));
-		}
-	}
-	
-	/**
-	 * 	Buys increasing firerate based on how many times firerate has been bought
-	 */
-	public void buyFireRate() {
-		Weapon w = player.getCurrentWeapon();
-		int goldNeeded = w.getUpgradeCost(WeaponUpgrade.FIRERATE);
-		if (player.getGold() >= goldNeeded) {
-			playBuySound();
-			w.upgrade(WeaponUpgrade.FIRERATE);
-			player.setGold(player.getGold() - goldNeeded);
-			updateUpgradeCostText(7, w.getUpgradeCost(WeaponUpgrade.FIRERATE));
-		}
-	}
-      
-	/**
-	 * 	Toggles the buy menu for rendering when wave has finished
-	 */
-	public void toggleBuyMenu() {
-		toggleBuyMenu = !toggleBuyMenu;
-		if(toggleBuyMenu == false) {
-			for(GUIText g : buyMenu)
-				g.text = "";
-			
-		} else {
-			for(int i = 1; i < 5; i++)
-				buyMenu.get(i-1).text = "["+i+"]";
-			Weapon w = player.getCurrentWeapon();
-			updateUpgradeCostText(4, w.getUpgradeCost(WeaponUpgrade.AMMO));
-			updateUpgradeCostText(5, w.getUpgradeCost(WeaponUpgrade.DAMAGE));
-			updateUpgradeCostText(6, w.getUpgradeCost(WeaponUpgrade.RELOAD));
-			updateUpgradeCostText(7, w.getUpgradeCost(WeaponUpgrade.FIRERATE));
-		}
-	}
-	
-	public void updateUpgradeCostText(int id, int cost) {
-		if(cost > 0)
-			buyMenu.get(id).text = "$"+cost;
-		else
-			buyMenu.get(id).text = "done";
-	}
-	
-	/**
-	 * 	Sound when player buys an upgrade
-	 */
-	private void playBuySound() {
-		try {
-            audioPlayer = new AudioPlayer("buy.wav");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        audioPlayer.play();
-        
-        try {
-            audioPlayer = new AudioPlayer("weap_pickup.wav");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        audioPlayer.play();
 	}
 }

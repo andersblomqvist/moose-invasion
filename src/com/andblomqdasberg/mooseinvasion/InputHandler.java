@@ -97,7 +97,11 @@ public class InputHandler implements KeyListener, MouseListener {
 	}
 	
 	public static boolean exit() {
-		return (keysPressed.contains(Keys.ESC));
+		if(keysPressed.contains(Keys.ESC)) {
+			keysPressed.remove(Keys.ESC);
+			return true;
+		}
+		return false;
 	}
 	
 	public static boolean enter() {

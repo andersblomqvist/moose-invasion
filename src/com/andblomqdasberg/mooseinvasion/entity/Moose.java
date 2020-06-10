@@ -172,8 +172,8 @@ public class Moose extends Entity
 				g.drawImage(img,
 		                (int)x*MooseInvasion.X_SCALE,
 		                (int)y*MooseInvasion.Y_SCALE,
-		                MooseInvasion.X_SCALE*MooseInvasion.SPRITE_SIZE,
-		                MooseInvasion.Y_SCALE*MooseInvasion.SPRITE_SIZE,
+		                MooseInvasion.X_SCALE*MooseInvasion.SPRITE_X_SIZE,
+		                MooseInvasion.Y_SCALE*MooseInvasion.SPRITE_Y_SIZE,
 		                null);
 			} else
 				super.render(g, gameTick);
@@ -191,8 +191,8 @@ public class Moose extends Entity
 			g.drawImage(img,
 	                (int)x*MooseInvasion.X_SCALE,
 	                (int)y*MooseInvasion.Y_SCALE,
-	                MooseInvasion.X_SCALE*MooseInvasion.SPRITE_SIZE,
-	                MooseInvasion.Y_SCALE*MooseInvasion.SPRITE_SIZE,
+	                MooseInvasion.X_SCALE*MooseInvasion.SPRITE_X_SIZE,
+	                MooseInvasion.Y_SCALE*MooseInvasion.SPRITE_Y_SIZE,
 	                null);
 		}
 	}
@@ -200,7 +200,7 @@ public class Moose extends Entity
 	private void playHitSound() {
 		try {
             audioPlayer = new AudioPlayer("moose-hit.wav");
-            audioPlayer.setVolume(-22);
+            // audioPlayer.setVolume(-22);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -217,7 +217,7 @@ public class Moose extends Entity
         audioPlayer.play();
         try {
             audioPlayer = new AudioPlayer("big-splash.wav");
-            audioPlayer.setVolume(-22f);
+            // audioPlayer.setVolume(-22f);
         } catch (Exception e) {
             e.printStackTrace();
         }
