@@ -10,6 +10,7 @@ import com.andblomqdasberg.mooseinvasion.entity.Entity;
 import com.andblomqdasberg.mooseinvasion.entity.Moose;
 import com.andblomqdasberg.mooseinvasion.entity.Player;
 import com.andblomqdasberg.mooseinvasion.entity.Projectile;
+import com.andblomqdasberg.mooseinvasion.gui.AbstractGUI;
 import com.andblomqdasberg.mooseinvasion.gui.GUIText;
 import com.andblomqdasberg.mooseinvasion.level.WaveSpawner;
 import com.andblomqdasberg.mooseinvasion.particle.AbstractParticle;
@@ -46,11 +47,9 @@ public class GameManager {
     public ArrayList<Entity> entities = new ArrayList<Entity>();
     public ArrayList<Entity> projectiles = new ArrayList<Entity>();
     public ArrayList<AbstractParticle> particles = new ArrayList<AbstractParticle>();
-    
-    private AudioPlayer audioPlayer = null;
 
     // GUI list for rendering
-    public ArrayList<GUIText> guiText = new ArrayList<GUIText>();
+    public ArrayList<AbstractGUI> gui = new ArrayList<AbstractGUI>();
     
     // Specific game components
     private ScreenStart startScreen;
@@ -83,16 +82,15 @@ public class GameManager {
         waveSpawner = new WaveSpawner();
         healthText = new GUIText("HP:" + health, 128, MooseInvasion.HEIGHT-6);
         
-        /*
-        // Starts intro wind when game starts
-        try {
-            audioPlayer = new AudioPlayer("wind.wav");
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-        audioPlayer.play();
-        */
+        AudioPlayer.play("ambient-wind.wav");
+    }
+    
+    /**
+     * 	Init when game state changes to GAME
+     */
+    private void gameStartInit() {
+    	// Cancel menu sounds
+    	AudioPlayer.stop("ambient-wind.wav");
     }
     
     /**
@@ -147,26 +145,10 @@ public class GameManager {
     		return;
     	}
     	else if (gameState == GameState.GAME_OVER) {
-    		if(InputHandler.reload())
+    		if(InputHandler.nextWave())
     			restartGame();
     		return;
     	}
-
-    	/*
-    	 * 
-    	 
-        // Fades out intro wind once game actually starts
-    	if(audioPlayer.getVolume() > -50)
-    	    audioPlayer.setVolume(audioPlayer.getVolume()-0.1f);
-    	else {
-            try {
-                audioPlayer.stop();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        
-        */
     	
     	waveSpawner.tick();
     	
@@ -211,7 +193,7 @@ public class GameManager {
     	
     	// Render ground
         for (int x = 0; x < 20; x++) {
-            for (int y = 1; y <= 14; y++) {
+            for (int y = 0; y <= 14; y++) {
             	// Fake random distribution of tiles
             	int tile = x*2*y / 3 % 4;
                 g.drawImage(Assets.sInstance.sprites[1][tile],
@@ -244,8 +226,8 @@ public class GameManager {
     	}
         
         // Render GUI text elements
-        for(int i = 0; i < guiText.size(); i++)
-        	guiText.get(i).render(g);
+        for(int i = 0; i < gui.size(); i++)
+        	gui.get(i).render(g);
     }
     
     /**
@@ -278,6 +260,9 @@ public class GameManager {
 	 */
 	public void setGameState(GameState state) {
 		gameState = state;
+		
+		if(state == GameState.GAME)
+			gameStartInit();
 	}
 	
 	/**
@@ -318,7 +303,7 @@ public class GameManager {
 	 */
 	private void setGameOverState() {
 		gameState = GameState.GAME_OVER;
-		guiText.clear();
+		gui.clear();
 		
 		GUIText gameOverText = new GUIText("Game Over!", 102, 64, 1);
         gameOverText.setColor(Color.RED);
@@ -335,7 +320,7 @@ public class GameManager {
 		entities.clear();
 		projectiles.clear();
 		particles.clear();
-		guiText.clear();
+		gui.clear();
 		
 		gameTick = 0;
         gameState = GameState.GAME;

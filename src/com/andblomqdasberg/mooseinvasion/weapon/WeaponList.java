@@ -8,8 +8,8 @@ package com.andblomqdasberg.mooseinvasion.weapon;
 public class WeaponList {
 
 	// Add new weapons from here
-	public static WeaponPistol PISTOL = new WeaponPistol(0, 34, 100, 40);
-	public static WeaponPistol CARBINE = new WeaponPistol(1, 34, 150, 7);
-	public static WeaponPistol UZI = new WeaponPistol(2, 15, 150, 3);
+	public static WeaponPistol PISTOL = new WeaponPistol(0, 34, 100, 40, "Pistol");
+	public static WeaponPistol CARBINE = new WeaponPistol(1, 34, 150, 7, "Rifle");
+	public static WeaponPistol UZI = new WeaponPistol(2, 15, 150, 3, "UZI");
 	
 }

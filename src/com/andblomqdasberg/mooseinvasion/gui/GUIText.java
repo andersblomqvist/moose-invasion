@@ -5,7 +5,6 @@ import java.awt.Font;
 import java.awt.Graphics;
 
 import com.andblomqdasberg.mooseinvasion.Assets;
-import com.andblomqdasberg.mooseinvasion.GameManager;
 import com.andblomqdasberg.mooseinvasion.MooseInvasion;
 
 /**
@@ -16,12 +15,10 @@ import com.andblomqdasberg.mooseinvasion.MooseInvasion;
  * 
  * 	@author Anders Blomqvist
  */
-public class GUIText {
+public class GUIText extends AbstractGUI {
 	
 	public String text;
 	public TextStyle style;
-	
-	public float x, y;
 	
 	/**
 	 * 	Class for storing data about TextStyling
@@ -41,7 +38,7 @@ public class GUIText {
 		 * 	@returns a TextStyle object with default styling
 		 */
 		public TextStyle getDefaultStyle() {
-			Font font = Assets.sInstance.pressstart2p.deriveFont(32f);
+			Font font = Assets.sInstance.pressstart2p.deriveFont(MooseInvasion.FONT_SIZE);
 			return new TextStyle(font, Color.WHITE);
 		}
 		
@@ -60,6 +57,12 @@ public class GUIText {
 			Font font = Assets.sInstance.pressstart2p.deriveFont(24f);
 			return new TextStyle(font, Color.WHITE);
 		}
+		
+		public void setStyle(float fontSize, Color color) {
+			Font font = Assets.sInstance.pressstart2p.deriveFont(fontSize);
+			this.font = font;
+			this.color = color;
+		}
 	}
 	
 	/**
@@ -70,9 +73,6 @@ public class GUIText {
 		this.y = y;
 		this.text = "";
 		style = new TextStyle().getDefaultStyle();
-		
-		// Add ourselves to the game manager gui text list for rendering.
-		GameManager.sInstance.guiText.add(this);
 	}
 	
 	/**
@@ -102,6 +102,7 @@ public class GUIText {
 		}
 	}
 	
+	@Override
 	public void render(Graphics g) {
 		g.setFont(style.font);
 		
@@ -111,10 +112,6 @@ public class GUIText {
 		
 		g.setColor(style.color);
 		g.drawString(this.text, (int) x*MooseInvasion.X_SCALE, (int) (y*MooseInvasion.Y_SCALE));
-	}
-
-	public void removeFromRender() {
-		GameManager.sInstance.guiText.remove(this);
 	}
 	
 	public void setColor(Color color) {

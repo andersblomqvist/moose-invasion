@@ -1,7 +1,11 @@
 package com.andblomqdasberg.mooseinvasion.weapon;
 
+import java.awt.Color;
+
 import com.andblomqdasberg.mooseinvasion.InputHandler;
+import com.andblomqdasberg.mooseinvasion.MooseInvasion;
 import com.andblomqdasberg.mooseinvasion.audio.AudioPlayer;
+import com.andblomqdasberg.mooseinvasion.gui.GUIText;
 import com.andblomqdasberg.mooseinvasion.util.GameRandom;
 
 /**
@@ -17,10 +21,12 @@ public abstract class AbstractWeapon {
 	public int ammo;
 	public int damage;
 	public int fireRate;
+	public String name;
 	
-	public AudioPlayer audio;
+	private int ticksSinceLastShot = 0;
 	
-	private int ticksSinceLastShot;
+	private GUIText weaponText;
+	private int ticksSinceTextActivated = 0;
 	
 	/**
 	 * 	Init weapon values
@@ -28,11 +34,28 @@ public abstract class AbstractWeapon {
 	 * 	@param stats Data holder with all base info for a weapon.
 	 * 	All weapons defined in {@link WeaponList}
 	 */
-	public AbstractWeapon(int id, int damage, int ammo, int fireRate) {
+	public AbstractWeapon(int id, int damage, int ammo, int fireRate, String name) {
 		this.id = id;
 		this.damage = damage;
 		this.ammo = ammo;
 		this.fireRate = fireRate;
+		this.name = name;
+	}
+	
+	/**
+	 * 	Called when the player swapps to this weapon
+	 */
+	public void activate(float x, float y) {
+		weaponText = new GUIText(this.name, x-this.name.length()/2, y);
+		weaponText.style.setStyle(MooseInvasion.RENDER_WIDTH*0.02f, Color.GREEN);
+		ticksSinceTextActivated = 0;
+	}
+	
+	/**
+	 * 	Called when the player switches away from this weapon
+	 */
+	public void deactivate() {
+		weaponText.destroy();
 	}
 	
 	/**
@@ -45,11 +68,22 @@ public abstract class AbstractWeapon {
 		if(InputHandler.shoot()) {
 			if(ticksSinceLastShot > fireRate) {
 				ticksSinceLastShot = 0;
-				shoot(x, y);
+				if(ammo > 0) {
+					shoot(x, y);
+					ammo--;
+				}
 			}
 		}
 		
+		if(weaponText != null) {
+			weaponText.y -= 1f;
+			
+			if(ticksSinceTextActivated > 50)
+				weaponText.destroy();
+		}
+		
 		ticksSinceLastShot++;
+		ticksSinceTextActivated++;
 	}
 	
 	/**
@@ -69,20 +103,14 @@ public abstract class AbstractWeapon {
 		String version = "-" + r + ".wav";
 		switch(id) {
 			case 0:
-				play("weapon-pistol" + version);
+				AudioPlayer.play("weapon-pistol" + version);
 				break;
 			case 1:
-				play("weapon-carbine.wav");
+				AudioPlayer.play("weapon-carbine.wav");
 				break;
 			case 2:
-				play("weapon-uzi");
+				AudioPlayer.play("weapon-uzi-1.wav");
 				break;
 		}
-	}
-	
-	private void play(String sound) {
-		try { audio = new AudioPlayer(sound); }
-        catch (Exception e) {e.printStackTrace(); }
-		audio.play();
 	}
 }

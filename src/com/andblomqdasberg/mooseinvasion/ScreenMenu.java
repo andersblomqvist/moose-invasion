@@ -3,6 +3,7 @@ package com.andblomqdasberg.mooseinvasion;
 import java.awt.Color;
 import java.awt.Graphics;
 
+import com.andblomqdasberg.mooseinvasion.audio.AudioPlayer;
 import com.andblomqdasberg.mooseinvasion.util.GameState;
 
 /**
@@ -27,19 +28,26 @@ public class ScreenMenu
 			else
 				iconFrame++;
 		
-		if(InputHandler.down(true))
+		if(InputHandler.down(true)) {
+			AudioPlayer.play("misc-menu-down.wav");
 			if(currentButton < 2)
 				currentButton++;
 			else
 				currentButton = 0;
+		}
+			
 		
-		if(InputHandler.up(true))
+		if(InputHandler.up(true)) {
+			AudioPlayer.play("misc-menu-up.wav");
 			if(currentButton > 0)
 				currentButton--;
 			else
 				currentButton = 2;
+		}
+			
 		
 		if(InputHandler.enter()) {
+			AudioPlayer.play("misc-menu-up.wav");
 			switch(currentButton) {
 				case 0:
 					GameManager.sInstance.setGameState(GameState.GAME);
@@ -78,7 +86,7 @@ public class ScreenMenu
 	 * 	@param currentButton which button we are on right now
 	 */
 	public void renderButton(Graphics g, String label, int id, int currentButton) {
-		g.setFont(Assets.sInstance.pressstart2p.deriveFont(MooseInvasion.RENDER_WIDTH*0.02f));
+		g.setFont(Assets.sInstance.pressstart2p.deriveFont(MooseInvasion.FONT_SIZE));
 		
 		if(currentButton == id)
 			g.setColor(Color.RED);

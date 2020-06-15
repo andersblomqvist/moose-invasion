@@ -12,8 +12,7 @@ public class AmmoParticle extends AbstractParticle {
 	
 	private float gravity = 0.12f;
 	private float ground;
-
-	AudioPlayer audioPlayer = null;
+	
 	boolean soundPlayed = false;
 
 	public AmmoParticle(float x, float y) {
@@ -56,9 +55,7 @@ public class AmmoParticle extends AbstractParticle {
 	 */
 	private void playShellDrop() {
 		if(!soundPlayed){
-			try { audioPlayer = new AudioPlayer("weapon-shell-drop.wav"); }
-			catch (Exception e) { e.printStackTrace(); }
-			audioPlayer.play();
+			AudioPlayer.play("weapon-shell-drop.wav");
 			soundPlayed = true;
 		}
 	}

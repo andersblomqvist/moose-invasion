@@ -48,7 +48,7 @@ public class WaveSpawner {
 			ticks++;
 			
 			if(killed - spawnAmount == 0) {
-				startText.text = "[q] for next wave";
+				startText.text = "[r] for next wave";
 				ticks = 0;
 				finished = true;
 			}

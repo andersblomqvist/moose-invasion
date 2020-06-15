@@ -113,27 +113,47 @@ public class InputHandler implements KeyListener, MouseListener {
 	}
 	
 	public static boolean nextWave() {
-		return (keysPressed.contains(Keys.Q));
+		return (keysPressed.contains(Keys.R));
 	}
 
-	public static boolean reload() {
-    	return keysPressed.contains(Keys.R);
+	public static boolean cycleWeapon() {
+		if(keysPressed.contains(Keys.Q)) {
+			keysPressed.remove(Keys.Q);
+			return true;
+		}
+		return false;
 	}
 
 	public static boolean num1() {
-		return keysPressed.contains(Keys.ONE);
+		if(keysPressed.contains(Keys.ONE)) {
+			keysPressed.remove(Keys.ONE);
+			return true;
+		}
+		return false;
 	}
 
 	public static boolean num2() {
-		return keysPressed.contains(Keys.TWO);
+		if(keysPressed.contains(Keys.TWO)) {
+			keysPressed.remove(Keys.TWO);
+			return true;
+		}
+		return false;
 	}
 
 	public static boolean num3() {
-		return keysPressed.contains(Keys.THREE);
+		if(keysPressed.contains(Keys.THREE)) {
+			keysPressed.remove(Keys.THREE);
+			return true;
+		}
+		return false;
 	}
 	
 	public static boolean num4() {
-		return keysPressed.contains(Keys.FOUR);
+		if(keysPressed.contains(Keys.FOUR)) {
+			keysPressed.remove(Keys.FOUR);
+			return true;
+		}
+		return false;
 	}
 	
 	@Override

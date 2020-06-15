@@ -35,8 +35,6 @@ public class Moose extends Entity
 	
 	// Reference to collision projectile if any
 	private Projectile p;
-	
-	private AudioPlayer audioPlayer;
 
 	private final ArrayList<GUIText> damageTextList;
 	
@@ -63,8 +61,7 @@ public class Moose extends Entity
 		// Render blood animation when we are dead.
 		if(dead)
 		{
-			if(velocity.x >= 0f)
-			{
+			if(velocity.x >= 0f) {
 				velocity.x -= 0.008f;
 				this.x += velocity.x;
 			}
@@ -89,7 +86,7 @@ public class Moose extends Entity
 		if((p = AABBCollision()) != null) {
 			
 			// Hit state, not dead yet
-			playHitSound();
+			AudioPlayer.play("moose-hit.wav");
 			whiteHitOverlay();
 			health -= p.damage;
 			p.tryRemove(p.index);
@@ -102,7 +99,7 @@ public class Moose extends Entity
 				return;
 			
 			// Set to dead state
-			playDeathSound();
+			AudioPlayer.play("moose-splash.wav");
 			GameManager.sInstance.spawnParticles(ParticleType.BLOOD_AND_MEAT, 1, x, y);
 			GameManager.sInstance.addProgress();
 			sprite.anim = DEATH_ANIM;
@@ -196,50 +193,20 @@ public class Moose extends Entity
 	                null);
 		}
 	}
-	
-	private void playHitSound() {
-		try {
-            audioPlayer = new AudioPlayer("moose-hit.wav");
-            // audioPlayer.setVolume(-22);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        audioPlayer.play();
-	}
-	
-	private void playDeathSound() {
-		try {
-            audioPlayer = new AudioPlayer("death-splash.wav");
-            // audioPlayer.setVolume(0.01f);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        audioPlayer.play();
-        try {
-            audioPlayer = new AudioPlayer("big-splash.wav");
-            // audioPlayer.setVolume(-22f);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        audioPlayer.play();
-	}
 
 	private void addDamageText(int damage) {
 		damageTextList.add(new GUIText(String.valueOf(damage), (int)this.x, (int)this.y, 2));
 	}
 
-	private void updateDamageText(){
-
+	private void updateDamageText() {
 		for (int i = 0; i < damageTextList.size(); i++) {
-			if(damageTextList.get(i).y < this.y - 15){
-				damageTextList.get(i).removeFromRender();
+			if(damageTextList.get(i).y < this.y - 15) {
+				damageTextList.get(i).destroy();
 				damageTextList.remove(i);
 				i--;
 			}
-			else{
+			else
 				damageTextList.get(i).y -= 0.75;
-			}
 		}
 	}
-
 }
