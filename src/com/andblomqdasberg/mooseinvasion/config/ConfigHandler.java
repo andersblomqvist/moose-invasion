@@ -21,7 +21,7 @@ public class ConfigHandler
 	 * 	Load config.properties file and return its values in a string
 	 * 
 	 * 	@return a string with its values seperated by a ','. Example output:
-	 * 	"true,1920x1080,100"
+	 * 	"1,3,100"
 	 * 
 	 * 	@throws IOException
 	 */

@@ -65,8 +65,8 @@ public abstract class AbstractParticle {
         g.drawImage(img,
                 (int)x*MooseInvasion.X_SCALE,
                 (int)y*MooseInvasion.Y_SCALE,
-                MooseInvasion.X_SCALE*MooseInvasion.SPRITE_SIZE,
-                MooseInvasion.Y_SCALE*MooseInvasion.SPRITE_SIZE,
+                MooseInvasion.X_SCALE*MooseInvasion.SPRITE_X_SIZE,
+                MooseInvasion.Y_SCALE*MooseInvasion.SPRITE_Y_SIZE,
                 null
         );
 	}

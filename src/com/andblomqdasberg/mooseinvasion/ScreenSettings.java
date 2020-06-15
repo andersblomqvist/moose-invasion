@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.io.IOException;
 
+import com.andblomqdasberg.mooseinvasion.audio.AudioPlayer;
 import com.andblomqdasberg.mooseinvasion.config.ConfigHandler;
 import com.andblomqdasberg.mooseinvasion.util.GameState;
 
@@ -51,19 +52,26 @@ public class ScreenSettings
 			}
 		}
 		
-		if(InputHandler.down(true))
+		if(InputHandler.down(true)) {
+			AudioPlayer.play("misc-menu-down.wav");
 			if(currentButton < 4)
 				currentButton++;
 			else
 				currentButton = 0;
+		}
+			
 		
-		if(InputHandler.up(true))
+		if(InputHandler.up(true)) {
+			AudioPlayer.play("misc-menu-up.wav");
 			if(currentButton > 0)
 				currentButton--;
 			else
 				currentButton = 4;
+		}
+			
 		
 		if(InputHandler.enter()) {
+			AudioPlayer.play("misc-menu-up.wav");
 			switch(currentButton) {
 				case 0:
 					// Fullscreen
@@ -94,10 +102,12 @@ public class ScreenSettings
 						ConfigHandler.configData.setValue("fullscreen", tempFullscreen);
 						ConfigHandler.configData.setValue("scale", tempScale);
 						ConfigHandler.configData.setValue("volume", tempVolume);
+						AudioPlayer.setGlobalVolume(Integer.parseInt(tempVolume));
 						ConfigHandler.setPropertiesValues();
 						saved = true;
 						savedColor = Color.RED;
 						savedColorBG = new Color(1.0f, 0f, 0f, 0.5f);
+						AudioPlayer.play("misc-menu-save.wav");
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
@@ -126,10 +136,10 @@ public class ScreenSettings
 		renderButtonIcon(g, currentButton);
 		
 		if(saved) {
-			g.setFont(Assets.sInstance.pressstart2p.deriveFont(MooseInvasion.RENDER_WIDTH*0.02f));
+			g.setFont(Assets.sInstance.pressstart2p.deriveFont(MooseInvasion.FONT_SIZE));
 			g.setColor(savedColor);
 			g.drawString("Successfully saved",
-					(int)(MooseInvasion.RENDER_WIDTH/2 - MooseInvasion.RENDER_WIDTH*0.18), 
+					(int)(MooseInvasion.RENDER_WIDTH/2 - MooseInvasion.RENDER_WIDTH*0.20), 
 					(int)(MooseInvasion.RENDER_HEIGHT/2 + MooseInvasion.RENDER_WIDTH*0.05f));
 			
 			g.setColor(savedColorBG);
@@ -146,7 +156,7 @@ public class ScreenSettings
 	 * 	@param currentButton which button we are on right now
 	 */
 	public void renderButton(Graphics g, String label, int id, int currentButton) {
-		g.setFont(Assets.sInstance.pressstart2p.deriveFont(MooseInvasion.RENDER_WIDTH*0.02f));
+		g.setFont(Assets.sInstance.pressstart2p.deriveFont(MooseInvasion.FONT_SIZE));
 		
 		if(currentButton == id)
 			g.setColor(Color.RED);
@@ -170,16 +180,16 @@ public class ScreenSettings
 					(int)(MooseInvasion.RENDER_WIDTH/2 - MooseInvasion.RENDER_WIDTH/10),
 					(int)(MooseInvasion.RENDER_HEIGHT/2 +
 							currentButton*MooseInvasion.RENDER_WIDTH*0.05f - MooseInvasion.Y_SCALE*12),
-					MooseInvasion.SPRITE_SIZE*MooseInvasion.X_SCALE,
-					MooseInvasion.SPRITE_SIZE*MooseInvasion.Y_SCALE,
+					MooseInvasion.SPRITE_X_SIZE*MooseInvasion.X_SCALE,
+					MooseInvasion.SPRITE_Y_SIZE*MooseInvasion.Y_SCALE,
 					null);	
 		} else {
 			g.drawImage(Assets.sInstance.sprites[5][iconFrame],
 					(int)(MooseInvasion.RENDER_WIDTH/2 - MooseInvasion.RENDER_WIDTH/4),
 					(int)(MooseInvasion.RENDER_HEIGHT/3.1 + 
 							currentButton*MooseInvasion.RENDER_WIDTH*0.05f - MooseInvasion.Y_SCALE*12),
-					MooseInvasion.SPRITE_SIZE*MooseInvasion.X_SCALE,
-					MooseInvasion.SPRITE_SIZE*MooseInvasion.Y_SCALE,
+					MooseInvasion.SPRITE_X_SIZE*MooseInvasion.X_SCALE,
+					MooseInvasion.SPRITE_Y_SIZE*MooseInvasion.Y_SCALE,
 					null);	
 		}
 	}

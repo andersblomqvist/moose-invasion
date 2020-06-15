@@ -4,6 +4,7 @@ import javax.swing.*;
 
 import com.andblomqdasberg.mooseinvasion.audio.AudioPlayer;
 import com.andblomqdasberg.mooseinvasion.config.ConfigHandler;
+import com.andblomqdasberg.mooseinvasion.util.GameState;
 
 import java.awt.*;
 import java.io.IOException;
@@ -18,22 +19,26 @@ public class MooseInvasion extends JFrame implements Runnable {
 	
 	private static final long serialVersionUID = 1L;
 	
-	// Standard Render settings
+	// Standard Render settings (will be overwritten by config)
 	public static int WIDTH = 320;
     public static int HEIGHT = 240;
     public static int X_SCALE = 3;
     public static int Y_SCALE = 3;
-    public static int SPRITE_SIZE = 16;
+    public static int SPRITE_X_SIZE = 16;
+    public static int SPRITE_Y_SIZE = 16;
     public static boolean FULLSCREEN = false;
 
     public static int RENDER_WIDTH = WIDTH*X_SCALE;
     public static int RENDER_HEIGHT = HEIGHT*Y_SCALE;
     
+    public static float FONT_SIZE = 32f;
+    
     // Display for rendering
     private Display display;
     
     private boolean running = false;
-
+    private boolean paused = false;
+    
     public static void main(String[] args) {
         EventQueue.invokeLater(() -> {
             new MooseInvasion("Moose Invasion");
@@ -46,6 +51,10 @@ public class MooseInvasion extends JFrame implements Runnable {
         // Monitor resolution
         Dimension monitor = Toolkit.getDefaultToolkit().getScreenSize();
 
+        /**
+         * 	Load config settings
+         */
+        
         System.out.println("-- Loading config --");
         String prop = "";
         try {
@@ -61,6 +70,10 @@ public class MooseInvasion extends JFrame implements Runnable {
 			}
 		}
         
+        /**
+         *  Parse and apply config
+         */
+        
         String[] values = prop.split(",");
         int f = Integer.parseInt(values[0]);
         int s = Integer.parseInt(values[1]);
@@ -73,11 +86,24 @@ public class MooseInvasion extends JFrame implements Runnable {
             setExtendedState(JFrame.MAXIMIZED_BOTH);
             setUndecorated(true);
             X_SCALE = monitor.width / WIDTH;
-            HEIGHT = monitor.height / (X_SCALE-1);
+            HEIGHT = monitor.height / (X_SCALE - 2);
             Y_SCALE = monitor.height / HEIGHT;
+            SPRITE_Y_SIZE += 2;
+            FONT_SIZE = 15 * SPRITE_Y_SIZE / 10f + 13;
         } else {
         	X_SCALE = s;
-        	Y_SCALE = s;	
+        	Y_SCALE = s;
+        	switch(s) {
+		        case 3:
+		        	FONT_SIZE = 24f;
+		        	break;
+		        case 4:
+		        	FONT_SIZE = 32f;
+		        	break;
+		        case 5:
+		        	FONT_SIZE = 40f;
+		        	break;
+	        }
         }
         
         RENDER_WIDTH = WIDTH*X_SCALE;
@@ -96,8 +122,11 @@ public class MooseInvasion extends JFrame implements Runnable {
         System.out.println("Monitor: " + monitor);
         System.out.println("X-Scale: " + X_SCALE);
         System.out.println("Y-Scale: " + Y_SCALE);
+        System.out.println("Sprite X-size: " + SPRITE_X_SIZE);
+        System.out.println("Sprite Y-size: " + SPRITE_Y_SIZE);
         System.out.println("Render-width: " + RENDER_WIDTH);
         System.out.println("Render-height: " + RENDER_HEIGHT);
+        System.out.println("Font-size: " + FONT_SIZE);
         System.out.println("Fullscreen: " + FULLSCREEN);
         
         new InputHandler(this);
@@ -144,16 +173,28 @@ public class MooseInvasion extends JFrame implements Runnable {
              */
             boolean render = false;
             while (unprocessedTime > 1) {
-                ticks++;
-                tick(ticks);
+            	
+            	ticks++;
                 render = true;
                 unprocessedTime -= 1;
                 
-                // TODO Hard quit, replace with pause screen!
-                if(InputHandler.exit()) {
-                	running = false;
-                	System.exit(0);
-                }
+            	if(!paused)
+                    tick(ticks);
+                
+            	if(paused) {
+            		if(InputHandler.exit()) {
+            			running = false;
+                    	System.exit(0);
+            		}
+            		
+            		if(InputHandler.enter())
+            			paused = false;
+            	}
+            	
+                if(InputHandler.exit() 
+                		&& !paused 
+                		&& GameManager.sInstance.getGameState() == GameState.GAME)
+                	paused = true;
             }
             
             /** 

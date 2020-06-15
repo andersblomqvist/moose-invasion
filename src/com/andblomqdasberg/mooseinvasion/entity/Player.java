@@ -1,14 +1,17 @@
 package com.andblomqdasberg.mooseinvasion.entity;
 
+import java.awt.Color;
+import java.util.ArrayList;
+
+import com.andblomqdasberg.mooseinvasion.Assets;
 import com.andblomqdasberg.mooseinvasion.InputHandler;
 import com.andblomqdasberg.mooseinvasion.MooseInvasion;
+import com.andblomqdasberg.mooseinvasion.audio.AudioPlayer;
+import com.andblomqdasberg.mooseinvasion.gui.GUIImage;
 import com.andblomqdasberg.mooseinvasion.gui.GUIText;
 import com.andblomqdasberg.mooseinvasion.util.GameRandom;
-import com.andblomqdasberg.mooseinvasion.weapon.Rifle;
-import com.andblomqdasberg.mooseinvasion.weapon.Weapon;
-
-import java.awt.*;
-import java.util.ArrayList;
+import com.andblomqdasberg.mooseinvasion.weapon.AbstractWeapon;
+import com.andblomqdasberg.mooseinvasion.weapon.WeaponList;
 
 /**
  * 	Player entity
@@ -23,9 +26,6 @@ public class Player extends Entity {
 	private static int[] igor = {2, 3};
 	private static int[] pcmr = {4, 5};
 	private static int[] scout = {6, 7};
-	
-	// Offset projectile spawning
-	private int offset = 1;
 
 	// Movement
 	private float friction = 0.9f;
@@ -33,13 +33,15 @@ public class Player extends Entity {
 	private float maxSpeed = 2.0f;
 	private float accel = 1.8f;
 	
-	private ArrayList<Weapon> weapons;
-	private Weapon currentWeapon;
+	// Weapons
+	private ArrayList<AbstractWeapon> weapons;
+	private AbstractWeapon currentWeapon;
 
 	private int gold;
 
-	public GUIText ammoText;
-	public GUIText goldText;
+	private GUIText ammoText;
+	private GUIText goldText;
+	private GUIImage ammoIcon;
 	
 	public Player(int x, int y) {
 		super(SPRITE_ID, jack, x, y);
@@ -49,19 +51,25 @@ public class Player extends Entity {
 		weight = 10;
 		friction = 0.9f;
 		maxSpeed = 2.0f;
-		weapons.add(new Rifle(8, 34, 20, 4*60));
+		weapons.add(WeaponList.PISTOL);
+		weapons.add(WeaponList.CARBINE);
+		weapons.add(WeaponList.UZI);
 		currentWeapon = weapons.get(0);
+		currentWeapon.activate(x, y);
 		
-		ammoText = new GUIText(currentWeapon.getBulletsInMag() + 
-				"/" + currentWeapon.getMagazineCapacity(), MooseInvasion.WIDTH-140, MooseInvasion.HEIGHT-6);
-		goldText =  new GUIText("$"+String.valueOf(gold), MooseInvasion.WIDTH - 13, MooseInvasion.HEIGHT-6);
-		goldText.setColor(new Color(255, 205, 85));
+		ammoText = new GUIText("", MooseInvasion.WIDTH, MooseInvasion.HEIGHT-6);
+		ammoIcon = new GUIImage(
+				MooseInvasion.WIDTH/1.03f, 
+				MooseInvasion.HEIGHT-MooseInvasion.SPRITE_Y_SIZE*2, 
+				Assets.sInstance.sprites[4][0]);
+		goldText =  new GUIText("$"+String.valueOf(gold), MooseInvasion.WIDTH - 13, 16);
+		goldText.style.color = new Color(255, 205, 85);
 	}
 	
 	@Override
 	public void tick() {
 		applyFriction();
-		currentWeapon.tick();
+		currentWeapon.tick(x, y);
 		checkInput();
 
 		x += velocity.x;
@@ -77,8 +85,8 @@ public class Player extends Entity {
 		else if(y > MooseInvasion.HEIGHT-16)
 			y = MooseInvasion.HEIGHT-16;
 		
-		updateAmmoText();
 		updateGoldText();
+		updateAmmoText();
 	}
 
 	/**
@@ -111,12 +119,7 @@ public class Player extends Entity {
 	 * 	and fires weapon on left mouse click
 	 */
  	private void checkInput() {
-		if(InputHandler.shoot())
-			shoot();
-    
-		if(InputHandler.reload())
-			currentWeapon.reload();
-    
+ 		
 		if(InputHandler.up(false))
 			if(velocity.y > -maxSpeed)
 				velocity.y -= accel/weight;
@@ -132,30 +135,59 @@ public class Player extends Entity {
 		if(InputHandler.left())
 			if(velocity.x > -maxSpeed)
 				velocity.x -= accel/weight;
+		
+		// Cyckle weapon by pressing one single button instead
+		// of specifc weapon number button
+		if(InputHandler.cycleWeapon())
+			cycleWeapon();
+		
+		if(InputHandler.num1())
+			directSwitchToWeapon(0);
+		
+		if(InputHandler.num2())
+			directSwitchToWeapon(1);
+		
+		if(InputHandler.num3())
+			directSwitchToWeapon(2);
 	}
 
-	private void shoot() {
- 		if(currentWeapon.isFireReady()) {
- 			currentWeapon.fire(x + offset, y);
+ 	/**
+ 	 * 	Cycles between the current weapons by only pressing one button.
+ 	 * 	Starts at 0 and goes forward til the end of weapon list where it 
+ 	 * 	loops back to 0 again.
+ 	 */
+ 	private void cycleWeapon() {
+ 		AudioPlayer.play("weapon-ammo-pickup.wav");
+ 		if(currentWeapon.id < weapons.size() - 1) {
+ 			// Not at the end yet, go forward.
+ 			currentWeapon.deactivate();
+ 			currentWeapon = weapons.get(currentWeapon.id + 1);
+ 			currentWeapon.activate(x, y);
  		}
-	}
-
-	@Override
-	public void render(Graphics g, int gameTick) {
-		super.render(g, gameTick);
-
-		// temp reloading indicator
-		if(currentWeapon.isReloading()){
-			g.setColor(Color.GRAY);
-			g.fillArc((int)(x+15)*MooseInvasion.X_SCALE
-					, (int)(y-5)*MooseInvasion.Y_SCALE
-					, 8*MooseInvasion.X_SCALE
-					, 8*MooseInvasion.Y_SCALE
-					, 0
-					, (int)(currentWeapon.reloadPercentage()/1 * 360));
-		}
-	}
-
+ 		else {
+ 			// At the end, go back to beginning
+ 			currentWeapon.deactivate();
+ 			currentWeapon = weapons.get(0);
+ 			currentWeapon.activate(x, y);
+ 		}
+ 	}
+ 	
+ 	/**
+ 	 * 	Directly switches to specific weapon
+ 	 * 
+ 	 * 	@param weaponID ID of weapon which is the slot in weapon list
+ 	 */
+ 	private void directSwitchToWeapon(int weaponID) {
+ 		// Check if have the weapon first and if we dont hold it already
+ 		if(weapons.get(weaponID) != null && currentWeapon.id != weaponID) {
+ 			// Do switch
+ 			AudioPlayer.play("weapon-ammo-pickup.wav");
+ 			currentWeapon.deactivate();
+ 			currentWeapon = weapons.get(weaponID);
+ 			currentWeapon.activate(x, y);
+ 		}
+ 	}
+ 	
 	/**
 	 * 	Randomizes a player model
 	 */
@@ -181,14 +213,30 @@ public class Player extends Entity {
 				break;
 		}
 	}
-
-	private void updateAmmoText() {
-		ammoText.text = currentWeapon.getBulletsInMag() + "/" +
-					currentWeapon.getMagazineCapacity();
+	
+	/**
+	 * 	Update gold text and position
+	 */
+	private void updateGoldText() {
+		goldText.text = "$123456789";
+		goldText.x = MooseInvasion.SPRITE_X_SIZE * 19 - goldText.text.length()*(MooseInvasion.SPRITE_X_SIZE/2);
 	}
 	
-	private void updateGoldText() {
-		goldText.x = MooseInvasion.WIDTH - goldText.text.length() * 13;
+	/**
+	 * 	Update ammo text, position and color
+	 */
+	private void updateAmmoText() {
+		ammoText.text = "" + currentWeapon.ammo;
+		ammoText.x = MooseInvasion.SPRITE_X_SIZE * 19 - ammoText.text.length()*(MooseInvasion.SPRITE_X_SIZE/2);
+		
+		ammoIcon.x = MooseInvasion.SPRITE_X_SIZE * 19;
+		ammoIcon.y = MooseInvasion.HEIGHT - MooseInvasion.SPRITE_Y_SIZE + 2;
+		
+		// Set text color to red when ammo is low
+		if(currentWeapon.ammo < 30)
+			ammoText.style.color = Color.RED;
+		else
+			ammoText.style.color = Color.WHITE;
 	}
 	
 	public int getGold() {
@@ -199,9 +247,5 @@ public class Player extends Entity {
 		this.gold = gold;
 		goldText.text = "$"+String.valueOf(gold);
 
-	}
-
-	public Weapon getCurrentWeapon(){
-		return currentWeapon;
 	}
 }

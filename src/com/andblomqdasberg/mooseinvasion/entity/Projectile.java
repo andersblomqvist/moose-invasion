@@ -20,7 +20,7 @@ public class Projectile extends Entity
 	public int damage;
 	public boolean fmj = false;
 	
-	private float speedX = -6.5f;
+	private float speedX = -7f;
 	
 	// Collision sizes
 	public int width = 6;

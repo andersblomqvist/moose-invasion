@@ -27,8 +27,6 @@ public class WaveSpawner {
 	private int counter;		// Timer counter
 	private int ticks;			// Counter getting seconds
 	
-	private boolean bought;		// Cool down for buying upgrades
-	
 	public GUIText progress;
 	public GUIText startText;
 	
@@ -50,8 +48,7 @@ public class WaveSpawner {
 			ticks++;
 			
 			if(killed - spawnAmount == 0) {
-				startText.text = "[q] for next wave";
-				GameManager.sInstance.toggleBuyMenu();
+				startText.text = "[r] for next wave";
 				ticks = 0;
 				finished = true;
 			}
@@ -76,33 +73,6 @@ public class WaveSpawner {
 		else {
 			if(InputHandler.nextWave() && finished)
 				startWave();
-
-			/**
-			 * 	Inputs for weapon upgrades
-			 */
-			ticks++;
-			
-			if(InputHandler.num1() && !bought) {
-				GameManager.sInstance.buyAmmoCap();
-				bought = true;
-			}
-			if(InputHandler.num2() && !bought) {
-				GameManager.sInstance.buyDamage();
-				bought = true;
-			}
-			if(InputHandler.num3() && !bought) {
-				GameManager.sInstance.buyFastReload();
-				bought = true;
-			}
-			if(InputHandler.num4() && !bought) {
-				GameManager.sInstance.buyFireRate();
-				bought = true;
-			}	
-			
-			if(ticks % 60 == 0) {
-				bought = false;
-				ticks = 0;
-			}
 		}
 	}
   
@@ -124,8 +94,6 @@ public class WaveSpawner {
 		
 		// Clear text
 		startText.text = "";
-		
-		GameManager.sInstance.toggleBuyMenu();
 		
 		System.out.println("Starting wave: " + wave + ", total of " + 
 				spawnAmount + " mobs, time: " +
