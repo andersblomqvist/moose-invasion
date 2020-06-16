@@ -1,0 +1,44 @@
+{
+	"stage1": {
+		"background": "stage1.png",
+		"wave1": {
+			"entries": [
+				{
+					"entity": "moose",
+					"count": "10"
+				},
+				{
+					"entity": "bear",
+					"count": "1"
+				}
+			]
+		},
+		"wave2": {
+			"entries": [
+				{
+					"entity": "moose",
+					"count": "25"
+				}
+			]	
+		}
+	},
+	"stage2": {
+		"background": "stage2.png",
+		"wave1": {
+			"entries": [
+				{
+					"entity": "bear",
+					"count": "10"
+				}
+			]
+		},
+		"wave2": {
+			"entries": [
+				{
+					"entity": "moose",
+					"count": "10"
+				}
+			]	
+		}
+	}
+}

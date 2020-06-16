@@ -2,6 +2,7 @@ package com.andblomqdasberg.mooseinvasion;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -12,6 +13,8 @@ import com.andblomqdasberg.mooseinvasion.entity.Player;
 import com.andblomqdasberg.mooseinvasion.entity.Projectile;
 import com.andblomqdasberg.mooseinvasion.gui.AbstractGUI;
 import com.andblomqdasberg.mooseinvasion.gui.GUIText;
+import com.andblomqdasberg.mooseinvasion.level.Level;
+import com.andblomqdasberg.mooseinvasion.level.LevelLoader;
 import com.andblomqdasberg.mooseinvasion.level.WaveSpawner;
 import com.andblomqdasberg.mooseinvasion.particle.AbstractParticle;
 import com.andblomqdasberg.mooseinvasion.particle.AmmoParticle;
@@ -55,6 +58,7 @@ public class GameManager {
     private ScreenStart startScreen;
     private ScreenMenu menuScreen;
     private ScreenSettings settingsScreen;
+    private LevelLoader levelLoader;
     private WaveSpawner waveSpawner;
     
     private GUIText healthText;
@@ -70,8 +74,10 @@ public class GameManager {
     /**
      * 	Second initialize, need to wait so the static instance is not null so
      * 	other classes can safely be created.
+     * 
+     * 	@throws IOException In case level.json fails to load
      */
-    public void init() {
+    public void init() throws IOException {
     	player = new Player(64, 128);
         entities.add(player);
         health = 5;
@@ -83,6 +89,11 @@ public class GameManager {
         healthText = new GUIText("HP:" + health, 128, MooseInvasion.HEIGHT-6);
         
         AudioPlayer.play("ambient-wind.wav");
+        
+        levelLoader = new LevelLoader("level");
+        Level level = new Level(levelLoader.getLevelData());
+        
+        System.out.println(level.getLevelData());
     }
     
     /**

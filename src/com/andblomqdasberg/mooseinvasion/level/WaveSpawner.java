@@ -85,7 +85,7 @@ public class WaveSpawner {
 		wave++;
 		waveTime = getWaveTime();
 		createSpawnList();
-		spawnRate = (int) Math.ceil((double)waveTime / spawnAmount); 
+		spawnRate = (int) Math.ceil((double)waveTime / spawnAmount);
 		killed = 0;
 		spawns = 0;
 		finished = false;
@@ -122,4 +122,3 @@ public class WaveSpawner {
 		return 60 + wave*2;
 	}
 }
-

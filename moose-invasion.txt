@@ -1,9 +1,3 @@
-Tills imorn:
-Fixa ljuden
-Lägg till vapen GUI
-Weapon swithcer med 'q'
-
-
 	MOOSE INVASION
 =======================
 	
@@ -28,12 +22,8 @@ WAVESPAWNERN
 Gör om vapensystemet
 ========================
 - shop med upgrades
-- olika vapen istället för att uppgradera ett vapen
 - player talent points? upgradera spelarens movement etc.?
-
-- Pistol?
 - Shotgun
-- Rifle
 - SMG?
 
 - Rocket launcher
@@ -56,7 +46,6 @@ Andra djur från skogen?
 
 SOUNDS
 =======================
-- Menu sounds
 - Footstep sounds
 - Round start sound
 - Random moose sound
@@ -69,17 +58,34 @@ MISC
 
 FIXES
 ========================
-- Fixa offset för UI (behövs ändå göras om)
-
-- Ta bort en övre rad för att ge plats åt stats och andra saker. Detta löser även så att man ser
-  hur mycket damage man gör på en älg som befinner sig längst upp.
-  - Ändra i for-loopen för att rita ut tiles
-  - Ändra vart älgar kan spawna
-  - Ändra bounds för player
-  
-- Ljudsystemet behöver lite kärlek
-	- balansera ljuden (mixing)
-	- volym kontroll från config
-  
 - Blodbuggen?
 - FPS drop?
+
+
+"stage1": {
+	"wave1": {
+		"moose": 10,
+		"time": "20"
+	},
+	"wave2": {
+		"moose": 20,
+		"time": "25"
+	},
+	"wave3": {
+		"moose": 25,
+		"bear": 1,
+		"time": "30"
+	},
+	"wave4": {
+		"moose": 25,
+		"bear": 2,
+		"time": "30"
+	},
+	"wave5": {
+		"bear": 5,
+		"time": "30"
+	}
+},
+"stage2": {
+	// new map
+}

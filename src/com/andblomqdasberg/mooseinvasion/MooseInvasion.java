@@ -1,13 +1,16 @@
 package com.andblomqdasberg.mooseinvasion;
 
-import javax.swing.*;
+import java.awt.Dimension;
+import java.awt.EventQueue;
+import java.awt.Toolkit;
+import java.io.IOException;
+
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
 
 import com.andblomqdasberg.mooseinvasion.audio.AudioPlayer;
 import com.andblomqdasberg.mooseinvasion.config.ConfigHandler;
 import com.andblomqdasberg.mooseinvasion.util.GameState;
-
-import java.awt.*;
-import java.io.IOException;
 
 /**
  * 	Main class with game loop
@@ -141,7 +144,12 @@ public class MooseInvasion extends JFrame implements Runnable {
     private void init() {
         Assets.init();
         GameManager.awake();
-        GameManager.sInstance.init();
+        try {
+			GameManager.sInstance.init();
+		} catch (IOException e) {
+			System.out.println("Failed to init GameManager");
+			e.printStackTrace();
+		}
     }
     
     @Override
