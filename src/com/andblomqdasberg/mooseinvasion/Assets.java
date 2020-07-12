@@ -23,14 +23,24 @@ public class Assets
 		sInstance = new Assets();
 	}
 	
+	// Sprites
 	public BufferedImage[][] sprites = loadAndCut("assets\\chars.png", 16, 16);
 	public BufferedImage[][] particles = loadAndCut("assets\\particles.png", 16, 16);
+	public BufferedImage[][] decorations = loadAndCut("assets\\decorations.png", 16, 16);
 	
-	public BufferedImage[][] intro_screen = loadAndCut("assets\\intro-screen.png", 320, 240);
-	public BufferedImage[][] intro_screen_start = loadAndCut("assets\\intro-screen-2.png", 320, 240);
-	public BufferedImage[][] menu_screen = loadAndCut("assets\\menu-screen.png", 320, 240);
-	public BufferedImage[][] settings_screen = loadAndCut("assets\\settings-screen.png", 320, 240);
+	// Menu images
+	public BufferedImage intro_screen = loadImage("assets\\intro-screen.png");
+	public BufferedImage intro_screen_start = loadImage("assets\\intro-screen-2.png");
+	public BufferedImage menu_screen = loadImage("assets\\menu-screen.png");
+	public BufferedImage settings_screen = loadImage("assets\\settings-screen.png");
 
+	public BufferedImage city = loadImage("assets\\levels\\city.png");
+	
+	// Level stages images
+	public BufferedImage l1s1 = loadImage("assets\\levels\\l1s1.png");
+	public BufferedImage l1s2 = loadImage("assets\\levels\\l1s2.png");
+	
+	// Fonts
 	public Font pressstart2p = loadFont("pressstart2p.ttf");
 	
 	/**
@@ -83,5 +93,40 @@ public class Assets
 			e.printStackTrace();
 		}
 		return font;
+	}
+
+	/**
+	 * 	Directly load an image
+	 * 
+	 * 	@param file path to image
+	 * 	@returns a buffered image object
+	 */
+	public BufferedImage loadImage(String file) {
+		BufferedImage img = null;
+		try {
+			img = ImageIO.read(new FileInputStream(file));
+		} catch (IOException e) {
+			System.out.println("Could not load: " + file);
+			e.printStackTrace();
+		}
+		
+		return img;
+	}
+
+	/**
+	 * 	Returns the ground image for a stage
+	 * 
+	 * 	@param background File name as in level.json
+	 * 	@returns Buffered Image
+	 */
+	public BufferedImage getStageImage(String background) {
+		switch(background) {
+			case "l1s1.png":
+				return l1s1;
+			case "l1s2.png":
+				return l1s2;
+			default:
+				return l1s1;
+		}
 	}
 }

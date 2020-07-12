@@ -9,8 +9,9 @@ public class GUIImage extends AbstractGUI
 {
 	public float x, y;
 	public BufferedImage img;
-	
-	public GUIImage(float x, float y, BufferedImage img) {
+
+	public GUIImage(float x, float y, BufferedImage img, String listName) {
+		super(listName);
 		this.x = x;
 		this.y = y;
 		this.img = img;
@@ -18,6 +19,9 @@ public class GUIImage extends AbstractGUI
 	
 	@Override
 	public void render(Graphics g) {
+		if(!enabled)
+			return;
+		
 		g.drawImage(img, (int)x*MooseInvasion.X_SCALE, (int)y*MooseInvasion.Y_SCALE, 
                 MooseInvasion.SPRITE_X_SIZE*MooseInvasion.X_SCALE,
                 MooseInvasion.SPRITE_Y_SIZE*MooseInvasion.Y_SCALE,

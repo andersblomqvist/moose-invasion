@@ -2,23 +2,23 @@ package com.andblomqdasberg.mooseinvasion;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 
 import com.andblomqdasberg.mooseinvasion.audio.AudioPlayer;
+import com.andblomqdasberg.mooseinvasion.decoration.DecorationType;
 import com.andblomqdasberg.mooseinvasion.entity.Entity;
-import com.andblomqdasberg.mooseinvasion.entity.Moose;
 import com.andblomqdasberg.mooseinvasion.entity.Player;
 import com.andblomqdasberg.mooseinvasion.entity.Projectile;
 import com.andblomqdasberg.mooseinvasion.gui.AbstractGUI;
 import com.andblomqdasberg.mooseinvasion.gui.GUIText;
-import com.andblomqdasberg.mooseinvasion.level.WaveSpawner;
-import com.andblomqdasberg.mooseinvasion.particle.AbstractParticle;
-import com.andblomqdasberg.mooseinvasion.particle.AmmoParticle;
-import com.andblomqdasberg.mooseinvasion.particle.BloodAndMeatParticle;
-import com.andblomqdasberg.mooseinvasion.particle.BloodParticle;
+import com.andblomqdasberg.mooseinvasion.level.City;
+import com.andblomqdasberg.mooseinvasion.level.Level;
+import com.andblomqdasberg.mooseinvasion.level.LevelLoader;
 import com.andblomqdasberg.mooseinvasion.particle.ParticleType;
 import com.andblomqdasberg.mooseinvasion.util.GameState;
+import com.andblomqdasberg.mooseinvasion.weapon.AbstractWeapon;
 
 /**
  * 	Manager class which controls all the game objects and
@@ -42,20 +42,26 @@ public class GameManager {
     // Player and health
     private Player player;
     public int health;
+    
+    // Track if player is in city or not
+    private boolean inCity;
 
     // List of all entities
     public ArrayList<Entity> entities = new ArrayList<Entity>();
     public ArrayList<Entity> projectiles = new ArrayList<Entity>();
-    public ArrayList<AbstractParticle> particles = new ArrayList<AbstractParticle>();
 
-    // GUI list for rendering
-    public ArrayList<AbstractGUI> gui = new ArrayList<AbstractGUI>();
+    // GUI lists
+    public ArrayList<AbstractGUI> guiCity = new ArrayList<AbstractGUI>();
+    public ArrayList<AbstractGUI> guiLevel = new ArrayList<AbstractGUI>();
+    public ArrayList<AbstractGUI> guiPlayer = new ArrayList<AbstractGUI>();
     
     // Specific game components
     private ScreenStart startScreen;
     private ScreenMenu menuScreen;
     private ScreenSettings settingsScreen;
-    private WaveSpawner waveSpawner;
+    private LevelLoader levelLoader;
+    private Level level;
+    private City city;
     
     private GUIText healthText;
     
@@ -70,19 +76,30 @@ public class GameManager {
     /**
      * 	Second initialize, need to wait so the static instance is not null so
      * 	other classes can safely be created.
+     * 
+     * 	@throws IOException In case level.json fails to load
      */
-    public void init() {
+    public void init() throws IOException {
     	player = new Player(64, 128);
         entities.add(player);
         health = 5;
-        
+        inCity = true;
         startScreen = new ScreenStart();
         menuScreen = new ScreenMenu();
         settingsScreen = new ScreenSettings();
-        waveSpawner = new WaveSpawner();
-        healthText = new GUIText("HP:" + health, 128, MooseInvasion.HEIGHT-6);
+        city = new City();
+        healthText = new GUIText(""+health, 
+        		MooseInvasion.WIDTH-MooseInvasion.SPRITE_X_SIZE*1.8f, 
+        		MooseInvasion.HEIGHT-MooseInvasion.SPRITE_Y_SIZE*1.5f, 
+        		"level-gui");
         
         AudioPlayer.play("ambient-wind.wav");
+
+        // Load level.json file
+        levelLoader = new LevelLoader("level");
+        
+        // Create new level from file
+        level = new Level(levelLoader.getLevelData());
     }
     
     /**
@@ -112,19 +129,19 @@ public class GameManager {
      *  @param y
      */
     public void spawnParticles(ParticleType type, int amount, float x, float y) {
-    	switch(type) {
-    		case BLOOD:
-    			for(int i = 0; i < amount; i++)
-    	    		particles.add(new BloodParticle(x, y));
-    		break;
-    		case BLOOD_AND_MEAT:
-    			for(int i = 0; i < amount; i++)
-    	    		particles.add(new BloodAndMeatParticle(x, y));
-    		break;
-    		case AMMO:	
-	    		particles.add(new AmmoParticle(x, y));
-    		break;
-    	}
+    	level.spawnParticle(type, amount, x, y);
+	}
+    
+    /**
+	 * 	Adds a decoration object of specified type in the level stage 
+	 * 	decoration list
+	 * 
+	 * 	@param type What type of decoration
+	 * 	@param x spawn position
+	 * 	@param y spawn position
+	 */
+	public void spawnDecoration(DecorationType type, float x, float y) {
+		level.spawnDecoration(type, x, y);
 	}
 
     /**
@@ -150,7 +167,11 @@ public class GameManager {
     		return;
     	}
     	
-    	waveSpawner.tick();
+    	if(inCity)
+    		city.tick(ticks);
+    	else
+    		// Game progression
+    		level.tick(ticks);
     	
     	// Save the game tick so render can utilize it
     	gameTick = ticks;
@@ -159,16 +180,7 @@ public class GameManager {
         updateEntityList(projectiles);
         updateEntityList(entities);
         
-        // Update particles
-        for(int i = 0; i < particles.size(); i++) {
-        	particles.get(i).tick();
-        	particles.get(i).animationTick();
-        }
-        
-        // TODO remove this and replace with a new system where the moose blood is stored
-        // TODO in a different list which we just render earlier than the entities. We need to create a
-        // TODO new game object which is just the blood sprite and instantiate it when a moose dies.
-        // TODO Sort entity list once a tick for depth rendering
+        // z-index rendering for entities
         if(gameTick % 60 == 0)
         	Collections.sort(entities);
     }
@@ -191,23 +203,10 @@ public class GameManager {
     		return;
     	}
     	
-    	// Render ground
-        for (int x = 0; x < 20; x++) {
-            for (int y = 0; y <= 14; y++) {
-            	// Fake random distribution of tiles
-            	int tile = x*2*y / 3 % 4;
-                g.drawImage(Assets.sInstance.sprites[1][tile],
-                        x*MooseInvasion.SPRITE_X_SIZE*MooseInvasion.X_SCALE,
-                        y*MooseInvasion.SPRITE_Y_SIZE*MooseInvasion.Y_SCALE,
-                        MooseInvasion.SPRITE_X_SIZE*MooseInvasion.X_SCALE,
-                        MooseInvasion.SPRITE_Y_SIZE*MooseInvasion.Y_SCALE,
-                        null);
-            }
-        }
-        
-        // Render particles
-        for(int i = 0; i < particles.size(); i++)
-        	particles.get(i).render(g, gameTick);
+    	if(inCity)
+    		city.render(g);
+    	else
+    		level.render(g);
         
         // Render entities
         for(int i = 0; i < entities.size(); i++)
@@ -225,9 +224,9 @@ public class GameManager {
     				MooseInvasion.RENDER_HEIGHT);
     	}
         
-        // Render GUI text elements
-        for(int i = 0; i < gui.size(); i++)
-        	gui.get(i).render(g);
+        // Render player GUI
+        for(int i = 0; i < guiPlayer.size(); i++)
+        	guiPlayer.get(i).render(g);
     }
     
     /**
@@ -273,11 +272,14 @@ public class GameManager {
 	}
 	
 	/**
-	 * 	Progress wave level. Called from when a {@link Moose} dies
+	 * 	Progress wave level. Called from when a {@link Entity} dies
 	 */
-	public void addProgress() {
-		waveSpawner.killed += 1;
-		player.setGold(player.getGold() + waveSpawner.wave);
+	public void onEntityKilled() {
+		level.onEntityKilled();
+	}
+	
+	public void addPlayerScore(int multiplier) {
+		player.addScore(multiplier);
 	}
 
 	/**
@@ -285,7 +287,7 @@ public class GameManager {
 	 */
 	public void reduceHealth() {
 		health -= 1;
-		healthText.text = "HP:" + health;
+		healthText.text = "" + health;
 		if(health <= 0) {
 			// End game.
 			setGameOverState();
@@ -293,7 +295,7 @@ public class GameManager {
 			// If the player did not die we want to add progress so even
 			// when the player does not kill all the moose, the game should
 			// still progress.
-			addProgress();
+			level.onEntityKilled();
 		}
 	}
 	
@@ -303,14 +305,7 @@ public class GameManager {
 	 */
 	private void setGameOverState() {
 		gameState = GameState.GAME_OVER;
-		gui.clear();
-		
-		GUIText gameOverText = new GUIText("Game Over!", 102, 64, 1);
-        gameOverText.setColor(Color.RED);
-        
-        new GUIText("[r] to restart", 104, 85);
-        new GUIText("[esc] to quit", 108, 100);
-        new GUIText("Died at wave " + waveSpawner.wave, 106, 115);
+		System.out.println("GAME OVER");
 	}
 	
 	/**
@@ -319,8 +314,6 @@ public class GameManager {
 	private void restartGame() {
 		entities.clear();
 		projectiles.clear();
-		particles.clear();
-		gui.clear();
 		
 		gameTick = 0;
         gameState = GameState.GAME;
@@ -328,8 +321,26 @@ public class GameManager {
 		player = new Player(64, 128);
         entities.add(player);
         health = 5;
-        
-        waveSpawner = new WaveSpawner();
-        healthText = new GUIText("HP:" + health, 128, MooseInvasion.HEIGHT-6);
+	}
+
+	/**
+	 * 	When players enter the city from a stage
+	 * 	Here we switch from ticking+rendering in level to ticking in city.
+	 */
+	public void enterCity() {
+		inCity = true;
+		AbstractWeapon.ALLOW_SHOOTING = false;
+	}
+	
+	/**
+	 * 	When player leaves the city we change ticking+rendering to level.
+	 */
+	public void leaveCity() {
+		inCity = false;
+		AbstractWeapon.ALLOW_SHOOTING = true;
+	}
+	
+	public Player getPlayer() {
+		return player;
 	}
 }

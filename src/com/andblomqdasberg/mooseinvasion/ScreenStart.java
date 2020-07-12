@@ -58,7 +58,7 @@ public class ScreenStart
 	public void render(Graphics g) {
 		
 		if(fadeIn) {
-			g.drawImage(Assets.sInstance.intro_screen[0][0],
+			g.drawImage(Assets.sInstance.intro_screen,
 					0,
 					0,
 					MooseInvasion.RENDER_WIDTH,
@@ -70,14 +70,14 @@ public class ScreenStart
 		
 		else {
 			if(screenSwitcher) {
-				g.drawImage(Assets.sInstance.intro_screen[0][0],
+				g.drawImage(Assets.sInstance.intro_screen,
 						0,
 						0,
 						MooseInvasion.RENDER_WIDTH,
 						MooseInvasion.RENDER_HEIGHT,
 						null);
 			} else {
-				g.drawImage(Assets.sInstance.intro_screen_start[0][0],
+				g.drawImage(Assets.sInstance.intro_screen_start,
 						0,
 						0,
 						MooseInvasion.RENDER_WIDTH,

@@ -15,7 +15,7 @@ import com.andblomqdasberg.mooseinvasion.util.Vector2D;
  */
 public abstract class AbstractParticle {
 	
-	public float x, y, z;
+	public float x, y;
 	public Vector2D velocity;
 	
 	private int maxSpeed = 4;

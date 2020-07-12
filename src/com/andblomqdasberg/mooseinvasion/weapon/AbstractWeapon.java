@@ -16,6 +16,10 @@ import com.andblomqdasberg.mooseinvasion.util.GameRandom;
  */
 public abstract class AbstractWeapon {
 	
+	// Toggle the ability to shoot on and off. Set to off when we are in
+	// the city and on in the stages.
+	public static boolean ALLOW_SHOOTING = false;
+	
 	public int id;
 	
 	public int ammo;
@@ -46,8 +50,10 @@ public abstract class AbstractWeapon {
 	 * 	Called when the player swapps to this weapon
 	 */
 	public void activate(float x, float y) {
-		weaponText = new GUIText(this.name, x-this.name.length()/2, y);
-		weaponText.style.setStyle(MooseInvasion.RENDER_WIDTH*0.02f, Color.GREEN);
+		weaponText = new GUIText(this.name, x-this.name.length()/2, y, 
+				"player-gui");
+		weaponText.style.setStyle(MooseInvasion.RENDER_WIDTH*0.02f, 
+				Color.GREEN);
 		ticksSinceTextActivated = 0;
 	}
 	
@@ -65,7 +71,7 @@ public abstract class AbstractWeapon {
 	 * 	@param y player position
 	 */
 	public void tick(float x, float y) {
-		if(InputHandler.shoot()) {
+		if(InputHandler.shoot() && ALLOW_SHOOTING) {
 			if(ticksSinceLastShot > fireRate) {
 				ticksSinceLastShot = 0;
 				if(ammo > 0) {

@@ -1,5 +1,6 @@
 package com.andblomqdasberg.mooseinvasion.entity;
 
+import com.andblomqdasberg.mooseinvasion.GameManager;
 import com.andblomqdasberg.mooseinvasion.MooseInvasion;
 import com.andblomqdasberg.mooseinvasion.util.Sprite;
 import com.andblomqdasberg.mooseinvasion.util.Vector2D;
@@ -82,6 +83,13 @@ public class Entity implements Comparable<Entity> {
         );
     }
 
+    /**
+     * 	Remove ourselves from the entity list 
+     */
+    public void destroy() {
+    	GameManager.sInstance.entities.remove(this);
+    }
+    
     /**
      * 	Enables entities to be compared depending on their y-position
      * 	so we create an illusion of depth. Also if the entity is dead
