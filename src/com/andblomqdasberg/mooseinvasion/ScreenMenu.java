@@ -64,7 +64,7 @@ public class ScreenMenu
 	
 	public void render(Graphics g) {
 		// Draw background
-		g.drawImage(Assets.sInstance.menu_screen[0][0],
+		g.drawImage(Assets.sInstance.menu_screen,
 				0,
 				0,
 				MooseInvasion.RENDER_WIDTH,

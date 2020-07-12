@@ -2,8 +2,6 @@ package com.andblomqdasberg.mooseinvasion.level;
 
 import java.util.ArrayList;
 
-import com.andblomqdasberg.mooseinvasion.entity.Entity;
-
 /**
  * 	Data struct for a level.
  * 
@@ -22,12 +20,23 @@ public class LevelData {
 		stages.add(stage);
 	}
 	
+	/**
+	 * 	Returns the Level Stage object at index (not starting with 0).
+	 * 
+	 * 	@param index of the stage starting with 1
+	 * 	@returns the Level Stage object
+	 */
 	public LevelStage getStage(int index) {
-		return stages.get(index);
+		if(index-1 >= stages.size())
+			return null;
+		
+		return stages.get(index - 1);
 	}
-	
-	@Override
-	public String toString() {
-		return stages.toString();
+
+	/**
+	 * 	@returns the number of stages for this level
+	 */
+	public int getStages() {
+		return stages.size();
 	}
 }

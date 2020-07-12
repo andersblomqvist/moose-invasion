@@ -1,44 +1,62 @@
 {
 	"stage1": {
-		"background": "stage1.png",
+		"background": "l1s1.png",
 		"wave1": {
 			"entries": [
 				{
 					"entity": "moose",
-					"count": "10"
-				},
-				{
-					"entity": "bear",
 					"count": "1"
 				}
-			]
+			],
+			"duration": "1"
 		},
 		"wave2": {
 			"entries": [
 				{
 					"entity": "moose",
-					"count": "25"
+					"count": "1"
 				}
-			]	
+			],
+			"duration": "1"
+		},
+		"wave3": {
+			"entries": [
+				{
+					"entity": "moose",
+					"count": "1"
+				}
+			],
+			"duration": "1"	
 		}
 	},
 	"stage2": {
-		"background": "stage2.png",
+		"background": "l1s2.png",
 		"wave1": {
 			"entries": [
 				{
-					"entity": "bear",
-					"count": "10"
+					"entity": "moose",
+					"count": "1"
 				}
-			]
+			],
+			"duration": "1"
 		},
 		"wave2": {
 			"entries": [
 				{
 					"entity": "moose",
-					"count": "10"
+					"count": "1"
 				}
-			]	
+			],
+			"duration": "1"
+		},
+		"wave3": {
+			"entries": [
+				{
+					"entity": "moose",
+					"count": "1"
+				}
+			],
+			"duration": "1"	
 		}
 	}
 }

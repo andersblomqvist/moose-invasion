@@ -121,7 +121,7 @@ public class ScreenSettings
 	}
 	
 	public void render(Graphics g) {
-		g.drawImage(Assets.sInstance.settings_screen[0][0],
+		g.drawImage(Assets.sInstance.settings_screen,
 				0,
 				0,
 				MooseInvasion.RENDER_WIDTH,

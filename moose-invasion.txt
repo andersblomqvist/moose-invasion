@@ -1,38 +1,26 @@
 	MOOSE INVASION
 =======================
 	
-Stages
+STADEN
 ========================
-- Ett system där man progressar genom att klara ett steg och man rör sig 
-  längre och längre in i skogen (åt vänster) för att sedam sluta där älgbossen 
-  finns. Ett steg består av olika waves med minibossar och kanske olika teman?
-  Skapa känslan "vad kommer nu", eller "undra vad som kommer sen :O".
-  
-  - När man unlockar så kan man gå ett steg till vänster vilket gör att spelplanen
-  	byts ut samt att spelaren flyttas från vänster till höger - vilket skapar 
-  	illusionen att man har rör på sig :)
-  	
-  - Staden ligger längst till höger och där kan man köpa upgrades och annat, öl kanske!
-
-WAVESPAWNERN
-=======================
-- Ett fixed antal mobs spawar varje wave under en fixed tid?
-	- Varje wave behöver defineras manuellt
-
-Gör om vapensystemet
+Säljare:
+ - Vapen shoppen
+ - Player gearew
+ - Misc shop (kul grejer typ)
+ 
+ - z-rendering för husen
+ - kollisioner
+ 
+VAPEN
 ========================
 - shop med upgrades
 - player talent points? upgradera spelarens movement etc.?
 - Shotgun
-- SMG?
-
 - Rocket launcher
 	- upgrade målsökande (vore fett coolt, men svårt med rotation kanske)
-
 - DMR
 	- 1 shot
 	- Upgrade - FMJ
-	
 - Gravity gun
 	Gör så att man laddar upp i två sekunder för att sedan skjuta iväg en rak
 	stråle som samlar ihop alla fiender på samma y-axel vilket gör det as enkelt
@@ -42,7 +30,8 @@ ENEMIES
 ========================
 - En slö björn
 - En snabb varg
-Andra djur från skogen?
+- Andra djur från skogen?
+- Random hastighet för moose, så alla inte beter sig exakt lika
 
 SOUNDS
 =======================
@@ -55,37 +44,9 @@ MISC
 ========================
 - Pause screen
 - Regn
+- Skapa mer feeling för stages (ambient sounds, speciell grafik - dimma kanske)
 
 FIXES
 ========================
 - Blodbuggen?
 - FPS drop?
-
-
-"stage1": {
-	"wave1": {
-		"moose": 10,
-		"time": "20"
-	},
-	"wave2": {
-		"moose": 20,
-		"time": "25"
-	},
-	"wave3": {
-		"moose": 25,
-		"bear": 1,
-		"time": "30"
-	},
-	"wave4": {
-		"moose": 25,
-		"bear": 2,
-		"time": "30"
-	},
-	"wave5": {
-		"bear": 5,
-		"time": "30"
-	}
-},
-"stage2": {
-	// new map
-}

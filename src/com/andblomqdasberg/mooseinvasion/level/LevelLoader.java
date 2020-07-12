@@ -60,7 +60,7 @@ public class LevelLoader {
 					JSONArray entries = wave.getJSONArray("entries");
 					
 					// Add an empty wave to the LevelStage
-					ls.addEmptyWave("wave" + j);
+					ls.addEmptyWave("wave" + j, j);
 					
 					// Populate the empty wave with the entities
 					for(int k = 0; k < entries.length(); k++) {
@@ -72,6 +72,10 @@ public class LevelLoader {
 						ls.addEntityToWave(entity, count, "wave" + j);
 						// System.out.println("Adding " + count + " of " + entity);
 					}
+					
+					// Get duration for wave
+					int duration = wave.getInt("duration");
+					ls.setWaveDuration("wave" + j, duration);
 					
 					// Wave completed.
 					System.out.println("Wave " + j + " completed.");

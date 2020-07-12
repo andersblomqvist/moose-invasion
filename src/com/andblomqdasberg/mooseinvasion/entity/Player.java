@@ -36,12 +36,12 @@ public class Player extends Entity {
 	// Weapons
 	private ArrayList<AbstractWeapon> weapons;
 	private AbstractWeapon currentWeapon;
-
+	public boolean allowShooting;
+	
 	private int gold;
 
 	private GUIText ammoText;
 	private GUIText goldText;
-	private GUIImage ammoIcon;
 	
 	public Player(int x, int y) {
 		super(SPRITE_ID, jack, x, y);
@@ -57,12 +57,24 @@ public class Player extends Entity {
 		currentWeapon = weapons.get(0);
 		currentWeapon.activate(x, y);
 		
-		ammoText = new GUIText("", MooseInvasion.WIDTH, MooseInvasion.HEIGHT-6);
-		ammoIcon = new GUIImage(
-				MooseInvasion.WIDTH/1.03f, 
-				MooseInvasion.HEIGHT-MooseInvasion.SPRITE_Y_SIZE*2, 
-				Assets.sInstance.sprites[4][0]);
-		goldText =  new GUIText("$"+String.valueOf(gold), MooseInvasion.WIDTH - 13, 16);
+		ammoText = new GUIText("", 0, 
+				MooseInvasion.HEIGHT-MooseInvasion.SPRITE_Y_SIZE/2, "player-gui");
+		
+		// Ammo image icon
+		new GUIImage(
+				MooseInvasion.WIDTH-MooseInvasion.SPRITE_X_SIZE, 
+				MooseInvasion.HEIGHT-MooseInvasion.SPRITE_Y_SIZE,
+				Assets.sInstance.sprites[4][0], "player-gui");
+		
+		// Health image icon
+		new GUIImage(
+				MooseInvasion.WIDTH-MooseInvasion.SPRITE_X_SIZE, 
+				MooseInvasion.HEIGHT-MooseInvasion.SPRITE_Y_SIZE*2,
+				Assets.sInstance.sprites[4][1], "player-gui");
+		
+		goldText = new GUIText(
+				"$"+String.valueOf(gold), 
+				MooseInvasion.WIDTH - 13, 16, "player-gui");
 		goldText.style.color = new Color(255, 205, 85);
 	}
 	
@@ -136,7 +148,7 @@ public class Player extends Entity {
 			if(velocity.x > -maxSpeed)
 				velocity.x -= accel/weight;
 		
-		// Cyckle weapon by pressing one single button instead
+		// Cycle weapon by pressing one single button instead
 		// of specifc weapon number button
 		if(InputHandler.cycleWeapon())
 			cycleWeapon();
@@ -195,7 +207,7 @@ public class Player extends Entity {
 		int animation = GameRandom.nextInt(4);
 		switch(animation) {
 
-			//temporary way of randomly getting a player character
+			// Temporary way of randomly getting a player character
 			case 0:
 				sprite.anim = jack;
 				break;
@@ -218,8 +230,8 @@ public class Player extends Entity {
 	 * 	Update gold text and position
 	 */
 	private void updateGoldText() {
-		goldText.text = "$123456789";
-		goldText.x = MooseInvasion.SPRITE_X_SIZE * 19 - goldText.text.length()*(MooseInvasion.SPRITE_X_SIZE/2);
+		goldText.x = MooseInvasion.SPRITE_X_SIZE * 19 - 
+				goldText.text.length()*(MooseInvasion.SPRITE_X_SIZE/2);
 	}
 	
 	/**
@@ -227,10 +239,8 @@ public class Player extends Entity {
 	 */
 	private void updateAmmoText() {
 		ammoText.text = "" + currentWeapon.ammo;
-		ammoText.x = MooseInvasion.SPRITE_X_SIZE * 19 - ammoText.text.length()*(MooseInvasion.SPRITE_X_SIZE/2);
-		
-		ammoIcon.x = MooseInvasion.SPRITE_X_SIZE * 19;
-		ammoIcon.y = MooseInvasion.HEIGHT - MooseInvasion.SPRITE_Y_SIZE + 2;
+		ammoText.x = MooseInvasion.WIDTH-MooseInvasion.SPRITE_X_SIZE - 
+				MooseInvasion.SPRITE_X_SIZE/2 * ammoText.text.length();
 		
 		// Set text color to red when ammo is low
 		if(currentWeapon.ammo < 30)
@@ -238,14 +248,14 @@ public class Player extends Entity {
 		else
 			ammoText.style.color = Color.WHITE;
 	}
-	
-	public int getGold() {
-		return gold;
-	}
 
-	public void setGold(int gold) {
-		this.gold = gold;
+	/**
+	 * 	Adds score to player
+	 * 
+	 * 	@param multiplier How much will be added
+	 */
+	public void addScore(int multiplier) {
+		this.gold += multiplier;
 		goldText.text = "$"+String.valueOf(gold);
-
 	}
 }

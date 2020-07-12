@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import com.andblomqdasberg.mooseinvasion.GameManager;
 import com.andblomqdasberg.mooseinvasion.MooseInvasion;
 import com.andblomqdasberg.mooseinvasion.audio.AudioPlayer;
+import com.andblomqdasberg.mooseinvasion.decoration.DecorationType;
 import com.andblomqdasberg.mooseinvasion.gui.GUIText;
 import com.andblomqdasberg.mooseinvasion.particle.ParticleType;
 import com.andblomqdasberg.mooseinvasion.util.GameRandom;
@@ -15,7 +16,7 @@ public class Moose extends Entity
 {
 	private static int SPRITE_ID = 3;
 	private static int[] ANIM = {0, 1, 2, 1};
-	private static int[] DEATH_ANIM = {3, 4, 5, 6};
+	private static int[] DEATH_ANIM = {3, 4, 5};
 	
 	// Horizontal speed of the moose
 	private float speedX = 0.33f;
@@ -36,7 +37,7 @@ public class Moose extends Entity
 	// Reference to collision projectile if any
 	private Projectile p;
 
-	private final ArrayList<GUIText> damageTextList;
+	private ArrayList<GUIText> damageTextList;
 	
 	/**
 	 * 	Default constructor with random spawn position
@@ -59,8 +60,7 @@ public class Moose extends Entity
 		updateDamageText();
 		
 		// Render blood animation when we are dead.
-		if(dead)
-		{
+		if(dead) {
 			if(velocity.x >= 0f) {
 				velocity.x -= 0.008f;
 				this.x += velocity.x;
@@ -68,6 +68,20 @@ public class Moose extends Entity
 				
 			if(deadFrame != sprite.lastFrame())
 				deadFrameTick++;
+			else {
+				// When we reach the last frame, spawn a decoration blood pool
+				// and remove this moose entity
+				GameManager.sInstance.spawnDecoration(
+						DecorationType.BLOOD_POOL, x, y);
+				
+				// Need to remove the damage texts
+				for(GUIText t : damageTextList)
+					t.destroy();
+				
+				// Destroy the moose
+				destroy();
+			}
+				
 			
 			if(deadFrameTick % 15 == 0)
 				deadFrame++;
@@ -101,7 +115,7 @@ public class Moose extends Entity
 			// Set to dead state
 			AudioPlayer.play("moose-splash.wav");
 			GameManager.sInstance.spawnParticles(ParticleType.BLOOD_AND_MEAT, 1, x, y);
-			GameManager.sInstance.addProgress();
+			GameManager.sInstance.onEntityKilled();
 			sprite.anim = DEATH_ANIM;
 			velocity.y = 0;
 			dead = true;
@@ -195,7 +209,11 @@ public class Moose extends Entity
 	}
 
 	private void addDamageText(int damage) {
-		damageTextList.add(new GUIText(String.valueOf(damage), (int)this.x, (int)this.y, 2));
+		damageTextList.add(new GUIText(
+				String.valueOf(damage), 
+				this.x, 
+				this.y, 2, 
+				"level-gui"));
 	}
 
 	private void updateDamageText() {

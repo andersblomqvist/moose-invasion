@@ -22,7 +22,8 @@ public class AmmoParticle extends AbstractParticle {
 		
 		// Random vector up to the right
 
-		this.velocity = new Vector2D(GameRandom.nextFloat()+0.5f, -(GameRandom.nextInt(2) + 1f));
+		this.velocity = new Vector2D(
+				GameRandom.nextFloat()+0.5f, -(GameRandom.nextInt(2) + 1f));
 		
 		this.sprite = new Sprite(
 				spriteId, 
