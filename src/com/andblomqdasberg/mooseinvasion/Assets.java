@@ -35,6 +35,7 @@ public class Assets
 	public BufferedImage settings_screen = loadImage("assets\\settings-screen.png");
 
 	public BufferedImage city = loadImage("assets\\levels\\city.png");
+	public BufferedImage city_top = loadImage("assets\\levels\\city-top.png");
 	
 	// Level stages images
 	public BufferedImage l1s1 = loadImage("assets\\levels\\l1s1.png");

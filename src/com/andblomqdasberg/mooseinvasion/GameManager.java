@@ -224,6 +224,9 @@ public class GameManager {
     				MooseInvasion.RENDER_HEIGHT);
     	}
         
+        if(inCity)
+        	city.renderTop(g);
+        
         // Render player GUI
         for(int i = 0; i < guiPlayer.size(); i++)
         	guiPlayer.get(i).render(g);

@@ -10,6 +10,7 @@ Säljare:
  
  - z-rendering för husen
  - kollisioner
+ - gui för säljare
  
 VAPEN
 ========================
