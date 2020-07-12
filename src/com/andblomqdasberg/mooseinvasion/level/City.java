@@ -46,4 +46,13 @@ public class City
         for(int i = 0; i < GameManager.sInstance.guiCity.size(); i++)
         	GameManager.sInstance.guiCity.get(i).render(g);
 	}
+
+	public void renderTop(Graphics g) {
+		g.drawImage(Assets.sInstance.city_top,
+				0,
+				0,
+				MooseInvasion.RENDER_WIDTH,
+				MooseInvasion.RENDER_HEIGHT,
+				null);
+	}
 }
