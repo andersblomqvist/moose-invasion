@@ -49,7 +49,7 @@ public class GameManager {
     // List of all entities
     public ArrayList<Entity> entities = new ArrayList<Entity>();
     public ArrayList<Entity> projectiles = new ArrayList<Entity>();
-
+    
     // GUI lists
     public ArrayList<AbstractGUI> guiCity = new ArrayList<AbstractGUI>();
     public ArrayList<AbstractGUI> guiLevel = new ArrayList<AbstractGUI>();
@@ -143,7 +143,7 @@ public class GameManager {
 	public void spawnDecoration(DecorationType type, float x, float y) {
 		level.spawnDecoration(type, x, y);
 	}
-
+	
     /**
      *  Game update
      */

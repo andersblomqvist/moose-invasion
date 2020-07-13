@@ -1,12 +1,14 @@
 package com.andblomqdasberg.mooseinvasion.entity;
 
 import java.awt.Color;
+import java.awt.Graphics;
 import java.util.ArrayList;
 
 import com.andblomqdasberg.mooseinvasion.Assets;
 import com.andblomqdasberg.mooseinvasion.InputHandler;
 import com.andblomqdasberg.mooseinvasion.MooseInvasion;
 import com.andblomqdasberg.mooseinvasion.audio.AudioPlayer;
+import com.andblomqdasberg.mooseinvasion.collider.CollisionType;
 import com.andblomqdasberg.mooseinvasion.gui.GUIImage;
 import com.andblomqdasberg.mooseinvasion.gui.GUIText;
 import com.andblomqdasberg.mooseinvasion.util.GameRandom;
@@ -20,7 +22,14 @@ import com.andblomqdasberg.mooseinvasion.weapon.WeaponList;
  * 	@author David Åsberg
  */
 public class Player extends Entity {
+
+	// Player collision box
+	public int height = 11;
+	public int width = 8;
+	public int offsetX = 5;
+	public int offsetY = 4;
 	
+	// Sprites
 	private static int SPRITE_ID = 0;
 	private static int[] jack = {0, 1};
 	private static int[] igor = {2, 3};
@@ -32,6 +41,12 @@ public class Player extends Entity {
 	private float weight = 10f;
 	private float maxSpeed = 2.0f;
 	private float accel = 1.8f;
+	
+	// Collision handlers
+	private boolean moveNorth = true;
+	private boolean moveSouth = true;
+	private boolean moveEast = true;
+	private boolean moveWest = true;
 	
 	// Weapons
 	private ArrayList<AbstractWeapon> weapons;
@@ -101,6 +116,22 @@ public class Player extends Entity {
 		updateAmmoText();
 	}
 
+	@Override
+	public void render(Graphics g, int gameTick) {
+		super.render(g, gameTick);
+		
+		/**
+		 * 	Debug render
+		 
+		g.setColor(Color.GREEN);
+		g.fillRect(
+				(int)(x+offsetX)*MooseInvasion.X_SCALE, 
+				(int)(y+offsetY)*MooseInvasion.Y_SCALE, 
+				width*MooseInvasion.X_SCALE, 
+				height*MooseInvasion.Y_SCALE);
+		*/
+	}
+	
 	/**
 	 * 	When no keys are pressed we reduce speed, just like friction
 	 */
@@ -132,19 +163,19 @@ public class Player extends Entity {
 	 */
  	private void checkInput() {
  		
-		if(InputHandler.up(false))
+		if(InputHandler.up(false) && moveNorth)
 			if(velocity.y > -maxSpeed)
 				velocity.y -= accel/weight;
 		
-		if(InputHandler.down(false))
+		if(InputHandler.down(false) && moveSouth)
 			if(velocity.y < maxSpeed)
 				velocity.y += accel/weight;
 
-		if(InputHandler.right())
+		if(InputHandler.right() && moveEast)
 			if(velocity.x < maxSpeed)
 				velocity.x += accel/weight;
 		
-		if(InputHandler.left())
+		if(InputHandler.left() && moveWest)
 			if(velocity.x > -maxSpeed)
 				velocity.x -= accel/weight;
 		
@@ -257,5 +288,60 @@ public class Player extends Entity {
 	public void addScore(int multiplier) {
 		this.gold += multiplier;
 		goldText.text = "$"+String.valueOf(gold);
+	}
+
+	/**
+	 * 	When player collides with a BoxCollider
+	 * 
+	 * 	@param type Where the collision happen
+	 */
+	public void onCollisionEnter(CollisionType type) {
+		System.out.println(type);
+		switch(type) {
+    		case NORTH:
+    			moveSouth = false;
+    			velocity.y = 0;
+    		break;
+    		case SOUTH:
+    			moveNorth = false;
+    			velocity.y = 0;
+    		break;
+    		case EAST:
+    			moveWest = false;
+    			velocity.x = 0;
+    		break;
+    		case WEST:
+    			moveEast = false;
+    			velocity.x = 0;
+    		break;
+    		default:
+    			System.out.println("No supported collision type");
+		}
+	}
+	
+	/**
+	 * 	We left a collider we previously had contact with.
+	 * 	Here we want to reset the movement.
+	 */
+	public void onCollisionExit() {
+		moveNorth = true;
+		moveSouth = true;
+		moveEast = true;
+		moveWest = true;
+		System.out.println("Left a collider");
+	}
+	
+	/**
+	 *	@returns the collder x position
+	 */
+	public float getColX() {
+		return x + offsetX;
+	}
+	
+	/**
+	 * 	@returns the collider y position
+	 */
+	public float getColY() {
+		return y + offsetY;
 	}
 }
