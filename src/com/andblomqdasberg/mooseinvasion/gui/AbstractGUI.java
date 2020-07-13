@@ -36,6 +36,7 @@ public abstract class AbstractGUI {
 			GameManager.sInstance.guiPlayer.add(this);
 		else
 			System.out.println("Failed to add GUI into list: " + listName);
+		
 		enabled = true;
 	}
 	

@@ -8,8 +8,6 @@ Säljare:
  - Player gearew
  - Misc shop (kul grejer typ)
  
- - z-rendering för husen
- - kollisioner
  - gui för säljare
  
 VAPEN

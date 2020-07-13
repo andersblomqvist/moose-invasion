@@ -61,7 +61,7 @@ public class GameManager {
     private ScreenSettings settingsScreen;
     private LevelLoader levelLoader;
     private Level level;
-    private City city;
+    public City city;
     
     private GUIText healthText;
     

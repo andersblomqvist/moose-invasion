@@ -5,6 +5,7 @@ import java.awt.Graphics;
 import java.util.ArrayList;
 
 import com.andblomqdasberg.mooseinvasion.Assets;
+import com.andblomqdasberg.mooseinvasion.GameManager;
 import com.andblomqdasberg.mooseinvasion.InputHandler;
 import com.andblomqdasberg.mooseinvasion.MooseInvasion;
 import com.andblomqdasberg.mooseinvasion.audio.AudioPlayer;
@@ -296,7 +297,6 @@ public class Player extends Entity {
 	 * 	@param type Where the collision happen
 	 */
 	public void onCollisionEnter(CollisionType type) {
-		System.out.println(type);
 		switch(type) {
     		case NORTH:
     			moveSouth = false;
@@ -328,7 +328,25 @@ public class Player extends Entity {
 		moveSouth = true;
 		moveEast = true;
 		moveWest = true;
-		System.out.println("Left a collider");
+	}
+	
+
+	/**
+	 * 	Called when players enters a trigger collider
+	 * 
+	 * 	@param tag name of the trigger
+	 */
+	public void onTriggerEnter(String tag) {
+		GameManager.sInstance.city.shopTrigger(tag, true);
+	}
+	
+	/**
+	 * 	Called when player leaves a trigger
+	 * 
+	 * 	@param tag name of the trigger
+	 */
+	public void onTriggerExit(String tag) {
+		GameManager.sInstance.city.shopTrigger(tag, false);
 	}
 	
 	/**
