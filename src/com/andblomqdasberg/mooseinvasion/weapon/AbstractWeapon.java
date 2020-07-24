@@ -25,6 +25,9 @@ public abstract class AbstractWeapon {
 	public int ammo;
 	public int damage;
 	public int fireRate;
+	public int level;
+	public boolean penetrationLight;
+	public boolean penetrationFull;
 	public String name;
 	
 	private int ticksSinceLastShot = 0;
@@ -44,6 +47,11 @@ public abstract class AbstractWeapon {
 		this.ammo = ammo;
 		this.fireRate = fireRate;
 		this.name = name;
+		
+		// Updated via weapon upgrades from shop
+		this.level = 1;
+		this.penetrationLight = false;
+		this.penetrationFull = false;
 	}
 	
 	/**
@@ -71,7 +79,7 @@ public abstract class AbstractWeapon {
 	 * 	@param y player position
 	 */
 	public void tick(float x, float y) {
-		if(InputHandler.shoot() && ALLOW_SHOOTING) {
+		if(InputHandler.shoot(false) && ALLOW_SHOOTING) {
 			if(ticksSinceLastShot > fireRate) {
 				ticksSinceLastShot = 0;
 				if(ammo > 0) {
@@ -99,6 +107,11 @@ public abstract class AbstractWeapon {
 	 * 	@param y player position
 	 */
 	public void shoot(float x, float y) {}
+	
+	/**
+	 * 	Override weapon level up
+	 */
+	public void levelUp() {}
 	
 	/**
 	 * 	Plays the sound connected with weapon ID

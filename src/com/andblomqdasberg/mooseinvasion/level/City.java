@@ -5,12 +5,14 @@ import java.util.ArrayList;
 
 import com.andblomqdasberg.mooseinvasion.Assets;
 import com.andblomqdasberg.mooseinvasion.GameManager;
+import com.andblomqdasberg.mooseinvasion.InputHandler;
 import com.andblomqdasberg.mooseinvasion.MooseInvasion;
 import com.andblomqdasberg.mooseinvasion.audio.AudioPlayer;
 import com.andblomqdasberg.mooseinvasion.collider.BoxCollider;
 import com.andblomqdasberg.mooseinvasion.collider.CollisionType;
 import com.andblomqdasberg.mooseinvasion.entity.Player;
 import com.andblomqdasberg.mooseinvasion.gui.GUIImage;
+import com.andblomqdasberg.mooseinvasion.gui.shop.GunStore;
 
 /**
  * 	The City where the player can buy upgrades
@@ -31,6 +33,8 @@ public class City
 	private GUIImage gunsShopTrigger;
 	private GUIImage blacksmithShopTrigger;
 	private GUIImage dassTrigger;
+	
+	private GunStore gunStore;
 	
 	public City() {
 		player = GameManager.sInstance.getPlayer();
@@ -81,6 +85,8 @@ public class City
 		new GUIImage(10,MooseInvasion.HEIGHT/2, 
 				Assets.sInstance.sprites[4][2],
 				"city-gui");
+		
+		gunStore = new GunStore();
 	}
 	
 	/**
@@ -104,6 +110,15 @@ public class City
 					player.onCollisionEnter(type);
 			}
 		}
+		
+		if(gunStore.isOpen)
+			gunStore.tick();
+		
+		if(gunsShopTrigger.isEnabled) {
+			if(InputHandler.interact())
+				gunStore.open();
+		} else
+			gunStore.close();
 	}
 	
 	/**
@@ -128,6 +143,9 @@ public class City
 		// Render GUI elements
         for(int i = 0; i < GameManager.sInstance.guiCity.size(); i++)
         	GameManager.sInstance.guiCity.get(i).render(g);
+        
+        if(gunStore.isOpen)
+			gunStore.render(g);
 	}
 	
 	/**

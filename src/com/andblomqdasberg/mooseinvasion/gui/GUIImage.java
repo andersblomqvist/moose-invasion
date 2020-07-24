@@ -65,7 +65,7 @@ public class GUIImage extends AbstractGUI
 	
 	@Override
 	public void enable(boolean state) {
-		if(!enabled && state)
+		if(!enabled && state && action != null)
 			action.onEnabled();
 		super.enable(state);
 	}

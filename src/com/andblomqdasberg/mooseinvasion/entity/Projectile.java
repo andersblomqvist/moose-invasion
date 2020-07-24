@@ -18,7 +18,8 @@ public class Projectile extends Entity
 	
 	// Projectile damage
 	public int damage;
-	public boolean fmj = false;
+	public boolean penetrationLight = false;	// Only penetrade 1 mob
+	public boolean penetrationFull = false;		// No stop
 	
 	private float speedX = -7f;
 	
@@ -42,11 +43,18 @@ public class Projectile extends Entity
 
 	/**
 	 * 	Constructor called by player
+	 * 
+	 * 	@param x
+	 * 	@param y
+	 * 	@param damage
+	 * 	@param light Toggle 1 time penetration
+	 * 	@param full Toggle unlimited penetration
 	 */
-	public Projectile(float x, float y, int damage, boolean fmj) {
+	public Projectile(float x, float y, int damage, boolean light, boolean full) {
 		this(x, y);
 		this.damage = damage;
-		this.fmj = fmj;
+		this.penetrationLight = light;
+		this.penetrationFull = full;
 	}
 	
 	/**
@@ -54,9 +62,23 @@ public class Projectile extends Entity
 	 * 	collision is detected.
 	 */
 	public void tryRemove(int index) {
-		if(!fmj) {
-			GameManager.sInstance.removeProjectile(index);
+		
+		// No removal if we got full penetration
+		if(penetrationFull)
+			return;
+		
+		System.out.println(penetrationLight);
+		
+		// Skip removal once if we have light penetration
+		// The -= 10f is needed to prevent the moose taking double damage from
+		// the projectile. It should just take damage once and keep going.
+		if(penetrationLight) {
+			penetrationLight = false;
+			this.x -= 10f;
+			return;
 		}
+		
+		GameManager.sInstance.removeProjectile(index);
 	}
 	
 	@Override

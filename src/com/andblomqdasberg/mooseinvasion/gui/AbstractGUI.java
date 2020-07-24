@@ -12,6 +12,7 @@ import com.andblomqdasberg.mooseinvasion.GameManager;
 public abstract class AbstractGUI {
 	
 	public float x, y;
+	public boolean isEnabled;
 	
 	// Enable / Disable rendering
 	protected boolean enabled;
@@ -34,10 +35,7 @@ public abstract class AbstractGUI {
 			GameManager.sInstance.guiLevel.add(this);
 		else if(listName.equals("player-gui"))
 			GameManager.sInstance.guiPlayer.add(this);
-		else
-			System.out.println("Failed to add GUI into list: " + listName);
-		
-		enabled = true;
+		enable(true);
 	}
 	
 	/**
@@ -62,5 +60,6 @@ public abstract class AbstractGUI {
 	 */
 	public void enable(boolean state) {
 		enabled = state;
+		isEnabled = state;
 	}
 }

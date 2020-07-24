@@ -1,7 +1,6 @@
 package com.andblomqdasberg.mooseinvasion.entity;
 
 import java.awt.Color;
-import java.awt.Graphics;
 import java.util.ArrayList;
 
 import com.andblomqdasberg.mooseinvasion.Assets;
@@ -54,13 +53,19 @@ public class Player extends Entity {
 	private AbstractWeapon currentWeapon;
 	public boolean allowShooting;
 	
-	private int gold;
+	public int money;
 
 	private GUIText ammoText;
-	private GUIText goldText;
+	private GUIText moneyText;
 	
 	public Player(int x, int y) {
 		super(SPRITE_ID, jack, x, y);
+		
+		// TODO
+		// TODO
+		// TODO DELETE
+		money = 9999;
+		
 		weapons = new ArrayList<>();
 		setRandomPlayerModel();
 		
@@ -68,8 +73,6 @@ public class Player extends Entity {
 		friction = 0.9f;
 		maxSpeed = 2.0f;
 		weapons.add(WeaponList.PISTOL);
-		weapons.add(WeaponList.CARBINE);
-		weapons.add(WeaponList.UZI);
 		currentWeapon = weapons.get(0);
 		currentWeapon.activate(x, y);
 		
@@ -88,10 +91,10 @@ public class Player extends Entity {
 				MooseInvasion.HEIGHT-MooseInvasion.SPRITE_Y_SIZE*2,
 				Assets.sInstance.sprites[4][1], "player-gui");
 		
-		goldText = new GUIText(
-				"$"+String.valueOf(gold), 
+		moneyText = new GUIText(
+				"$"+String.valueOf(money), 
 				MooseInvasion.WIDTH - 13, 16, "player-gui");
-		goldText.style.color = new Color(255, 205, 85);
+		moneyText.style.color = new Color(255, 205, 85);
 	}
 	
 	@Override
@@ -115,22 +118,6 @@ public class Player extends Entity {
 		
 		updateGoldText();
 		updateAmmoText();
-	}
-
-	@Override
-	public void render(Graphics g, int gameTick) {
-		super.render(g, gameTick);
-		
-		/**
-		 * 	Debug render
-		 
-		g.setColor(Color.GREEN);
-		g.fillRect(
-				(int)(x+offsetX)*MooseInvasion.X_SCALE, 
-				(int)(y+offsetY)*MooseInvasion.Y_SCALE, 
-				width*MooseInvasion.X_SCALE, 
-				height*MooseInvasion.Y_SCALE);
-		*/
 	}
 	
 	/**
@@ -172,11 +159,11 @@ public class Player extends Entity {
 			if(velocity.y < maxSpeed)
 				velocity.y += accel/weight;
 
-		if(InputHandler.right() && moveEast)
+		if(InputHandler.right(false) && moveEast)
 			if(velocity.x < maxSpeed)
 				velocity.x += accel/weight;
 		
-		if(InputHandler.left() && moveWest)
+		if(InputHandler.left(false) && moveWest)
 			if(velocity.x > -maxSpeed)
 				velocity.x -= accel/weight;
 		
@@ -188,10 +175,10 @@ public class Player extends Entity {
 		if(InputHandler.num1())
 			directSwitchToWeapon(0);
 		
-		if(InputHandler.num2())
+		if(InputHandler.num2() && weapons.size() > 1)
 			directSwitchToWeapon(1);
 		
-		if(InputHandler.num3())
+		if(InputHandler.num3() && weapons.size() > 2)
 			directSwitchToWeapon(2);
 	}
 
@@ -261,9 +248,10 @@ public class Player extends Entity {
 	/**
 	 * 	Update gold text and position
 	 */
-	private void updateGoldText() {
-		goldText.x = MooseInvasion.SPRITE_X_SIZE * 19 - 
-				goldText.text.length()*(MooseInvasion.SPRITE_X_SIZE/2);
+	public void updateGoldText() {
+		moneyText.text = "$"+String.valueOf(money);
+		moneyText.x = MooseInvasion.SPRITE_X_SIZE * 19 - 
+				moneyText.text.length()*(MooseInvasion.SPRITE_X_SIZE/2);
 	}
 	
 	/**
@@ -282,13 +270,13 @@ public class Player extends Entity {
 	}
 
 	/**
-	 * 	Adds score to player
+	 * 	Adds money to player
 	 * 
 	 * 	@param multiplier How much will be added
 	 */
 	public void addScore(int multiplier) {
-		this.gold += multiplier;
-		goldText.text = "$"+String.valueOf(gold);
+		this.money += multiplier;
+		moneyText.text = "$"+String.valueOf(money);
 	}
 
 	/**
@@ -361,5 +349,36 @@ public class Player extends Entity {
 	 */
 	public float getColY() {
 		return y + offsetY;
+	}
+
+	/**
+	 * 	Add weapon to current weapon list
+	 * 	@param weapon Name of the weapon
+	 */
+	public void buyWeapon(String weapon) {
+		weapons.add(WeaponList.getWeaponByName(weapon));
+	}
+
+	/**
+	 * 	Adds ammo to specifed weapon
+	 * 
+	 * 	@param weapon
+	 * 	@param ammo 
+	 */
+	public void buyAmmo(String weapon, String ammo) {
+		AbstractWeapon w = WeaponList.getWeaponByName(weapon);
+		w.ammo += Integer.parseInt(ammo);
+		System.out.println("added ammo");
+	}
+
+	/**
+	 * 	Upgrades a weapon one level. Upgrades stats are set in each specific
+	 * 	weapon class with an override method.
+	 * 
+	 * 	@param weapon Name of the weapon
+	 */
+	public void buyUpgrade(String weapon) {
+		AbstractWeapon w = WeaponList.getWeaponByName(weapon);
+		w.levelUp();
 	}
 }
