@@ -1,4 +1,4 @@
-package com.andblomqdasberg.mooseinvasion.entity;
+package com.andblomqdasberg.mooseinvasion.entity.player;
 
 import java.awt.Color;
 import java.util.ArrayList;
@@ -9,6 +9,7 @@ import com.andblomqdasberg.mooseinvasion.InputHandler;
 import com.andblomqdasberg.mooseinvasion.MooseInvasion;
 import com.andblomqdasberg.mooseinvasion.audio.AudioPlayer;
 import com.andblomqdasberg.mooseinvasion.collider.CollisionType;
+import com.andblomqdasberg.mooseinvasion.entity.Entity;
 import com.andblomqdasberg.mooseinvasion.gui.GUIImage;
 import com.andblomqdasberg.mooseinvasion.gui.GUIText;
 import com.andblomqdasberg.mooseinvasion.util.GameRandom;
@@ -52,26 +53,22 @@ public class Player extends Entity {
 	private ArrayList<AbstractWeapon> weapons;
 	private AbstractWeapon currentWeapon;
 	public boolean allowShooting;
-	
+
+	// Misc
 	public int money;
+	public int beers;
 
 	private GUIText ammoText;
 	private GUIText moneyText;
+	private GUIText beerText;
 	
 	public Player(int x, int y) {
 		super(SPRITE_ID, jack, x, y);
 		
-		// TODO
-		// TODO
-		// TODO DELETE
-		money = 9999;
-		
 		weapons = new ArrayList<>();
 		setRandomPlayerModel();
 		
-		weight = 10;
-		friction = 0.9f;
-		maxSpeed = 2.0f;
+		// Add pistol at the beginning
 		weapons.add(WeaponList.PISTOL);
 		currentWeapon = weapons.get(0);
 		currentWeapon.activate(x, y);
@@ -91,10 +88,29 @@ public class Player extends Entity {
 				MooseInvasion.HEIGHT-MooseInvasion.SPRITE_Y_SIZE*2,
 				Assets.sInstance.sprites[4][1], "player-gui");
 		
+		// Beer image icon
+		new GUIImage(
+				MooseInvasion.WIDTH-MooseInvasion.SPRITE_X_SIZE, 
+				MooseInvasion.HEIGHT-MooseInvasion.SPRITE_Y_SIZE*3,
+				Assets.sInstance.sprites[4][5], "player-gui");
+		
 		moneyText = new GUIText(
 				"$"+String.valueOf(money), 
 				MooseInvasion.WIDTH - 13, 16, "player-gui");
 		moneyText.style.color = new Color(255, 205, 85);
+		
+		beerText = new GUIText("" + beers, 
+				(MooseInvasion.WIDTH - 16)*MooseInvasion.X_SCALE, 
+				(MooseInvasion.HEIGHT - 3*16)*MooseInvasion.Y_SCALE, 
+				"player-gui");
+		
+		// TODO
+		// TODO
+		// TODO
+		money = 9999;
+		// TODO
+		// TODO
+		// TODO
 	}
 	
 	@Override
@@ -106,24 +122,26 @@ public class Player extends Entity {
 		x += velocity.x;
 		y += velocity.y;
 		
+		// Game window bounds
 		if(x < 0)
 			x = 0;
 		else if(x > MooseInvasion.WIDTH-16)
 			x = MooseInvasion.WIDTH-16;
-		
 		if(y < 0)
 			y = 0;
 		else if(y > MooseInvasion.HEIGHT-16)
 			y = MooseInvasion.HEIGHT-16;
 		
-		updateGoldText();
-		updateAmmoText();
+		updateGUIText();
 	}
 	
 	/**
 	 * 	When no keys are pressed we reduce speed, just like friction
 	 */
 	private void applyFriction() {
+		beerText.x = MooseInvasion.WIDTH - 20 - (beerText.text.length() * 7);
+		beerText.y = MooseInvasion.HEIGHT - 8*5;
+		
 		if(velocity.y < 0) {
 			velocity.y += 1.0/weight * friction;
 			if (velocity.y > 0)
@@ -246,27 +264,24 @@ public class Player extends Entity {
 	}
 	
 	/**
-	 * 	Update gold text and position
+	 * 	Updates all the GUI text
 	 */
-	public void updateGoldText() {
-		moneyText.text = "$"+String.valueOf(money);
-		moneyText.x = MooseInvasion.SPRITE_X_SIZE * 19 - 
-				moneyText.text.length()*(MooseInvasion.SPRITE_X_SIZE/2);
-	}
-	
-	/**
-	 * 	Update ammo text, position and color
-	 */
-	private void updateAmmoText() {
+	public void updateGUIText() {
+		
 		ammoText.text = "" + currentWeapon.ammo;
-		ammoText.x = MooseInvasion.WIDTH-MooseInvasion.SPRITE_X_SIZE - 
-				MooseInvasion.SPRITE_X_SIZE/2 * ammoText.text.length();
+		ammoText.x = MooseInvasion.WIDTH - 20 - (ammoText.text.length() * 7);
 		
 		// Set text color to red when ammo is low
 		if(currentWeapon.ammo < 30)
 			ammoText.style.color = Color.RED;
 		else
 			ammoText.style.color = Color.WHITE;
+		
+		moneyText.text = "$"+String.valueOf(money);
+		moneyText.x = MooseInvasion.WIDTH - 8 - (moneyText.text.length() * 7);
+		
+		beerText.text = "" + beers;
+		beerText.x = MooseInvasion.WIDTH - 20 - (beerText.text.length() * 7);
 	}
 
 	/**

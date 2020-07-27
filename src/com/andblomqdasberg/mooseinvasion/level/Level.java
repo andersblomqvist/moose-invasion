@@ -9,7 +9,7 @@ import com.andblomqdasberg.mooseinvasion.InputHandler;
 import com.andblomqdasberg.mooseinvasion.MooseInvasion;
 import com.andblomqdasberg.mooseinvasion.decoration.AbstractDecoration;
 import com.andblomqdasberg.mooseinvasion.decoration.DecorationType;
-import com.andblomqdasberg.mooseinvasion.entity.Player;
+import com.andblomqdasberg.mooseinvasion.entity.player.Player;
 import com.andblomqdasberg.mooseinvasion.gui.GUIImage;
 import com.andblomqdasberg.mooseinvasion.gui.GUIText;
 import com.andblomqdasberg.mooseinvasion.particle.AbstractParticle;

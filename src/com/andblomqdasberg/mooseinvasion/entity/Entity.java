@@ -22,11 +22,11 @@ public class Entity implements Comparable<Entity> {
     // Store if this entity needs updates (gc)
     public boolean alive = true;
     
-    // When only blood is left from the entity we want
-    // to draw it first so it comes behind other entities.
+    // When an entity is out of the game but still needs some rendering and
+    // or updates.
     public boolean dead = false;
     
-    // Handle render
+    // Handle rendering
     protected Sprite sprite;
 
     // If the entity is outside the game frame with this much

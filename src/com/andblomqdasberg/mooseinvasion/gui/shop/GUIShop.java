@@ -9,7 +9,7 @@ import com.andblomqdasberg.mooseinvasion.GameManager;
 import com.andblomqdasberg.mooseinvasion.InputHandler;
 import com.andblomqdasberg.mooseinvasion.MooseInvasion;
 import com.andblomqdasberg.mooseinvasion.audio.AudioPlayer;
-import com.andblomqdasberg.mooseinvasion.entity.Player;
+import com.andblomqdasberg.mooseinvasion.entity.player.Player;
 import com.andblomqdasberg.mooseinvasion.gui.GUIText;
 
 /**

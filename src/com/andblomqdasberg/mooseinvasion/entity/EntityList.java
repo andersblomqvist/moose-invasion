@@ -1,5 +1,7 @@
 package com.andblomqdasberg.mooseinvasion.entity;
 
+import com.andblomqdasberg.mooseinvasion.entity.player.Player;
+
 /**
  * 	List of all the entities in the game
  * 

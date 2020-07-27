@@ -10,8 +10,9 @@ import com.andblomqdasberg.mooseinvasion.MooseInvasion;
 import com.andblomqdasberg.mooseinvasion.audio.AudioPlayer;
 import com.andblomqdasberg.mooseinvasion.collider.BoxCollider;
 import com.andblomqdasberg.mooseinvasion.collider.CollisionType;
-import com.andblomqdasberg.mooseinvasion.entity.Player;
+import com.andblomqdasberg.mooseinvasion.entity.player.Player;
 import com.andblomqdasberg.mooseinvasion.gui.GUIImage;
+import com.andblomqdasberg.mooseinvasion.gui.shop.Blacksmith;
 import com.andblomqdasberg.mooseinvasion.gui.shop.GUIShop;
 import com.andblomqdasberg.mooseinvasion.gui.shop.GunStore;
 import com.andblomqdasberg.mooseinvasion.gui.shop.Market;
@@ -40,6 +41,7 @@ public class City
 	private GUIShop currentShop;
 	private GunStore gunStore;
 	private Market market;
+	private Blacksmith blacksmith;
 	
 	public City() {
 		player = GameManager.sInstance.getPlayer();
@@ -70,6 +72,7 @@ public class City
 		
 		gunStore = new GunStore();
 		market = new Market();
+		blacksmith = new Blacksmith();
 		
 		// E image icons
 		marketShopTrigger = new GUIImage(188, 104, Assets.sInstance.sprites[4][4], "city-gui", () -> {
@@ -82,6 +85,7 @@ public class City
 		});
 		blacksmithShopTrigger = new GUIImage(116, 145, Assets.sInstance.sprites[4][4], "city-gui", () -> {
 			AudioPlayer.play("misc-popup.wav");
+			currentShop = blacksmith;
 		});
 		dassTrigger = new GUIImage(310, 145, Assets.sInstance.sprites[4][4], "city-gui", () -> {
 			AudioPlayer.play("misc-popup.wav");

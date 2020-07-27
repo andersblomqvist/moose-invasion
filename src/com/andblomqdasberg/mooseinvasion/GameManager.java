@@ -9,8 +9,8 @@ import java.util.Collections;
 import com.andblomqdasberg.mooseinvasion.audio.AudioPlayer;
 import com.andblomqdasberg.mooseinvasion.decoration.DecorationType;
 import com.andblomqdasberg.mooseinvasion.entity.Entity;
-import com.andblomqdasberg.mooseinvasion.entity.Player;
 import com.andblomqdasberg.mooseinvasion.entity.Projectile;
+import com.andblomqdasberg.mooseinvasion.entity.player.Player;
 import com.andblomqdasberg.mooseinvasion.gui.AbstractGUI;
 import com.andblomqdasberg.mooseinvasion.gui.GUIText;
 import com.andblomqdasberg.mooseinvasion.level.City;
@@ -89,9 +89,9 @@ public class GameManager {
         settingsScreen = new ScreenSettings();
         city = new City();
         healthText = new GUIText(""+health, 
-        		MooseInvasion.WIDTH-MooseInvasion.SPRITE_X_SIZE*1.8f, 
-        		MooseInvasion.HEIGHT-MooseInvasion.SPRITE_Y_SIZE*1.5f, 
-        		"level-gui");
+        		MooseInvasion.WIDTH - 27,
+        		MooseInvasion.HEIGHT - 8*3, 
+        		"player-gui");
         
         AudioPlayer.play("ambient-wind.wav");
 

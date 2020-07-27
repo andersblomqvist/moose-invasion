@@ -4,7 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 
 import com.andblomqdasberg.mooseinvasion.MooseInvasion;
-import com.andblomqdasberg.mooseinvasion.entity.Player;
+import com.andblomqdasberg.mooseinvasion.entity.player.Player;
 
 /**
  * 	Box collider

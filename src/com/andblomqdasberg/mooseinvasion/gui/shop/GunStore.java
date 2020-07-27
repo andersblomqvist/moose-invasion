@@ -134,9 +134,7 @@ public class GunStore extends GUIShop {
 	
 	@Override
 	protected boolean buyItem() {
-		boolean available = super.buyItem();
-		
-		if(!available)
+		if(!super.buyItem())
 			return false;
 		
 		String moneyText = activeTab.money.get(currentOption).text;
@@ -144,7 +142,7 @@ public class GunStore extends GUIShop {
 		String weapon = activeTab.item.get(currentOption).text;
 		
 		player.money -= money;
-		player.updateGoldText();
+		player.updateGUIText();
 		moneyLost.add(new GUIText("-"+money,270,25,"").color(Color.RED));
 		
 		AudioPlayer.play("misc-buy.wav");

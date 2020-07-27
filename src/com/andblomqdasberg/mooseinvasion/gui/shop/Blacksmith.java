@@ -6,20 +6,21 @@ import com.andblomqdasberg.mooseinvasion.audio.AudioPlayer;
 import com.andblomqdasberg.mooseinvasion.gui.GUIText;
 
 /**
- * 	Market store.
- * 	Misc item, but beer. nice
- * 
- * 	@author Anders Blomqvist	
+ * 	Blacksmith store.
+ * 	Melee weapons and non hostile player upgrades (movement etc ...)
+ * 	
+ * 	@author Anders Blomqvist
  */
-public class Market extends GUIShop {
+public class Blacksmith extends GUIShop {
 
-	private Tab store = new Tab("MAIN", 0);
+	private Tab main = new Tab("MAIN", 0);
 	
-	public Market() {
-		store.addText("BEER", 0);
-		store.addText("$7", 2);
+	public Blacksmith() {
 		
-		tabs.add(store);
+		main.addText("KNUCKLES", 0);
+		main.addText("$99", 2);
+		
+		tabs.add(main);
 		
 		currentTab = 0;
 		currentOption = 0;
@@ -43,8 +44,9 @@ public class Market extends GUIShop {
 		moneyLost.add(new GUIText("-"+money,270,25,"").color(Color.RED));
 		
 		switch(item) {
-			case "BEER":
-				player.beers += 1;
+			case "KNUCKLES":
+				System.out.println("Bought knuckles.");
+				activeTab.money.get(currentOption).text = "SOLD";
 				break;
 		}
 		
