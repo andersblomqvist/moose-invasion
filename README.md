@@ -3,14 +3,4 @@
 </p>
 
 # Moose Invasion
-2D Java Game built with Java JFrame.
-
-As the best hunter of your village your task is to defend the citizens from hoards of angry moose.
-
-# Installation
-#### Source
-1. Clone this repo
-2. Import files `/src/` and `/assets/` into your favourite IDE and run `MooseInvasion.java`.
-
-#### Build - not yet available
-Inside `/build/` run the `MooseInvaison.jar`, either by clicking on it or via command line with `java -jar MooseInvasion.jar`.
+2D Java Game built with standard Java JFrame. It's a very basic shoot em up style type of game where you progress further by killing of waves of mobs, mainly angry moose. Your task is to defend your village from these hostile creatures and venture into the unknown to find out what's causing the invasion.
