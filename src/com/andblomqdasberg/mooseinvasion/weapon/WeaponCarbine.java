@@ -45,6 +45,5 @@ public class WeaponCarbine extends AbstractWeapon {
     			penetrationLight = true;
     			break;
 		}
-		System.out.println("Upgraded Carbine to level " + level);
 	}
 }

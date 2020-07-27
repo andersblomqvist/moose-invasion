@@ -2,7 +2,6 @@ package com.andblomqdasberg.mooseinvasion.gui.shop;
 
 import java.awt.Color;
 
-import com.andblomqdasberg.mooseinvasion.GameManager;
 import com.andblomqdasberg.mooseinvasion.audio.AudioPlayer;
 import com.andblomqdasberg.mooseinvasion.gui.GUIText;
 import com.andblomqdasberg.mooseinvasion.weapon.AbstractWeapon;
@@ -20,8 +19,6 @@ public class GunStore extends GUIShop {
 	private Tab upg = new Tab("UPG.", 2);
 	
 	public GunStore() {
-		player = GameManager.sInstance.getPlayer();
-		
 		/**
 		 * 	GUNS tab
 		 */
@@ -136,60 +133,49 @@ public class GunStore extends GUIShop {
 	}
 	
 	@Override
-	protected void buyItem() {
+	protected boolean buyItem() {
+		boolean available = super.buyItem();
 		
-		// Get weapno type and money text
-		String weapon = activeTab.item.get(currentOption).text;
+		if(!available)
+			return false;
+		
 		String moneyText = activeTab.money.get(currentOption).text;
-		
-		if(moneyText.contentEquals("SOLD") || moneyText.contentEquals("")) {
-			System.out.println("Item already sold or cant be bought");
-			// TODO add err sound
-			return;
-		}
-		
-		// Parse the money and check if we have enough
 		int money = Integer.parseInt(moneyText.substring(1));
-		if(player.money < money) {
-			// TODO add err sound
-			System.out.println("Not enough money");
-			return;
-		} else {
-			// ... We had enough money. Buy the item
-			
-			player.money -= money;
-			player.updateGoldText();
-			moneyLost.add(new GUIText("-"+money,270,25,"").color(Color.RED));
-			
-			AudioPlayer.play("misc-buy.wav");
-			switch(activeTab.name) {
-    			case "GUNS":
-    				System.out.println("Item: " + weapon);
-    				player.buyWeapon(weapon);
-    				activeTab.money.get(currentOption).text = "SOLD";
-    				updateUpgradeTab(weapon);
-    				break;
-    			case "AMMO":
-    				String ammo = activeTab.misc1.get(currentOption).text;
-    				player.buyAmmo(weapon, ammo.substring(1));
-    				updateAmmo();
-    				break;
-    			case "UPG.":
-    				String s = activeTab.misc1.get(currentOption).text;
-    				int level = Integer.parseInt(s.substring(0, 1)) + 1;
-    				if(level <= 5 && level > 1) {
-    					System.out.println(level);
-    					player.buyUpgrade(weapon);
-    					activeTab.misc1.get(currentOption).text = level + "/5";
-    					if(level != 5) {
-    						int nextCost = (int) Math.pow(2, level + 6);
-        					activeTab.money.get(currentOption).text = "$"+nextCost;
-    					} else {
-    						activeTab.money.get(currentOption).text = "SOLD";
-    					}
-    				} 
-    				break;
-			}
+		String weapon = activeTab.item.get(currentOption).text;
+		
+		player.money -= money;
+		player.updateGoldText();
+		moneyLost.add(new GUIText("-"+money,270,25,"").color(Color.RED));
+		
+		AudioPlayer.play("misc-buy.wav");
+		switch(activeTab.name) {
+			case "GUNS":
+				System.out.println("Item: " + weapon);
+				player.buyWeapon(weapon);
+				activeTab.money.get(currentOption).text = "SOLD";
+				updateUpgradeTab(weapon);
+				break;
+			case "AMMO":
+				String ammo = activeTab.misc1.get(currentOption).text;
+				player.buyAmmo(weapon, ammo.substring(1));
+				updateAmmo();
+				break;
+			case "UPG.":
+				String s = activeTab.misc1.get(currentOption).text;
+				int level = Integer.parseInt(s.substring(0, 1)) + 1;
+				if(level <= 5 && level > 1) {
+					player.buyUpgrade(weapon);
+					activeTab.misc1.get(currentOption).text = level + "/5";
+					if(level != 5) {
+						int nextCost = (int) Math.pow(2, level + 6);
+    					activeTab.money.get(currentOption).text = "$"+nextCost;
+					} else {
+						activeTab.money.get(currentOption).text = "SOLD";
+					}
+				} 
+				break;
 		}
+		
+		return true;
 	}
 }

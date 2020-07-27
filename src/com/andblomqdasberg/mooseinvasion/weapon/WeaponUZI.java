@@ -45,6 +45,5 @@ public class WeaponUZI extends AbstractWeapon {
     			penetrationLight = true;
     			break;
 		}
-		System.out.println("Upgraded UZI to level " + level);
 	}
 }

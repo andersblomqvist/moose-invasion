@@ -4,15 +4,12 @@
 STADEN
 ========================
 Säljare:
- - Vapen shoppen
- - Player gearew
+ - Player gear?
  - Misc shop (kul grejer typ)
  
- - gui för säljare
  
 VAPEN
 ========================
-- shop med upgrades
 - player talent points? upgradera spelarens movement etc.?
 - Shotgun
 - Rocket launcher
@@ -37,6 +34,7 @@ SOUNDS
 - Footstep sounds
 - Round start sound
 - Random moose sound
+- Error sound in shop
 - People screem/dying when moose goes into the village
 
 MISC
@@ -47,5 +45,4 @@ MISC
 
 FIXES
 ========================
-- Blodbuggen?
-- FPS drop?
+- FPS drop? Orsakat av ljuden

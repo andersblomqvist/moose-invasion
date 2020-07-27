@@ -5,6 +5,7 @@ import java.awt.Graphics;
 import java.util.ArrayList;
 
 import com.andblomqdasberg.mooseinvasion.Assets;
+import com.andblomqdasberg.mooseinvasion.GameManager;
 import com.andblomqdasberg.mooseinvasion.InputHandler;
 import com.andblomqdasberg.mooseinvasion.MooseInvasion;
 import com.andblomqdasberg.mooseinvasion.audio.AudioPlayer;
@@ -48,6 +49,10 @@ public abstract class GUIShop
 	private int offsetY = y - 11*MooseInvasion.Y_SCALE;
 	
 	protected ArrayList<GUIText> moneyLost = new ArrayList<GUIText>();
+	
+	public GUIShop() {
+		player = GameManager.sInstance.getPlayer();
+	}
 	
 	/**
 	 * 	Tab object
@@ -182,11 +187,9 @@ public abstract class GUIShop
 	}
 	
 	/**
-	 * 	Check for inputs
+	 * 	Check for inputs and update lost money text position 
 	 */
 	public void tick() {
-		offsetX = x + 5*MooseInvasion.X_SCALE;
-		
 		if(InputHandler.down(true))
 			arrowDown();
 		
@@ -199,7 +202,7 @@ public abstract class GUIShop
 		if(InputHandler.left(true))
 			arrowLeft();
 		
-		if(InputHandler.exit() || InputHandler.interact())
+		if(InputHandler.exit())
 			close();
 		
 		if(InputHandler.enter() || InputHandler.shoot(true))
@@ -241,16 +244,38 @@ public abstract class GUIShop
 	}
 	
 	/**
-	 * 	Called when player hits enter on an menu option
+	 * 	Called when player hits enter on an menu option. Here we do error
+	 * 	prevention where we leave if player does not have enough money or if
+	 * 	the item can't be bought.
+	 * 
 	 * 	Override this for each shop.
 	 */
-	protected void buyItem() {}
+	protected boolean buyItem() {
+		String moneyText = activeTab.money.get(currentOption).text;
+		
+		if(moneyText.contentEquals("SOLD") || moneyText.contentEquals("")) {
+			System.out.println("Item alreadt bought or can't be bought!");
+			// TODO add err sound effect
+			return false;
+		}
+		
+		int money = Integer.parseInt(moneyText.substring(1));
+		if(player.money < money) {
+			// TODO add err sound
+			System.out.println("Not enough money!");
+			return false;
+		}
+		
+		return true;
+	}
 	
 	/**
 	 * 	Go to text below
 	 */
 	protected void arrowDown() {
 		int max = activeTab.item.size()-1;
+		if(max == 0)
+			return;
 		int prev = currentOption;
 		if(currentOption < max)
 			currentOption++;
@@ -265,6 +290,8 @@ public abstract class GUIShop
 	 */
 	protected void arrowUp() {
 		int max = activeTab.item.size()-1;
+		if(max == 0)
+			return;
 		int prev = currentOption;
 		if(currentOption > 0)
 			currentOption--;
@@ -279,6 +306,8 @@ public abstract class GUIShop
 	 */
 	protected void arrowRight() {
 		int max = tabs.size()-1;
+		if(max == 0)
+			return;
 		if(currentTab < max)
 			currentTab++;
 		else currentTab = 0;
@@ -294,6 +323,8 @@ public abstract class GUIShop
 	 */
 	protected void arrowLeft() {
 		int max = tabs.size()-1;
+		if(max == 0)
+			return;
 		if(currentTab > 0)
 			currentTab--;
 		else currentTab = max;

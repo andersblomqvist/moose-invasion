@@ -44,7 +44,5 @@ public class WeaponPistol extends AbstractWeapon {
     			fireRate = 15;
     			break;
 		}
-		
-		System.out.println("Upgraded pistol to level " + level);
 	}
 }

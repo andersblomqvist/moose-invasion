@@ -12,7 +12,9 @@ import com.andblomqdasberg.mooseinvasion.collider.BoxCollider;
 import com.andblomqdasberg.mooseinvasion.collider.CollisionType;
 import com.andblomqdasberg.mooseinvasion.entity.Player;
 import com.andblomqdasberg.mooseinvasion.gui.GUIImage;
+import com.andblomqdasberg.mooseinvasion.gui.shop.GUIShop;
 import com.andblomqdasberg.mooseinvasion.gui.shop.GunStore;
+import com.andblomqdasberg.mooseinvasion.gui.shop.Market;
 
 /**
  * 	The City where the player can buy upgrades
@@ -34,7 +36,10 @@ public class City
 	private GUIImage blacksmithShopTrigger;
 	private GUIImage dassTrigger;
 	
+	// Shops
+	private GUIShop currentShop;
 	private GunStore gunStore;
+	private Market market;
 	
 	public City() {
 		player = GameManager.sInstance.getPlayer();
@@ -63,12 +68,17 @@ public class City
 		colliders.add(new BoxCollider(110, 162, 26, 10,true, "blacksmith"));
 		colliders.add(new BoxCollider(300, 160, 17, 12,true, "dass"));
 		
+		gunStore = new GunStore();
+		market = new Market();
+		
 		// E image icons
 		marketShopTrigger = new GUIImage(188, 104, Assets.sInstance.sprites[4][4], "city-gui", () -> {
 			AudioPlayer.play("misc-popup.wav");
+			currentShop = market;
 		});
 		gunsShopTrigger = new GUIImage(123, 81, Assets.sInstance.sprites[4][4], "city-gui", () -> {
 			AudioPlayer.play("misc-popup.wav");
+			currentShop = gunStore;
 		});
 		blacksmithShopTrigger = new GUIImage(116, 145, Assets.sInstance.sprites[4][4], "city-gui", () -> {
 			AudioPlayer.play("misc-popup.wav");
@@ -85,8 +95,6 @@ public class City
 		new GUIImage(10,MooseInvasion.HEIGHT/2, 
 				Assets.sInstance.sprites[4][2],
 				"city-gui");
-		
-		gunStore = new GunStore();
 	}
 	
 	/**
@@ -111,14 +119,17 @@ public class City
 			}
 		}
 		
-		if(gunStore.isOpen)
-			gunStore.tick();
+		if(currentShop == null)
+			return;
 		
-		if(gunsShopTrigger.isEnabled) {
-			if(InputHandler.interact())
-				gunStore.open();
-		} else
-			gunStore.close();
+		if(InputHandler.interact())
+			if(currentShop.isOpen)
+				currentShop.close();
+			else
+				currentShop.open();
+		
+		if(currentShop.isOpen)
+			currentShop.tick();
 	}
 	
 	/**
@@ -144,9 +155,13 @@ public class City
         for(int i = 0; i < GameManager.sInstance.guiCity.size(); i++)
         	GameManager.sInstance.guiCity.get(i).render(g);
         
-        if(gunStore.isOpen)
-			gunStore.render(g);
+        if(currentShop == null)
+        	return;
+        
+        if(currentShop.isOpen)
+        	currentShop.render(g);
 	}
+	
 	
 	/**
 	 * 	Called when player enters a shop trigger
@@ -169,5 +184,8 @@ public class City
     			dassTrigger.enable(state);
     			break;
     	}
+		
+		if(!state)
+			currentShop = null;
 	}
 }

@@ -67,8 +67,6 @@ public class Projectile extends Entity
 		if(penetrationFull)
 			return;
 		
-		System.out.println(penetrationLight);
-		
 		// Skip removal once if we have light penetration
 		// The -= 10f is needed to prevent the moose taking double damage from
 		// the projectile. It should just take damage once and keep going.
