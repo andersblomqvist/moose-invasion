@@ -14,6 +14,7 @@ import com.andblomqdasberg.mooseinvasion.gui.GUIImage;
 import com.andblomqdasberg.mooseinvasion.gui.GUIText;
 import com.andblomqdasberg.mooseinvasion.particle.AbstractParticle;
 import com.andblomqdasberg.mooseinvasion.particle.AmmoParticle;
+import com.andblomqdasberg.mooseinvasion.particle.BeerGlasParticle;
 import com.andblomqdasberg.mooseinvasion.particle.BloodAndMeatParticle;
 import com.andblomqdasberg.mooseinvasion.particle.BloodParticle;
 import com.andblomqdasberg.mooseinvasion.particle.ParticleType;
@@ -349,6 +350,11 @@ public class Level {
     		case AMMO:	
     			stage.particles.add(new AmmoParticle(x, y));
     		break;
+    		case BEER_GLAS:
+    			stage.particles.add(new BeerGlasParticle(x, y));
+    			break;
+    		default:
+    			break;
     	}
 	}
 }

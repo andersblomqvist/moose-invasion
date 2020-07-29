@@ -5,7 +5,7 @@ import com.andblomqdasberg.mooseinvasion.entity.Projectile;
 import com.andblomqdasberg.mooseinvasion.particle.ParticleType;
 
 /**
- * 	Simple weapon with pistol behaviour (very generic)
+ * 	Simple weapon with pistol behaviour
  * 
  * 	@author Anders Blomqvist
  */
@@ -22,6 +22,7 @@ public class WeaponPistol extends AbstractWeapon {
 	
 	@Override
 	public void shoot(float x, float y) {
+		super.shoot(x, y);
 		GameManager.sInstance.spawnParticles(ParticleType.AMMO, 1, x, y);
         GameManager.sInstance.spawnEntity(new Projectile(x+1, y, damage, false, false));
         playSound();
@@ -29,6 +30,8 @@ public class WeaponPistol extends AbstractWeapon {
 	
 	@Override
 	public void levelUp() {
+		System.out.println("Early level up");
+		
 		level += 1;
 		switch(level) {
     		case 2:
@@ -44,5 +47,7 @@ public class WeaponPistol extends AbstractWeapon {
     			fireRate = 15;
     			break;
 		}
+		
+		super.levelUp();
 	}
 }

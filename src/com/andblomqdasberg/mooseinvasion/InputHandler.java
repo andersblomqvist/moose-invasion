@@ -37,6 +37,7 @@ public class InputHandler implements KeyListener, MouseListener {
     	public static final int R = 82;
     	public static final int Q = 81;
     	public static final int E = 69;
+    	public static final int F = 70;
     	public static final int ENTER = 10;
     	
     	public static final int ONE = 49;
@@ -152,6 +153,14 @@ public class InputHandler implements KeyListener, MouseListener {
 	public static boolean interact() {
 		if(keysPressed.contains(Keys.E)) {
 			keysPressed.remove(Keys.E);
+			return true;
+		}
+		return false;
+	}
+	
+	public static boolean consume() {
+		if(keysPressed.contains(Keys.F)) {
+			keysPressed.remove(Keys.F);
 			return true;
 		}
 		return false;

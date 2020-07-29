@@ -53,7 +53,7 @@ public class Entity implements Comparable<Entity> {
 	/**
      * 	Entity update
      */
-    public void tick() {
+    public void tick(int ticks) {
     	// Set alive to false when out of bounds with a bit of margin
         if (
     		this.x < -boundsMargin ||

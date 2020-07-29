@@ -16,7 +16,10 @@ import com.andblomqdasberg.mooseinvasion.gui.GUIText;
 import com.andblomqdasberg.mooseinvasion.level.City;
 import com.andblomqdasberg.mooseinvasion.level.Level;
 import com.andblomqdasberg.mooseinvasion.level.LevelLoader;
+import com.andblomqdasberg.mooseinvasion.particle.AbstractParticle;
+import com.andblomqdasberg.mooseinvasion.particle.BeerParticle;
 import com.andblomqdasberg.mooseinvasion.particle.ParticleType;
+import com.andblomqdasberg.mooseinvasion.util.GameRandom;
 import com.andblomqdasberg.mooseinvasion.util.GameState;
 import com.andblomqdasberg.mooseinvasion.weapon.AbstractWeapon;
 
@@ -49,6 +52,7 @@ public class GameManager {
     // List of all entities
     public ArrayList<Entity> entities = new ArrayList<Entity>();
     public ArrayList<Entity> projectiles = new ArrayList<Entity>();
+    private ArrayList<AbstractParticle> specialParticles = new ArrayList<AbstractParticle>();
     
     // GUI lists
     public ArrayList<AbstractGUI> guiCity = new ArrayList<AbstractGUI>();
@@ -121,7 +125,8 @@ public class GameManager {
     }
     
     /**
-     * 	Spawns particles
+     * 	Spawns particles in current level stage. However special particles can be
+     * 	spawned which renders ontop of everything else. Not dependent on level stage.
      * 
      * 	@param type What type of particle will we spawn
      * 	@param amount How many particle objects
@@ -129,6 +134,11 @@ public class GameManager {
      *  @param y
      */
     public void spawnParticles(ParticleType type, int amount, float x, float y) {
+    	if(type == ParticleType.BEER) {
+    		for(int i = 0; i < amount; i++)
+	    		specialParticles.add(new BeerParticle(x + GameRandom.randomBetween(-2, 5), y+7));
+    	}
+    	
     	level.spawnParticle(type, amount, x, y);
 	}
     
@@ -177,8 +187,17 @@ public class GameManager {
     	gameTick = ticks;
     	
     	// Update all the entities
-        updateEntityList(projectiles);
-        updateEntityList(entities);
+        updateEntityList(projectiles, ticks);
+        updateEntityList(entities, ticks);
+        
+        for(int i = 0; i < specialParticles.size(); i++) {
+        	AbstractParticle p = specialParticles.get(i);
+        	p.tick();
+        	p.animationTick();
+        	
+        	if(p.lifetime > 15)
+        		specialParticles.remove(i);
+        }	
         
         // z-index rendering for entities
         if(gameTick % 60 == 0)
@@ -216,13 +235,9 @@ public class GameManager {
         for(int i = 0; i < projectiles.size(); i++)
         	projectiles.get(i).render(g, gameTick);
         
-        // Game over state black overlay
-        if(gameState == GameState.GAME_OVER) {
-    		g.setColor(new Color(0,0,0,100));
-    		g.fillRect(0,0, 
-    				MooseInvasion.RENDER_WIDTH, 
-    				MooseInvasion.RENDER_HEIGHT);
-    	}
+        // Render special top particles
+        for(AbstractParticle p : specialParticles)
+        	p.render(g, gameTick);
         
         if(inCity)
         	city.renderTop(g);
@@ -230,18 +245,26 @@ public class GameManager {
         // Render player GUI
         for(int i = 0; i < guiPlayer.size(); i++)
         	guiPlayer.get(i).render(g);
+        
+        // Game over state black overlay
+        if(gameState == GameState.GAME_OVER) {
+    		g.setColor(new Color(0,0,0,100));
+    		g.fillRect(0,0, 
+    				MooseInvasion.RENDER_WIDTH, 
+    				MooseInvasion.RENDER_HEIGHT);
+    	}
     }
     
     /**
      * 	Goes through all the entities in the list and calls
      * 	the {@code tick()} method
      */
-    private void updateEntityList(ArrayList<Entity> list)
+    private void updateEntityList(ArrayList<Entity> list, int ticks)
     {
         for(int i = 0; i < list.size(); i++) {
         	Entity e = list.get(i);
             if (e.alive)
-                e.tick();
+                e.tick(ticks);
             else
             	list.remove(i);
         }
@@ -254,6 +277,15 @@ public class GameManager {
      */
 	public void removeProjectile(int index) {
 		projectiles.remove(index);
+	}
+	
+	/**
+	 * 	Removes a particle from the speical paricle list
+	 * 
+	 * 	@param p reference to particle object
+	 */
+	public void removeParticle(AbstractParticle p) {
+		specialParticles.remove(p);
 	}
 	
 	/**

@@ -19,9 +19,11 @@ public abstract class AbstractWeapon {
 	// Toggle the ability to shoot on and off. Set to off when we are in
 	// the city and on in the stages.
 	public static boolean ALLOW_SHOOTING = false;
+
+	// Damage boost when beer is consumed. Applies on all weapons.
+	public static boolean DAMAGE_INCREASE = false;
 	
 	public int id;
-	
 	public int ammo;
 	public int damage;
 	public int fireRate;
@@ -34,6 +36,9 @@ public abstract class AbstractWeapon {
 	
 	private GUIText weaponText;
 	private int ticksSinceTextActivated = 0;
+	
+	private int baseDamage;
+	private int damageIncrease;
 	
 	/**
 	 * 	Init weapon values
@@ -52,6 +57,9 @@ public abstract class AbstractWeapon {
 		this.level = 1;
 		this.penetrationLight = false;
 		this.penetrationFull = false;
+		
+		baseDamage = damage;
+		damageIncrease = damage * 2;
 	}
 	
 	/**
@@ -101,17 +109,29 @@ public abstract class AbstractWeapon {
 	}
 	
 	/**
-	 * 	Override shoot method for each weapon.
+	 * 	Override shoot method for each weapon but call this method aswell so
+	 * 	weapons can get a damage increase when player drinks beer.
 	 * 
 	 * 	@param x player position
 	 * 	@param y player position
 	 */
-	public void shoot(float x, float y) {}
+	public void shoot(float x, float y) {
+		if(DAMAGE_INCREASE)
+			damage = damageIncrease;
+		else
+			damage = baseDamage;
+	}
 	
 	/**
-	 * 	Override weapon level up
+	 * 	Override weapon level up.
+	 * 
+	 * 	This method has to be called at the end of the override so we get updated
+	 * 	damage values.
 	 */
-	public void levelUp() {}
+	public void levelUp() {
+		baseDamage = damage;
+		damageIncrease = damage * 2;
+	}
 	
 	/**
 	 * 	Plays the sound connected with weapon ID

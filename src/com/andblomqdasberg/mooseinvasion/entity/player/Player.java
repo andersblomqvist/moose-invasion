@@ -12,6 +12,7 @@ import com.andblomqdasberg.mooseinvasion.collider.CollisionType;
 import com.andblomqdasberg.mooseinvasion.entity.Entity;
 import com.andblomqdasberg.mooseinvasion.gui.GUIImage;
 import com.andblomqdasberg.mooseinvasion.gui.GUIText;
+import com.andblomqdasberg.mooseinvasion.particle.ParticleType;
 import com.andblomqdasberg.mooseinvasion.util.GameRandom;
 import com.andblomqdasberg.mooseinvasion.weapon.AbstractWeapon;
 import com.andblomqdasberg.mooseinvasion.weapon.WeaponList;
@@ -55,8 +56,11 @@ public class Player extends Entity {
 	public boolean allowShooting;
 
 	// Misc
-	public int money;
-	public int beers;
+	public int money = 9999;
+	public int beers = 0;
+	private int ticksSinceLastBeer = 0;
+	private int beerDuration = 600;
+	private boolean beer = false;
 
 	private GUIText ammoText;
 	private GUIText moneyText;
@@ -103,18 +107,10 @@ public class Player extends Entity {
 				(MooseInvasion.WIDTH - 16)*MooseInvasion.X_SCALE, 
 				(MooseInvasion.HEIGHT - 3*16)*MooseInvasion.Y_SCALE, 
 				"player-gui");
-		
-		// TODO
-		// TODO
-		// TODO
-		money = 9999;
-		// TODO
-		// TODO
-		// TODO
 	}
 	
 	@Override
-	public void tick() {
+	public void tick(int ticks) {
 		applyFriction();
 		currentWeapon.tick(x, y);
 		checkInput();
@@ -131,6 +127,24 @@ public class Player extends Entity {
 			y = 0;
 		else if(y > MooseInvasion.HEIGHT-16)
 			y = MooseInvasion.HEIGHT-16;
+		
+		if(beer) {
+			if(ticks % 5 == 0)
+				GameManager.sInstance.spawnParticles(ParticleType.BEER, 1, x, y);
+			
+			if(ticksSinceLastBeer == 60)
+				GameManager.sInstance.spawnParticles(ParticleType.BEER_GLAS, 1, x, y);
+			
+			if(ticksSinceLastBeer > beerDuration) {
+				ticksSinceLastBeer = 0;
+				AbstractWeapon.DAMAGE_INCREASE = false;
+				friction = 0.9f;
+				beer = false;
+				System.out.println(" > Feel sober again");
+			}
+			
+			ticksSinceLastBeer++;
+		}
 		
 		updateGUIText();
 	}
@@ -198,6 +212,9 @@ public class Player extends Entity {
 		
 		if(InputHandler.num3() && weapons.size() > 2)
 			directSwitchToWeapon(2);
+		
+		if(InputHandler.consume())
+			consumeBeer();
 	}
 
  	/**
@@ -323,6 +340,25 @@ public class Player extends Entity {
 	}
 	
 	/**
+	 * 	Consumes a beer which doubles the damage but also makes the character
+	 * 	harder to control.
+	 */
+	private void consumeBeer() {
+		if(beers == 0 || beer)
+			return;
+		
+		AudioPlayer.play("misc-drink-beer.wav");
+		
+		// Increase damage and decrease friction for some time (set by beerDuration).
+		AbstractWeapon.DAMAGE_INCREASE = true;
+		friction = 0.3f;
+		beer = true;
+		ticksSinceLastBeer = 0;
+		beers -= 1;
+		System.out.println(" > You are drunk from the beer!");
+	}
+	
+	/**
 	 * 	We left a collider we previously had contact with.
 	 * 	Here we want to reset the movement.
 	 */
@@ -332,7 +368,6 @@ public class Player extends Entity {
 		moveEast = true;
 		moveWest = true;
 	}
-	
 
 	/**
 	 * 	Called when players enters a trigger collider
@@ -350,20 +385,6 @@ public class Player extends Entity {
 	 */
 	public void onTriggerExit(String tag) {
 		GameManager.sInstance.city.shopTrigger(tag, false);
-	}
-	
-	/**
-	 *	@returns the collder x position
-	 */
-	public float getColX() {
-		return x + offsetX;
-	}
-	
-	/**
-	 * 	@returns the collider y position
-	 */
-	public float getColY() {
-		return y + offsetY;
 	}
 
 	/**
@@ -395,5 +416,19 @@ public class Player extends Entity {
 	public void buyUpgrade(String weapon) {
 		AbstractWeapon w = WeaponList.getWeaponByName(weapon);
 		w.levelUp();
+	}
+	
+	/**
+	 *	@returns the collder x position
+	 */
+	public float getColX() {
+		return x + offsetX;
+	}
+	
+	/**
+	 * 	@returns the collider y position
+	 */
+	public float getColY() {
+		return y + offsetY;
 	}
 }

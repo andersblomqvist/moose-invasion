@@ -56,7 +56,7 @@ public class Moose extends Entity
 	 *  TODO Make the moose not just go straight ahead.
 	 */
 	@Override
-	public void tick() {
+	public void tick(int ticks) {
 		updateDamageText();
 		
 		// Render blood animation when we are dead.
@@ -129,7 +129,7 @@ public class Moose extends Entity
 			GameManager.sInstance.reduceHealth();
 			return;
 		}
-		super.tick();
+		super.tick(ticks);
 	}
 	
 	/**

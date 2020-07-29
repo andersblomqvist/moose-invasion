@@ -15,8 +15,10 @@ import com.andblomqdasberg.mooseinvasion.util.Vector2D;
  */
 public abstract class AbstractParticle {
 	
-	public float x, y;
+	public float x, y, lifetime;
 	public Vector2D velocity;
+	
+	protected boolean animationFinished = false;
 	
 	private int maxSpeed = 4;
 	
@@ -56,6 +58,7 @@ public abstract class AbstractParticle {
 			// Stay on last frame
 			frame = sprite.lastFrame();
 			img = sprite.img[sprite.anim[frame]];
+			animationFinished = true;
 		} else {
 			// Else, continue with animation
 			frame = frameTick / sprite.animationSpeed % sprite.anim.length;

@@ -22,6 +22,7 @@ public class WeaponCarbine extends AbstractWeapon {
 	
 	@Override
 	public void shoot(float x, float y) {
+		super.shoot(x, y);
 		GameManager.sInstance.spawnParticles(ParticleType.AMMO, 1, x, y);
         GameManager.sInstance.spawnEntity(
         		new Projectile(x+1, y, damage, penetrationLight, false));
@@ -45,5 +46,7 @@ public class WeaponCarbine extends AbstractWeapon {
     			penetrationLight = true;
     			break;
 		}
+		
+		super.levelUp();
 	}
 }
