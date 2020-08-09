@@ -11,14 +11,31 @@ import com.andblomqdasberg.mooseinvasion.MooseInvasion;
  * 	GUI class for handling text elements on screen such as wave progress,
  * 	ammo and other text elements.
  * 
- * 	This class adds itself to the GameManager guiText list.
- * 
  * 	@author Anders Blomqvist
  */
 public class GUIText extends AbstractGUI implements IFadeOut {
 	
 	public String text;
 	public TextStyle style;
+	
+	/**
+	 * 	Default GUI constructor
+	 */
+	public GUIText(float x, float y, String listName) {
+		super(listName);
+		this.x = x;
+		this.y = y;
+		this.text = "";
+		style = new TextStyle().getDefaultStyle();
+	}
+	
+	/**
+	 * 	Constructor with specified string
+	 */
+	public GUIText(String string, float x, float y, String listName) {
+		this(x, y, listName);
+		this.text = string;
+	}
 	
 	/**
 	 * 	Class for storing data about TextStyling
@@ -59,64 +76,10 @@ public class GUIText extends AbstractGUI implements IFadeOut {
 			return new TextStyle(font, Color.WHITE);
 		}
 		
-		/**
-		 * 	@returns a TextStyle with bigger font
-		 */
-		public TextStyle getTitleStyle() {
-			Font font = Assets.sInstance.pressstart2p.deriveFont(48f);
-			return new TextStyle(font, Color.WHITE);
-		}
-		
-		/**
-		 * 	@returns a TextStyle with smaller font
-		 */
-		public TextStyle getSmallStyle() {
-			Font font = Assets.sInstance.pressstart2p.deriveFont(24f);
-			return new TextStyle(font, Color.WHITE);
-		}
-		
 		public void setStyle(float fontSize, Color color) {
 			Font font = Assets.sInstance.pressstart2p.deriveFont(fontSize);
 			this.font = font;
 			this.color = color;
-		}
-	}
-	
-	/**
-	 * 	Default GUI constructor
-	 */
-	public GUIText(float x, float y, String listName) {
-		super(listName);
-		this.x = x;
-		this.y = y;
-		this.text = "";
-		style = new TextStyle().getDefaultStyle();
-	}
-	
-	/**
-	 * 	Constructor with specified string
-	 */
-	public GUIText(String string, float x, float y, String listName) {
-		this(x, y, listName);
-		this.text = string;
-	}
-	
-	/**
-	 * 	Constructor with specified style and string
-	 */
-	public GUIText(String string, float x, float y, int style, String listName) {
-		this(x, y, listName);
-		this.text = string;
-		switch(style) {
-		case 0:
-			this.style = this.style.getDefaultStyle();
-			break;
-		case 1:
-			this.style = this.style.getTitleStyle();
-			break;
-		case 2:
-			this.style = this.style.getSmallStyle();
-			break;
 		}
 	}
 	
@@ -170,24 +133,58 @@ public class GUIText extends AbstractGUI implements IFadeOut {
 		g.setColor(style.color);
 		g.drawString(this.text, 
 				(int) x*MooseInvasion.X_SCALE, 
-				(int) (y*MooseInvasion.Y_SCALE));
+				(int) y*MooseInvasion.Y_SCALE);
 	}
 	
+	/**
+	 * 	Render with specific x and y coords.
+	 * 
+	 * 	@param g
+	 * 	@param x
+	 * 	@param y
+	 */
+	public void render(Graphics g, float x, float y) {
+		if(!enabled)
+			return;
+		
+		g.setFont(style.font);
+		
+		// Drop shadow
+		g.setColor(style.shadow);
+		g.drawString(this.text, 
+				(int)x + style.shadowLength, 
+				(int)y + style.shadowLength);
+		
+		g.setColor(style.color);
+		g.drawString(this.text, 
+				(int) x, 
+				(int) y);
+	}
+	
+	/**
+	 * 	Resets color back to normal (used when fading opacity)
+	 */
 	public void resetColor() {
 		style.color = style.savedColor;
 		style.shadow = Color.BLACK;
 	}
 	
+	/**
+	 * 	Set color of text
+	 * 
+	 * 	@param color new color
+	 */
 	public void setColor(Color color) {
 		this.style.color = color;
 		this.style.savedColor = color;
 	}
 	
-	public TextStyle getTitleStyle() {
-		return this.style.getTitleStyle();
-	}
-	
-	public TextStyle getSmallStyle() {
-		return this.style.getSmallStyle();
+	/**
+	 * 	Ability to set color when creating new object
+	 */
+	public GUIText color(Color color) {
+		this.style.color = color;
+		this.style.savedColor = color;
+		return this;
 	}
 }

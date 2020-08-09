@@ -56,7 +56,7 @@ public class Moose extends Entity
 	 *  TODO Make the moose not just go straight ahead.
 	 */
 	@Override
-	public void tick() {
+	public void tick(int ticks) {
 		updateDamageText();
 		
 		// Render blood animation when we are dead.
@@ -123,15 +123,13 @@ public class Moose extends Entity
 		}
 		
 		// When moose have cross the play field player looses 1 point of health
-		if(this.x > MooseInvasion.WIDTH)
-		{
+		if(this.x > MooseInvasion.WIDTH) {
 			dead = true;
 			alive = false;
 			GameManager.sInstance.reduceHealth();
 			return;
 		}
-
-		super.tick();
+		super.tick(ticks);
 	}
 	
 	/**
@@ -212,7 +210,7 @@ public class Moose extends Entity
 		damageTextList.add(new GUIText(
 				String.valueOf(damage), 
 				this.x, 
-				this.y, 2, 
+				this.y, 
 				"level-gui"));
 	}
 

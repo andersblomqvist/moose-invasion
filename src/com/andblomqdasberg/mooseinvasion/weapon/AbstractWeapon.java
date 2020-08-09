@@ -19,12 +19,18 @@ public abstract class AbstractWeapon {
 	// Toggle the ability to shoot on and off. Set to off when we are in
 	// the city and on in the stages.
 	public static boolean ALLOW_SHOOTING = false;
+
+	// Damage boost when beer is consumed. Applies on all weapons.
+	public static boolean DAMAGE_INCREASE = false;
 	
 	public int id;
-	
 	public int ammo;
 	public int damage;
 	public int fireRate;
+	public int level;
+	public boolean penetrationLight;
+	public boolean penetrationFull;
+	public boolean melee;
 	public String name;
 	
 	private int ticksSinceLastShot = 0;
@@ -32,18 +38,30 @@ public abstract class AbstractWeapon {
 	private GUIText weaponText;
 	private int ticksSinceTextActivated = 0;
 	
+	private int baseDamage;
+	private int damageIncrease;
+	
 	/**
 	 * 	Init weapon values
 	 * 
 	 * 	@param stats Data holder with all base info for a weapon.
 	 * 	All weapons defined in {@link WeaponList}
 	 */
-	public AbstractWeapon(int id, int damage, int ammo, int fireRate, String name) {
+	public AbstractWeapon(int id, int damage, int ammo, int fireRate, String name, boolean isMelee) {
 		this.id = id;
 		this.damage = damage;
 		this.ammo = ammo;
 		this.fireRate = fireRate;
 		this.name = name;
+		melee = isMelee;
+		
+		// Updated via weapon upgrades from shop
+		this.level = 1;
+		this.penetrationLight = false;
+		this.penetrationFull = false;
+		
+		baseDamage = damage;
+		damageIncrease = damage * 2;
 	}
 	
 	/**
@@ -71,13 +89,14 @@ public abstract class AbstractWeapon {
 	 * 	@param y player position
 	 */
 	public void tick(float x, float y) {
-		if(InputHandler.shoot() && ALLOW_SHOOTING) {
+		if(InputHandler.shoot(false) && ALLOW_SHOOTING) {
 			if(ticksSinceLastShot > fireRate) {
 				ticksSinceLastShot = 0;
 				if(ammo > 0) {
 					shoot(x, y);
 					ammo--;
-				}
+				} else if(melee)
+					shoot(x, y);
 			}
 		}
 		
@@ -93,12 +112,29 @@ public abstract class AbstractWeapon {
 	}
 	
 	/**
-	 * 	Override shoot method for each weapon.
+	 * 	Override shoot method for each weapon but call this method aswell so
+	 * 	weapons can get a damage increase when player drinks beer.
 	 * 
 	 * 	@param x player position
 	 * 	@param y player position
 	 */
-	public void shoot(float x, float y) {}
+	public void shoot(float x, float y) {
+		if(DAMAGE_INCREASE)
+			damage = damageIncrease;
+		else
+			damage = baseDamage;
+	}
+	
+	/**
+	 * 	Override weapon level up.
+	 * 
+	 * 	This method has to be called at the end of the override so we get updated
+	 * 	damage values.
+	 */
+	public void levelUp() {
+		baseDamage = damage;
+		damageIncrease = damage * 2;
+	}
 	
 	/**
 	 * 	Plays the sound connected with weapon ID

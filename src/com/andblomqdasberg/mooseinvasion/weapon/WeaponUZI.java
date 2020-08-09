@@ -5,18 +5,18 @@ import com.andblomqdasberg.mooseinvasion.entity.Projectile;
 import com.andblomqdasberg.mooseinvasion.particle.ParticleType;
 
 /**
- * 	Simple weapon with pistol behaviour
+ * 	Carbine weapon, main assault rifle
  * 
  * 	@author Anders Blomqvist
  */
-public class WeaponPistol extends AbstractWeapon {
+public class WeaponUZI extends AbstractWeapon {
 
 	/**
 	 * 	Stats are set in {@link WeaponList}
 	 * 
 	 * 	@param stats Data about the weapon
 	 */
-	public WeaponPistol(int id, int damage, int ammo, int fireRate, String name, boolean isMelee) {
+	public WeaponUZI(int id, int damage, int ammo, int fireRate, String name, boolean isMelee) {
 		super(id, damage, ammo, fireRate, name, isMelee);
 	}
 	
@@ -24,27 +24,26 @@ public class WeaponPistol extends AbstractWeapon {
 	public void shoot(float x, float y) {
 		super.shoot(x, y);
 		GameManager.sInstance.spawnParticles(ParticleType.AMMO, 1, x, y);
-        GameManager.sInstance.spawnEntity(new Projectile(x+1, y, damage, false, false));
+        GameManager.sInstance.spawnEntity(
+        		new Projectile(x+1, y, damage, penetrationLight, false));
         playSound();
 	}
 	
 	@Override
 	public void levelUp() {
-		System.out.println("Early level up");
-		
 		level += 1;
 		switch(level) {
     		case 2:
-    			fireRate = 30;
+    			damage = 17;
     			break;
     		case 3:
-    			fireRate = 20;
+    			damage = 20;
     			break;
     		case 4:
-    			damage = 51;
+    			damage = 25;
     			break;
     		case 5:
-    			fireRate = 15;
+    			penetrationLight = true;
     			break;
 		}
 		

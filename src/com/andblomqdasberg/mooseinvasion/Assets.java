@@ -34,6 +34,10 @@ public class Assets
 	public BufferedImage menu_screen = loadImage("assets\\menu-screen.png");
 	public BufferedImage settings_screen = loadImage("assets\\settings-screen.png");
 
+	// GUI
+	public BufferedImage gui_shop_background = loadImage("assets\\gui\\gui-shop-background.png");
+	public BufferedImage gui_shop_tab = loadImage("assets\\gui\\gui-shop-tab.png");
+	
 	public BufferedImage city = loadImage("assets\\levels\\city.png");
 	public BufferedImage city_top = loadImage("assets\\levels\\city-top.png");
 	

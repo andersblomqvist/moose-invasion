@@ -17,11 +17,6 @@ import javax.swing.JFrame;
 public class InputHandler implements KeyListener, MouseListener {
 
 	private static HashSet<Integer> keysPressed = new HashSet<>();
-	
-    private static boolean leftMouse = false;
-    
-    @SuppressWarnings("unused")
-	private static boolean rightMouse = false;
     
     /**
      * 	Connect actions to specific key codes
@@ -41,12 +36,16 @@ public class InputHandler implements KeyListener, MouseListener {
     	public static final int ESC = 27;
     	public static final int R = 82;
     	public static final int Q = 81;
+    	public static final int E = 69;
+    	public static final int F = 70;
     	public static final int ENTER = 10;
     	
     	public static final int ONE = 49;
 		public static final int TWO = 50;
 		public static final int THREE = 51;
 		public static final int FOUR = 52;
+		
+		public static final int MOUSE1 = 501;
     }
     
 	public InputHandler(JFrame frame) {
@@ -58,12 +57,21 @@ public class InputHandler implements KeyListener, MouseListener {
 	 * 	Key actions
 	 */
 	
-	public static boolean shoot() {
-		return (keysPressed.contains(Keys.SPACE) || leftMouse);
+	public static boolean shoot(boolean preventHold) {
+		if(preventHold) {
+			if(keysPressed.contains(Keys.SPACE) || keysPressed.contains(Keys.MOUSE1)) {
+				keysPressed.remove(Keys.MOUSE1);
+				keysPressed.remove(Keys.SPACE);
+				return true;
+			} else
+				return false;
+		} else {
+			return keysPressed.contains(Keys.SPACE) || keysPressed.contains(Keys.MOUSE1);	
+		}
 	}
 	
-	public static boolean up(boolean hold) {
-		if(hold) {
+	public static boolean up(boolean preventHold) {
+		if(preventHold) {
 			if(keysPressed.contains(Keys.UP) || keysPressed.contains(Keys.ARROW_UP)) {
 				keysPressed.remove(Keys.ARROW_UP);
 				keysPressed.remove(Keys.UP);
@@ -75,8 +83,8 @@ public class InputHandler implements KeyListener, MouseListener {
 		}
 	}
 	
-	public static boolean down(boolean hold) {
-		if(hold) {
+	public static boolean down(boolean preventHold) {
+		if(preventHold) {
 			if(keysPressed.contains(Keys.DOWN) || keysPressed.contains(Keys.ARROW_DOWN)) {
 				keysPressed.remove(Keys.ARROW_DOWN);
 				keysPressed.remove(Keys.DOWN);
@@ -88,12 +96,30 @@ public class InputHandler implements KeyListener, MouseListener {
 		}
 	}
 	
-	public static boolean left() {
-		return keysPressed.contains(Keys.LEFT) || keysPressed.contains(Keys.ARROW_LEFT);
+	public static boolean left(boolean preventHold) {
+		if(preventHold) {
+			if(keysPressed.contains(Keys.LEFT) || keysPressed.contains(Keys.ARROW_LEFT)) {
+				keysPressed.remove(Keys.ARROW_LEFT);
+				keysPressed.remove(Keys.LEFT);
+				return true;
+			} else
+				return false;
+		} else {
+			return keysPressed.contains(Keys.LEFT) || keysPressed.contains(Keys.ARROW_LEFT);	
+		}
 	}
 	
-	public static boolean right() {
-		return (keysPressed.contains(Keys.RIGHT)) || keysPressed.contains(Keys.ARROW_RIGHT);
+	public static boolean right(boolean preventHold) {
+		if(preventHold) {
+			if(keysPressed.contains(Keys.RIGHT) || keysPressed.contains(Keys.ARROW_RIGHT)) {
+				keysPressed.remove(Keys.ARROW_RIGHT);
+				keysPressed.remove(Keys.RIGHT);
+				return true;
+			} else
+				return false;
+		} else {
+			return keysPressed.contains(Keys.RIGHT) || keysPressed.contains(Keys.ARROW_RIGHT);	
+		}
 	}
 	
 	public static boolean exit() {
@@ -119,6 +145,22 @@ public class InputHandler implements KeyListener, MouseListener {
 	public static boolean cycleWeapon() {
 		if(keysPressed.contains(Keys.Q)) {
 			keysPressed.remove(Keys.Q);
+			return true;
+		}
+		return false;
+	}
+	
+	public static boolean interact() {
+		if(keysPressed.contains(Keys.E)) {
+			keysPressed.remove(Keys.E);
+			return true;
+		}
+		return false;
+	}
+	
+	public static boolean consume() {
+		if(keysPressed.contains(Keys.F)) {
+			keysPressed.remove(Keys.F);
 			return true;
 		}
 		return false;
@@ -158,18 +200,12 @@ public class InputHandler implements KeyListener, MouseListener {
 	
 	@Override
 	public void mousePressed(MouseEvent e) {
-		if(e.getButton() == MouseEvent.BUTTON1)
-			leftMouse = true;
-        else if(e.getButton() == MouseEvent.BUTTON2)
-        	rightMouse = true;
+		keysPressed.add(Keys.MOUSE1);
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		if(e.getButton() == MouseEvent.BUTTON1)
-			 leftMouse = false;
-        else if(e.getButton() == MouseEvent.BUTTON2)
-        	rightMouse = false;
+		keysPressed.remove(Keys.MOUSE1);
 	}	
 
 	@Override

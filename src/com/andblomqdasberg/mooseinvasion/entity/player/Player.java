@@ -1,19 +1,22 @@
-package com.andblomqdasberg.mooseinvasion.entity;
+package com.andblomqdasberg.mooseinvasion.entity.player;
 
 import java.awt.Color;
-import java.awt.Graphics;
 import java.util.ArrayList;
 
 import com.andblomqdasberg.mooseinvasion.Assets;
+import com.andblomqdasberg.mooseinvasion.GameManager;
 import com.andblomqdasberg.mooseinvasion.InputHandler;
 import com.andblomqdasberg.mooseinvasion.MooseInvasion;
 import com.andblomqdasberg.mooseinvasion.audio.AudioPlayer;
 import com.andblomqdasberg.mooseinvasion.collider.CollisionType;
+import com.andblomqdasberg.mooseinvasion.entity.Entity;
 import com.andblomqdasberg.mooseinvasion.gui.GUIImage;
 import com.andblomqdasberg.mooseinvasion.gui.GUIText;
+import com.andblomqdasberg.mooseinvasion.particle.ParticleType;
 import com.andblomqdasberg.mooseinvasion.util.GameRandom;
 import com.andblomqdasberg.mooseinvasion.weapon.AbstractWeapon;
 import com.andblomqdasberg.mooseinvasion.weapon.WeaponList;
+import com.andblomqdasberg.mooseinvasion.weapon.WeaponMelee;
 
 /**
  * 	Player entity
@@ -52,23 +55,27 @@ public class Player extends Entity {
 	private ArrayList<AbstractWeapon> weapons;
 	private AbstractWeapon currentWeapon;
 	public boolean allowShooting;
-	
-	private int gold;
+
+	// Misc
+	public int money = 9999;
+	public int beers = 0;
+	private int ticksSinceLastBeer = 0;
+	private int beerDuration = 600;
+	private boolean beer = false;
+	public boolean inCity = true;
 
 	private GUIText ammoText;
-	private GUIText goldText;
+	private GUIText moneyText;
+	private GUIText beerText;
 	
 	public Player(int x, int y) {
 		super(SPRITE_ID, jack, x, y);
+		
 		weapons = new ArrayList<>();
 		setRandomPlayerModel();
 		
-		weight = 10;
-		friction = 0.9f;
-		maxSpeed = 2.0f;
+		// Add pistol at the beginning
 		weapons.add(WeaponList.PISTOL);
-		weapons.add(WeaponList.CARBINE);
-		weapons.add(WeaponList.UZI);
 		currentWeapon = weapons.get(0);
 		currentWeapon.activate(x, y);
 		
@@ -87,14 +94,25 @@ public class Player extends Entity {
 				MooseInvasion.HEIGHT-MooseInvasion.SPRITE_Y_SIZE*2,
 				Assets.sInstance.sprites[4][1], "player-gui");
 		
-		goldText = new GUIText(
-				"$"+String.valueOf(gold), 
+		// Beer image icon
+		new GUIImage(
+				MooseInvasion.WIDTH-MooseInvasion.SPRITE_X_SIZE, 
+				MooseInvasion.HEIGHT-MooseInvasion.SPRITE_Y_SIZE*3,
+				Assets.sInstance.sprites[4][5], "player-gui");
+		
+		moneyText = new GUIText(
+				"$"+String.valueOf(money), 
 				MooseInvasion.WIDTH - 13, 16, "player-gui");
-		goldText.style.color = new Color(255, 205, 85);
+		moneyText.style.color = new Color(255, 205, 85);
+		
+		beerText = new GUIText("" + beers, 
+				(MooseInvasion.WIDTH - 16)*MooseInvasion.X_SCALE, 
+				(MooseInvasion.HEIGHT - 3*16)*MooseInvasion.Y_SCALE, 
+				"player-gui");
 	}
 	
 	@Override
-	public void tick() {
+	public void tick(int ticks) {
 		applyFriction();
 		currentWeapon.tick(x, y);
 		checkInput();
@@ -102,40 +120,44 @@ public class Player extends Entity {
 		x += velocity.x;
 		y += velocity.y;
 		
+		// Game window bounds
 		if(x < 0)
 			x = 0;
 		else if(x > MooseInvasion.WIDTH-16)
 			x = MooseInvasion.WIDTH-16;
-		
 		if(y < 0)
 			y = 0;
 		else if(y > MooseInvasion.HEIGHT-16)
 			y = MooseInvasion.HEIGHT-16;
 		
-		updateGoldText();
-		updateAmmoText();
-	}
-
-	@Override
-	public void render(Graphics g, int gameTick) {
-		super.render(g, gameTick);
+		if(beer) {
+			if(ticks % 5 == 0)
+				GameManager.sInstance.spawnParticles(ParticleType.BEER, 1, x, y);
+			
+			if(ticksSinceLastBeer == 60)
+				GameManager.sInstance.spawnParticles(ParticleType.BEER_GLASS, 1, x, y);
+			
+			if(ticksSinceLastBeer > beerDuration) {
+				ticksSinceLastBeer = 0;
+				AbstractWeapon.DAMAGE_INCREASE = false;
+				friction = 0.9f;
+				beer = false;
+				System.out.println(" > Feel sober again");
+			}
+			
+			ticksSinceLastBeer++;
+		}
 		
-		/**
-		 * 	Debug render
-		 
-		g.setColor(Color.GREEN);
-		g.fillRect(
-				(int)(x+offsetX)*MooseInvasion.X_SCALE, 
-				(int)(y+offsetY)*MooseInvasion.Y_SCALE, 
-				width*MooseInvasion.X_SCALE, 
-				height*MooseInvasion.Y_SCALE);
-		*/
+		updateGUIText();
 	}
 	
 	/**
 	 * 	When no keys are pressed we reduce speed, just like friction
 	 */
 	private void applyFriction() {
+		beerText.x = MooseInvasion.WIDTH - 20 - (beerText.text.length() * 7);
+		beerText.y = MooseInvasion.HEIGHT - 8*5;
+		
 		if(velocity.y < 0) {
 			velocity.y += 1.0/weight * friction;
 			if (velocity.y > 0)
@@ -171,11 +193,11 @@ public class Player extends Entity {
 			if(velocity.y < maxSpeed)
 				velocity.y += accel/weight;
 
-		if(InputHandler.right() && moveEast)
+		if(InputHandler.right(false) && moveEast)
 			if(velocity.x < maxSpeed)
 				velocity.x += accel/weight;
 		
-		if(InputHandler.left() && moveWest)
+		if(InputHandler.left(false) && moveWest)
 			if(velocity.x > -maxSpeed)
 				velocity.x -= accel/weight;
 		
@@ -187,11 +209,19 @@ public class Player extends Entity {
 		if(InputHandler.num1())
 			directSwitchToWeapon(0);
 		
-		if(InputHandler.num2())
+		if(InputHandler.num2() && weapons.size() > 1)
 			directSwitchToWeapon(1);
 		
-		if(InputHandler.num3())
+		if(InputHandler.num3() && weapons.size() > 2)
 			directSwitchToWeapon(2);
+		
+		if(InputHandler.consume()) {
+			if(inCity)
+				AudioPlayer.play("misc-error-2.wav");
+			else
+				consumeBeer();
+		}
+			
 	}
 
  	/**
@@ -258,36 +288,34 @@ public class Player extends Entity {
 	}
 	
 	/**
-	 * 	Update gold text and position
+	 * 	Updates all the GUI text
 	 */
-	private void updateGoldText() {
-		goldText.x = MooseInvasion.SPRITE_X_SIZE * 19 - 
-				goldText.text.length()*(MooseInvasion.SPRITE_X_SIZE/2);
-	}
-	
-	/**
-	 * 	Update ammo text, position and color
-	 */
-	private void updateAmmoText() {
+	public void updateGUIText() {
+		
 		ammoText.text = "" + currentWeapon.ammo;
-		ammoText.x = MooseInvasion.WIDTH-MooseInvasion.SPRITE_X_SIZE - 
-				MooseInvasion.SPRITE_X_SIZE/2 * ammoText.text.length();
+		ammoText.x = MooseInvasion.WIDTH - 20 - (ammoText.text.length() * 7);
 		
 		// Set text color to red when ammo is low
 		if(currentWeapon.ammo < 30)
 			ammoText.style.color = Color.RED;
 		else
 			ammoText.style.color = Color.WHITE;
+		
+		moneyText.text = "$"+String.valueOf(money);
+		moneyText.x = MooseInvasion.WIDTH - 8 - (moneyText.text.length() * 7);
+		
+		beerText.text = "" + beers;
+		beerText.x = MooseInvasion.WIDTH - 20 - (beerText.text.length() * 7);
 	}
 
 	/**
-	 * 	Adds score to player
+	 * 	Adds money to player
 	 * 
 	 * 	@param multiplier How much will be added
 	 */
 	public void addScore(int multiplier) {
-		this.gold += multiplier;
-		goldText.text = "$"+String.valueOf(gold);
+		this.money += multiplier;
+		moneyText.text = "$"+String.valueOf(money);
 	}
 
 	/**
@@ -296,7 +324,6 @@ public class Player extends Entity {
 	 * 	@param type Where the collision happen
 	 */
 	public void onCollisionEnter(CollisionType type) {
-		System.out.println(type);
 		switch(type) {
     		case NORTH:
     			moveSouth = false;
@@ -320,6 +347,30 @@ public class Player extends Entity {
 	}
 	
 	/**
+	 * 	Consumes a beer which doubles the damage but also makes the character
+	 * 	harder to control.
+	 */
+	private void consumeBeer() {
+		if(beers == 0) {
+			AudioPlayer.play("misc-error-2.wav");
+			return;
+		}
+			
+		if(beer)
+			return;
+		
+		AudioPlayer.play("misc-drink-beer.wav");
+		
+		// Increase damage and decrease friction for some time (set by beerDuration).
+		AbstractWeapon.DAMAGE_INCREASE = true;
+		friction = 0.3f;
+		beer = true;
+		ticksSinceLastBeer = 0;
+		beers -= 1;
+		System.out.println(" > You are drunk from the beer!");
+	}
+	
+	/**
 	 * 	We left a collider we previously had contact with.
 	 * 	Here we want to reset the movement.
 	 */
@@ -328,7 +379,55 @@ public class Player extends Entity {
 		moveSouth = true;
 		moveEast = true;
 		moveWest = true;
-		System.out.println("Left a collider");
+	}
+
+	/**
+	 * 	Called when players enters a trigger collider
+	 * 
+	 * 	@param tag name of the trigger
+	 */
+	public void onTriggerEnter(String tag) {
+		GameManager.sInstance.city.shopTrigger(tag, true);
+	}
+	
+	/**
+	 * 	Called when player leaves a trigger
+	 * 
+	 * 	@param tag name of the trigger
+	 */
+	public void onTriggerExit(String tag) {
+		GameManager.sInstance.city.shopTrigger(tag, false);
+	}
+
+	/**
+	 * 	Add weapon to current weapon list
+	 * 	@param weapon Name of the weapon
+	 */
+	public void buyWeapon(String weapon) {
+		weapons.add(WeaponList.getWeaponByName(weapon));
+	}
+	
+	/**
+	 * 	Adds ammo to specifed weapon
+	 * 
+	 * 	@param weapon
+	 * 	@param ammo 
+	 */
+	public void buyAmmo(String weapon, String ammo) {
+		AbstractWeapon w = WeaponList.getWeaponByName(weapon);
+		w.ammo += Integer.parseInt(ammo);
+		System.out.println("added ammo");
+	}
+
+	/**
+	 * 	Upgrades a weapon one level. Upgrades stats are set in each specific
+	 * 	weapon class with an override method.
+	 * 
+	 * 	@param weapon Name of the weapon
+	 */
+	public void buyUpgrade(String weapon) {
+		AbstractWeapon w = WeaponList.getWeaponByName(weapon);
+		w.levelUp();
 	}
 	
 	/**

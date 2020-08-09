@@ -22,11 +22,11 @@ public class Entity implements Comparable<Entity> {
     // Store if this entity needs updates (gc)
     public boolean alive = true;
     
-    // When only blood is left from the entity we want
-    // to draw it first so it comes behind other entities.
+    // When an entity is out of the game but still needs some rendering and
+    // or updates.
     public boolean dead = false;
     
-    // Handle render
+    // Handle rendering
     protected Sprite sprite;
 
     // If the entity is outside the game frame with this much
@@ -46,14 +46,14 @@ public class Entity implements Comparable<Entity> {
     /**
      * 	Default constructor with no animation
      */
-    public Entity(int spriteId, int numberOfSprites2, float x, float y) {
+    public Entity(int spriteId, float x, float y) {
 		this(spriteId, null, x, y);
 	}
 
 	/**
      * 	Entity update
      */
-    public void tick() {
+    public void tick(int ticks) {
     	// Set alive to false when out of bounds with a bit of margin
         if (
     		this.x < -boundsMargin ||

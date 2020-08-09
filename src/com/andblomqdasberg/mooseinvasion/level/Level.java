@@ -9,11 +9,12 @@ import com.andblomqdasberg.mooseinvasion.InputHandler;
 import com.andblomqdasberg.mooseinvasion.MooseInvasion;
 import com.andblomqdasberg.mooseinvasion.decoration.AbstractDecoration;
 import com.andblomqdasberg.mooseinvasion.decoration.DecorationType;
-import com.andblomqdasberg.mooseinvasion.entity.Player;
+import com.andblomqdasberg.mooseinvasion.entity.player.Player;
 import com.andblomqdasberg.mooseinvasion.gui.GUIImage;
 import com.andblomqdasberg.mooseinvasion.gui.GUIText;
 import com.andblomqdasberg.mooseinvasion.particle.AbstractParticle;
 import com.andblomqdasberg.mooseinvasion.particle.AmmoParticle;
+import com.andblomqdasberg.mooseinvasion.particle.BeerGlassParticle;
 import com.andblomqdasberg.mooseinvasion.particle.BloodAndMeatParticle;
 import com.andblomqdasberg.mooseinvasion.particle.BloodParticle;
 import com.andblomqdasberg.mooseinvasion.particle.ParticleType;
@@ -136,6 +137,7 @@ public class Level {
 			}
 		}
 		
+		
 		for(AbstractParticle p : stage.particles) {
 			p.tick();
 			p.animationTick();
@@ -158,11 +160,15 @@ public class Level {
 				MooseInvasion.RENDER_HEIGHT,
 				null);
 		
-		for(AbstractParticle p : stage.particles)
+		for(int i = 0; i < stage.particles.size(); i++) {
+			AbstractParticle p = stage.particles.get(i);
 			p.render(g, ticks);
+		}
 		
-		for(AbstractDecoration d : stage.decorations)
+		for(int i = 0; i < stage.decorations.size(); i++) {
+			AbstractDecoration d = stage.decorations.get(i);
 			d.render(g, ticks);
+		}
 		
         // Render GUI elements
         for(int i = 0; i < GameManager.sInstance.guiLevel.size(); i++)
@@ -349,6 +355,10 @@ public class Level {
     		case AMMO:	
     			stage.particles.add(new AmmoParticle(x, y));
     		break;
+    		case BEER_GLASS:
+    			stage.particles.add(new BeerGlassParticle(x, y));
+    		default:
+    			break;
     	}
 	}
 }

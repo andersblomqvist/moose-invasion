@@ -24,4 +24,15 @@ public class GameRandom
 	{
 		return random.nextFloat();
 	}
+	
+	/**
+	 * 	Returns a random number between min and max (exclusive)
+	 * 
+	 * 	@param min Lower bound
+	 * 	@param max Hihger bound
+	 * 	@returns an integer between max and min
+	 */
+	public static int randomBetween(int min, int max) {
+		return random.nextInt(max + Math.abs(min)) - Math.abs(min);
+	}
 }

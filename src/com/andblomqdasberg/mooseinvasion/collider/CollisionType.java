@@ -5,5 +5,6 @@ public enum CollisionType {
 	SOUTH,
 	EAST,
 	WEST,
+	TRIGGER,
 	NONE
 }
