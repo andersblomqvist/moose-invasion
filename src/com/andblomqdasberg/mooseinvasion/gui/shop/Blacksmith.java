@@ -47,6 +47,7 @@ public class Blacksmith extends GUIShop {
 			case "KNUCKLES":
 				System.out.println("Bought knuckles.");
 				activeTab.money.get(currentOption).text = "SOLD";
+				player.buyWeapon(item);
 				break;
 		}
 		

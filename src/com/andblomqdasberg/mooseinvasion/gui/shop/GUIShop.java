@@ -209,7 +209,7 @@ public abstract class GUIShop
 			buyItem();
 		
 		for(int i = 0; i < moneyLost.size(); i++) {
-			if(moneyLost.get(i).y > 50) {
+			if(moneyLost.get(i).y > 35) {
 				moneyLost.get(i).destroy();
 				moneyLost.remove(i);
 				i--;
@@ -255,13 +255,13 @@ public abstract class GUIShop
 		
 		if(moneyText.contentEquals("SOLD") || moneyText.contentEquals("")) {
 			System.out.println("Item alreadt bought or can't be bought!");
-			// TODO add err sound effect
+			AudioPlayer.play("misc-error.wav");
 			return false;
 		}
 		
 		int money = Integer.parseInt(moneyText.substring(1));
 		if(player.money < money) {
-			// TODO add err sound
+			AudioPlayer.play("misc-error.wav");
 			System.out.println("Not enough money!");
 			return false;
 		}

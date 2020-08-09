@@ -8,5 +8,5 @@ public enum ParticleType {
 	BLOOD_AND_MEAT,
 	AMMO,
 	BEER,
-	BEER_GLAS,
+	BEER_GLASS,
 }

@@ -30,6 +30,7 @@ public abstract class AbstractWeapon {
 	public int level;
 	public boolean penetrationLight;
 	public boolean penetrationFull;
+	public boolean melee;
 	public String name;
 	
 	private int ticksSinceLastShot = 0;
@@ -46,12 +47,13 @@ public abstract class AbstractWeapon {
 	 * 	@param stats Data holder with all base info for a weapon.
 	 * 	All weapons defined in {@link WeaponList}
 	 */
-	public AbstractWeapon(int id, int damage, int ammo, int fireRate, String name) {
+	public AbstractWeapon(int id, int damage, int ammo, int fireRate, String name, boolean isMelee) {
 		this.id = id;
 		this.damage = damage;
 		this.ammo = ammo;
 		this.fireRate = fireRate;
 		this.name = name;
+		melee = isMelee;
 		
 		// Updated via weapon upgrades from shop
 		this.level = 1;
@@ -93,7 +95,8 @@ public abstract class AbstractWeapon {
 				if(ammo > 0) {
 					shoot(x, y);
 					ammo--;
-				}
+				} else if(melee)
+					shoot(x, y);
 			}
 		}
 		

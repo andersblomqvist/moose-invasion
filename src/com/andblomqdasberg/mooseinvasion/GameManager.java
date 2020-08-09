@@ -134,10 +134,9 @@ public class GameManager {
      *  @param y
      */
     public void spawnParticles(ParticleType type, int amount, float x, float y) {
-    	if(type == ParticleType.BEER) {
+    	if(type == ParticleType.BEER)
     		for(int i = 0; i < amount; i++)
 	    		specialParticles.add(new BeerParticle(x + GameRandom.randomBetween(-2, 5), y+7));
-    	}
     	
     	level.spawnParticle(type, amount, x, y);
 	}
@@ -280,6 +279,16 @@ public class GameManager {
 	}
 	
 	/**
+     * 	Removes the projectile object
+     * 
+     * 	@param e Projectile enitty
+     */
+	public void removeProjectile(Projectile e) {
+		System.out.println("Removed projectile!");
+		projectiles.remove(e);
+	}
+	
+	/**
 	 * 	Removes a particle from the speical paricle list
 	 * 
 	 * 	@param p reference to particle object
@@ -364,6 +373,7 @@ public class GameManager {
 	 */
 	public void enterCity() {
 		inCity = true;
+		player.inCity = true;
 		AbstractWeapon.ALLOW_SHOOTING = false;
 	}
 	
@@ -372,6 +382,7 @@ public class GameManager {
 	 */
 	public void leaveCity() {
 		inCity = false;
+		player.inCity = false;
 		AbstractWeapon.ALLOW_SHOOTING = true;
 	}
 	

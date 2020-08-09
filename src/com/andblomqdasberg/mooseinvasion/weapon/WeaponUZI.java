@@ -16,8 +16,8 @@ public class WeaponUZI extends AbstractWeapon {
 	 * 
 	 * 	@param stats Data about the weapon
 	 */
-	public WeaponUZI(int id, int damage, int ammo, int fireRate, String name) {
-		super(id, damage, ammo, fireRate, name);
+	public WeaponUZI(int id, int damage, int ammo, int fireRate, String name, boolean isMelee) {
+		super(id, damage, ammo, fireRate, name, isMelee);
 	}
 	
 	@Override

@@ -12,14 +12,14 @@ import com.andblomqdasberg.mooseinvasion.util.Vector2D;
  * 	
  * 	@author Anders Blomqvist
  */
-public class BeerGlasParticle extends AbstractParticle {
+public class BeerGlassParticle extends AbstractParticle {
 
 	private int spriteId = 3;
 	private float gravity = 0.12f;
 	private float ground;
 	boolean soundPlayed = false;
 	
-	public BeerGlasParticle(float x, float y) {
+	public BeerGlassParticle(float x, float y) {
 		this.x = x;
 		this.y = y;
 		ground = this.y + 10;

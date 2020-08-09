@@ -16,8 +16,8 @@ public class WeaponCarbine extends AbstractWeapon {
 	 * 
 	 * 	@param stats Data about the weapon
 	 */
-	public WeaponCarbine(int id, int damage, int ammo, int fireRate, String name) {
-		super(id, damage, ammo, fireRate, name);
+	public WeaponCarbine(int id, int damage, int ammo, int fireRate, String name, boolean isMelee) {
+		super(id, damage, ammo, fireRate, name, isMelee);
 	}
 	
 	@Override

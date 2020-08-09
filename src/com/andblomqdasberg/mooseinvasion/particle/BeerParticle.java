@@ -1,7 +1,6 @@
 package com.andblomqdasberg.mooseinvasion.particle;
 
 import com.andblomqdasberg.mooseinvasion.Assets;
-import com.andblomqdasberg.mooseinvasion.GameManager;
 import com.andblomqdasberg.mooseinvasion.util.Sprite;
 import com.andblomqdasberg.mooseinvasion.util.Vector2D;
 

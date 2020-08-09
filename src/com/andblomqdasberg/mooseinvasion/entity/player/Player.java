@@ -16,6 +16,7 @@ import com.andblomqdasberg.mooseinvasion.particle.ParticleType;
 import com.andblomqdasberg.mooseinvasion.util.GameRandom;
 import com.andblomqdasberg.mooseinvasion.weapon.AbstractWeapon;
 import com.andblomqdasberg.mooseinvasion.weapon.WeaponList;
+import com.andblomqdasberg.mooseinvasion.weapon.WeaponMelee;
 
 /**
  * 	Player entity
@@ -61,6 +62,7 @@ public class Player extends Entity {
 	private int ticksSinceLastBeer = 0;
 	private int beerDuration = 600;
 	private boolean beer = false;
+	public boolean inCity = true;
 
 	private GUIText ammoText;
 	private GUIText moneyText;
@@ -133,7 +135,7 @@ public class Player extends Entity {
 				GameManager.sInstance.spawnParticles(ParticleType.BEER, 1, x, y);
 			
 			if(ticksSinceLastBeer == 60)
-				GameManager.sInstance.spawnParticles(ParticleType.BEER_GLAS, 1, x, y);
+				GameManager.sInstance.spawnParticles(ParticleType.BEER_GLASS, 1, x, y);
 			
 			if(ticksSinceLastBeer > beerDuration) {
 				ticksSinceLastBeer = 0;
@@ -213,8 +215,13 @@ public class Player extends Entity {
 		if(InputHandler.num3() && weapons.size() > 2)
 			directSwitchToWeapon(2);
 		
-		if(InputHandler.consume())
-			consumeBeer();
+		if(InputHandler.consume()) {
+			if(inCity)
+				AudioPlayer.play("misc-error-2.wav");
+			else
+				consumeBeer();
+		}
+			
 	}
 
  	/**
@@ -344,7 +351,12 @@ public class Player extends Entity {
 	 * 	harder to control.
 	 */
 	private void consumeBeer() {
-		if(beers == 0 || beer)
+		if(beers == 0) {
+			AudioPlayer.play("misc-error-2.wav");
+			return;
+		}
+			
+		if(beer)
 			return;
 		
 		AudioPlayer.play("misc-drink-beer.wav");
@@ -394,7 +406,7 @@ public class Player extends Entity {
 	public void buyWeapon(String weapon) {
 		weapons.add(WeaponList.getWeaponByName(weapon));
 	}
-
+	
 	/**
 	 * 	Adds ammo to specifed weapon
 	 * 

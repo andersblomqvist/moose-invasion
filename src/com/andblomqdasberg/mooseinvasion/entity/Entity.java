@@ -46,7 +46,7 @@ public class Entity implements Comparable<Entity> {
     /**
      * 	Default constructor with no animation
      */
-    public Entity(int spriteId, int numberOfSprites2, float x, float y) {
+    public Entity(int spriteId, float x, float y) {
 		this(spriteId, null, x, y);
 	}
 
