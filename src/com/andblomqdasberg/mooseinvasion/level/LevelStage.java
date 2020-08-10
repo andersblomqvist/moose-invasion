@@ -7,7 +7,7 @@ import java.util.Map;
 import com.andblomqdasberg.mooseinvasion.decoration.AbstractDecoration;
 import com.andblomqdasberg.mooseinvasion.decoration.BloodPoolDecoration;
 import com.andblomqdasberg.mooseinvasion.decoration.DecorationType;
-import com.andblomqdasberg.mooseinvasion.entity.Entity;
+import com.andblomqdasberg.mooseinvasion.entity.AbstractEntity;
 import com.andblomqdasberg.mooseinvasion.entity.EntityList;
 import com.andblomqdasberg.mooseinvasion.particle.AbstractParticle;
 
@@ -84,7 +84,7 @@ public class LevelStage {
 	 * 	@param wave Which wave to add to
 	 */
 	public void addEntityToWave(String entity, int count, String wave) {
-		ArrayList<Entity> e = new ArrayList<Entity>();
+		ArrayList<AbstractEntity> e = new ArrayList<AbstractEntity>();
 		for(int i = 0; i < count; i++)
 			e.add(EntityList.getEntity(entity));
 		waves.get(wave).entities.addAll(e);
@@ -113,7 +113,7 @@ public class LevelStage {
 	 * 	@param wave Wave id
 	 * 	@returns an array list with all the entities for a specific wave
 	 */
-	public ArrayList<Entity> getEntities(String wave) {
+	public ArrayList<AbstractEntity> getEntities(String wave) {
 		return waves.get(wave).entities;
 	}
 

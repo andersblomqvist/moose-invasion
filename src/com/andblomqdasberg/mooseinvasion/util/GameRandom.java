@@ -26,13 +26,13 @@ public class GameRandom
 	}
 	
 	/**
-	 * 	Returns a random number between min and max (exclusive)
+	 * 	Returns a random integer number between min and max (inclusive)
 	 * 
 	 * 	@param min Lower bound
 	 * 	@param max Hihger bound
 	 * 	@returns an integer between max and min
 	 */
 	public static int randomBetween(int min, int max) {
-		return random.nextInt(max + Math.abs(min)) - Math.abs(min);
+		return random.nextInt((max - min) + 1) + min;
 	}
 }

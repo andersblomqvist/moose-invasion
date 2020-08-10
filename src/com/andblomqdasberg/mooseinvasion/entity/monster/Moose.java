@@ -1,4 +1,4 @@
-package com.andblomqdasberg.mooseinvasion.entity;
+package com.andblomqdasberg.mooseinvasion.entity.monster;
 
 import java.awt.Graphics;
 import java.awt.Image;
@@ -7,19 +7,20 @@ import java.util.ArrayList;
 import com.andblomqdasberg.mooseinvasion.GameManager;
 import com.andblomqdasberg.mooseinvasion.MooseInvasion;
 import com.andblomqdasberg.mooseinvasion.audio.AudioPlayer;
+import com.andblomqdasberg.mooseinvasion.collider.BoxCollider;
 import com.andblomqdasberg.mooseinvasion.decoration.DecorationType;
+import com.andblomqdasberg.mooseinvasion.entity.Projectile;
 import com.andblomqdasberg.mooseinvasion.gui.GUIText;
 import com.andblomqdasberg.mooseinvasion.particle.ParticleType;
 import com.andblomqdasberg.mooseinvasion.util.GameRandom;
+import com.andblomqdasberg.mooseinvasion.util.Sprite;
+import com.andblomqdasberg.mooseinvasion.util.Vector2D;
 
-public class Moose extends Entity
+public class Moose extends EntityMonster
 {
-	private static int SPRITE_ID = 3;
-	private static int[] ANIM = {0, 1, 2, 1};
-	private static int[] DEATH_ANIM = {3, 4, 5};
-	
-	// Horizontal speed of the moose
-	private float speedX = 0.33f;
+	private int spriteId = 3;
+	private int[] anim = {0, 1, 2, 1};
+	private int[] deathAnim = {3, 4, 5};
 	
 	// Collision sizes
 	private int width = 10;
@@ -27,34 +28,33 @@ public class Moose extends Entity
 	private int offsetX = 3;
 	private int offsetY = 7;
 	
-	// Health stuff
+	// Health
 	public int health = 100;
 	private boolean hit = false;
+	private boolean dead = false;
 	private int deadFrameTick = 0;
 	private int deadFrame = 0;
 	private int hitTick = 0;
-	
-	// Reference to collision projectile if any
-	private Projectile p;
 
 	private ArrayList<GUIText> damageTextList;
 	
-	/**
-	 * 	Default constructor with random spawn position
-	 */
 	public Moose() {
-		super(SPRITE_ID, ANIM, -10, GameRandom.nextInt(MooseInvasion.HEIGHT-16));
-		// Randomize animation
+		super(-10f, (float) GameRandom.nextInt(MooseInvasion.HEIGHT-16), new Vector2D());
+		
+		sprite = new Sprite(spriteId, anim);
+		collider = new BoxCollider(this, width, height, "moose");
+		
+		// Randomize animation	
 		if(GameRandom.nextFloat() > 0.5)
 			sprite.anim = new int[] {1, 0};
-		velocity.x = speedX;
-
+		
+		// Set random x speed.
+		velocity.x = GameRandom.randomBetween(2, 4) / 10f;
+		System.out.println("Vel-x: " + velocity.x);
+		
 		damageTextList = new ArrayList<>();
 	}
-
-	/**
-	 *  TODO Make the moose not just go straight ahead.
-	 */
+	
 	@Override
 	public void tick(int ticks) {
 		updateDamageText();
@@ -96,14 +96,27 @@ public class Moose extends Entity
 				hit = false;
 		}
 		
-		// Check collision with projectile
-		if((p = AABBCollision()) != null) {
-			
+		// When moose have cross the play field player looses 1 point of health
+		if(this.x > MooseInvasion.WIDTH) {
+			dead = true;
+			alive = false;
+			GameManager.sInstance.reduceHealth();
+			return;
+		}
+		super.tick(ticks);
+	}
+	
+	@Override
+	public void onTriggerEnter(BoxCollider b) {
+		System.out.println("moose: Entered the trigger: " + b.tag);
+		
+		if(b.tag == "projectile") {
+			System.out.println("Moose hit by projectile!");
+			Projectile p = (Projectile) b.e;
 			// Hit state, not dead yet
 			AudioPlayer.play("moose-hit.wav");
 			whiteHitOverlay();
 			health -= p.damage;
-			p.tryRemove(p.index);
 			GameManager.sInstance.spawnParticles(ParticleType.BLOOD, 4, x, y);
 
 			addDamageText(p.damage);
@@ -116,44 +129,10 @@ public class Moose extends Entity
 			AudioPlayer.play("moose-splash.wav");
 			GameManager.sInstance.spawnParticles(ParticleType.BLOOD_AND_MEAT, 1, x, y);
 			GameManager.sInstance.onEntityKilled();
-			sprite.anim = DEATH_ANIM;
+			sprite.anim = deathAnim;
 			velocity.y = 0;
 			dead = true;
-			return;
 		}
-		
-		// When moose have cross the play field player looses 1 point of health
-		if(this.x > MooseInvasion.WIDTH) {
-			dead = true;
-			alive = false;
-			GameManager.sInstance.reduceHealth();
-			return;
-		}
-		super.tick(ticks);
-	}
-	
-	/**
-	 * 	2D AABB Collision detection with projectiles.
-	 * 
-	 * 	@returns The projectile which we collided with
-	 */
-	private Projectile AABBCollision() {
-		for(int i = 0; i < GameManager.sInstance.projectiles.size(); i++) {
-			Projectile p = (Projectile) GameManager.sInstance.projectiles.get(i);
-			
-			// Offset is how many pixels in x and y direction to where the sprite
-			// begins within its 16x16 bounds.
-			if(this.x+offsetX < p.x+p.offsetX + p.width && 
-				this.x+offsetX + width > p.x+p.offsetX &&
-				this.y+offsetY < p.y+p.offsetY + p.height &&
-				this.y+offsetY + height > p.y+p.offsetY) {
-				
-				// Set index and return reference to projectile
-				p.index = i;
-				return p;
-			}
-		}
-		return null;
 	}
 	
 	/**
@@ -173,7 +152,7 @@ public class Moose extends Entity
 	 * 	Also when hit, we render a white overlay
 	 */
 	@Override
-	public void render(Graphics g, int gameTick) {
+	public void render(Graphics g) {
 		// Render as normal
 		if(!dead)
 			if(hit) {
@@ -185,7 +164,7 @@ public class Moose extends Entity
 		                MooseInvasion.Y_SCALE*MooseInvasion.SPRITE_Y_SIZE,
 		                null);
 			} else
-				super.render(g, gameTick);
+				super.render(g);
 		
 		// Render death animation.
 		else {
@@ -224,5 +203,15 @@ public class Moose extends Entity
 			else
 				damageTextList.get(i).y -= 0.75;
 		}
+	}
+	
+	@Override
+	public float getX() {
+		return x + offsetX;
+	}
+	
+	@Override
+	public float getY() {
+		return y + offsetY;
 	}
 }

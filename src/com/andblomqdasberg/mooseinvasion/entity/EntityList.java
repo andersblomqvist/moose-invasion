@@ -1,6 +1,6 @@
 package com.andblomqdasberg.mooseinvasion.entity;
 
-import com.andblomqdasberg.mooseinvasion.entity.player.Player;
+import com.andblomqdasberg.mooseinvasion.entity.monster.Moose;
 
 /**
  * 	List of all the entities in the game
@@ -8,11 +8,6 @@ import com.andblomqdasberg.mooseinvasion.entity.player.Player;
  * 	@author Anders Blomqvist
  */
 public class EntityList {
-
-	public static Player PLAYER;
-	
-	// Mobs
-	public static Moose MOOSE;
 	
 	/**
 	 * 	Get a new instance of an entity from a string.	
@@ -20,7 +15,7 @@ public class EntityList {
 	 * 	@param entity What type of entity
 	 * 	@returns A new instance of an entity
 	 */
-	public static Entity getEntity(String entity) {
+	public static AbstractEntity getEntity(String entity) {
 		switch(entity) {
 			case "moose":
 				return new Moose();

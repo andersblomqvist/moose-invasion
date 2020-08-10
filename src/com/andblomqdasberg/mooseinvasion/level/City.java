@@ -65,10 +65,10 @@ public class City
 		colliders.add(new BoxCollider(183, 194, 58, 28));	// Lake
 		
 		// Triggers
-		colliders.add(new BoxCollider(179, 121, 20, 8, true, "market"));
-		colliders.add(new BoxCollider(109, 99, 28, 10, true, "guns"));
-		colliders.add(new BoxCollider(110, 162, 26, 10,true, "blacksmith"));
-		colliders.add(new BoxCollider(300, 160, 17, 12,true, "dass"));
+		colliders.add(new BoxCollider(179, 121, 20, 8, "market"));
+		colliders.add(new BoxCollider(109, 99, 28, 10, "guns"));
+		colliders.add(new BoxCollider(110, 162, 26, 10,"blacksmith"));
+		colliders.add(new BoxCollider(300, 160, 17, 12,"dass"));
 		
 		gunStore = new GunStore();
 		market = new Market();

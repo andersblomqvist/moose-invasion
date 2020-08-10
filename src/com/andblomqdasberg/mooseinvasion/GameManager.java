@@ -8,8 +8,8 @@ import java.util.Collections;
 
 import com.andblomqdasberg.mooseinvasion.audio.AudioPlayer;
 import com.andblomqdasberg.mooseinvasion.decoration.DecorationType;
-import com.andblomqdasberg.mooseinvasion.entity.Entity;
-import com.andblomqdasberg.mooseinvasion.entity.Projectile;
+import com.andblomqdasberg.mooseinvasion.entity.AbstractEntity;
+import com.andblomqdasberg.mooseinvasion.entity.monster.EntityMonster;
 import com.andblomqdasberg.mooseinvasion.entity.player.Player;
 import com.andblomqdasberg.mooseinvasion.gui.AbstractGUI;
 import com.andblomqdasberg.mooseinvasion.gui.GUIText;
@@ -50,8 +50,7 @@ public class GameManager {
     private boolean inCity;
 
     // List of all entities
-    public ArrayList<Entity> entities = new ArrayList<Entity>();
-    public ArrayList<Entity> projectiles = new ArrayList<Entity>();
+    public ArrayList<AbstractEntity> entities = new ArrayList<AbstractEntity>();
     private ArrayList<AbstractParticle> specialParticles = new ArrayList<AbstractParticle>();
     
     // GUI lists
@@ -117,11 +116,8 @@ public class GameManager {
     /**
      *  Spawns an entity
      */
-    public void spawnEntity(Entity e) {
-    	if(e instanceof Projectile)
-    		projectiles.add(e);
-    	else
-    		entities.add(e);
+    public void spawnEntity(AbstractEntity e) {
+		entities.add(e);
     }
     
     /**
@@ -186,8 +182,7 @@ public class GameManager {
     	gameTick = ticks;
     	
     	// Update all the entities
-        updateEntityList(projectiles, ticks);
-        updateEntityList(entities, ticks);
+        updateEntityList(ticks);
         
         for(int i = 0; i < specialParticles.size(); i++) {
         	AbstractParticle p = specialParticles.get(i);
@@ -228,11 +223,7 @@ public class GameManager {
         
         // Render entities
         for(int i = 0; i < entities.size(); i++)
-        	entities.get(i).render(g, gameTick);
-        
-        // Render projectiles
-        for(int i = 0; i < projectiles.size(); i++)
-        	projectiles.get(i).render(g, gameTick);
+        	entities.get(i).render(g);
         
         // Render special top particles
         for(AbstractParticle p : specialParticles)
@@ -249,7 +240,7 @@ public class GameManager {
         if(gameState == GameState.GAME_OVER) {
     		g.setColor(new Color(0,0,0,100));
     		g.fillRect(0,0, 
-    				MooseInvasion.RENDER_WIDTH, 
+    				MooseInvasion.RENDER_WIDTH,
     				MooseInvasion.RENDER_HEIGHT);
     	}
     }
@@ -258,35 +249,30 @@ public class GameManager {
      * 	Goes through all the entities in the list and calls
      * 	the {@code tick()} method
      */
-    private void updateEntityList(ArrayList<Entity> list, int ticks)
+    private void updateEntityList(int ticks)
     {
-        for(int i = 0; i < list.size(); i++) {
-        	Entity e = list.get(i);
+        for(int i = 0; i < entities.size(); i++) {
+        	AbstractEntity e = entities.get(i);
             if (e.alive)
                 e.tick(ticks);
             else
-            	list.remove(i);
+            	entities.remove(i);
+        }
+        
+        // Collision detection
+        for(int i = 0; i < entities.size()-1; i++) {
+        	AbstractEntity e1 = entities.get(i);
+        	for(int j = i+1; j < entities.size(); j++) {
+        		AbstractEntity e2 = entities.get(j);
+        		
+        		// Skip collision if the entities are both Monsters
+        		if(e1 instanceof EntityMonster && e2 instanceof EntityMonster)
+        			continue;
+        		
+        		e1.collider.AABBCollision(e2.collider);
+        	}
         }
     }
-    
-    /**
-     * 	Removes the projectile at index
-     * 
-     * 	@param index List index position
-     */
-	public void removeProjectile(int index) {
-		projectiles.remove(index);
-	}
-	
-	/**
-     * 	Removes the projectile object
-     * 
-     * 	@param e Projectile enitty
-     */
-	public void removeProjectile(Projectile e) {
-		System.out.println("Removed projectile!");
-		projectiles.remove(e);
-	}
 	
 	/**
 	 * 	Removes a particle from the speical paricle list
@@ -357,7 +343,6 @@ public class GameManager {
 	 */
 	private void restartGame() {
 		entities.clear();
-		projectiles.clear();
 		
 		gameTick = 0;
         gameState = GameState.GAME;

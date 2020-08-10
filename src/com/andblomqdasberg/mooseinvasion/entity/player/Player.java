@@ -8,15 +8,17 @@ import com.andblomqdasberg.mooseinvasion.GameManager;
 import com.andblomqdasberg.mooseinvasion.InputHandler;
 import com.andblomqdasberg.mooseinvasion.MooseInvasion;
 import com.andblomqdasberg.mooseinvasion.audio.AudioPlayer;
+import com.andblomqdasberg.mooseinvasion.collider.BoxCollider;
 import com.andblomqdasberg.mooseinvasion.collider.CollisionType;
-import com.andblomqdasberg.mooseinvasion.entity.Entity;
+import com.andblomqdasberg.mooseinvasion.entity.AbstractEntity;
 import com.andblomqdasberg.mooseinvasion.gui.GUIImage;
 import com.andblomqdasberg.mooseinvasion.gui.GUIText;
 import com.andblomqdasberg.mooseinvasion.particle.ParticleType;
 import com.andblomqdasberg.mooseinvasion.util.GameRandom;
+import com.andblomqdasberg.mooseinvasion.util.Sprite;
+import com.andblomqdasberg.mooseinvasion.util.Vector2D;
 import com.andblomqdasberg.mooseinvasion.weapon.AbstractWeapon;
 import com.andblomqdasberg.mooseinvasion.weapon.WeaponList;
-import com.andblomqdasberg.mooseinvasion.weapon.WeaponMelee;
 
 /**
  * 	Player entity
@@ -24,7 +26,7 @@ import com.andblomqdasberg.mooseinvasion.weapon.WeaponMelee;
  * 	@author Anders Blomqvist
  * 	@author David Åsberg
  */
-public class Player extends Entity {
+public class Player extends AbstractEntity {
 
 	// Player collision box
 	public int height = 11;
@@ -33,11 +35,11 @@ public class Player extends Entity {
 	public int offsetY = 4;
 	
 	// Sprites
-	private static int SPRITE_ID = 0;
-	private static int[] jack = {0, 1};
-	private static int[] igor = {2, 3};
-	private static int[] pcmr = {4, 5};
-	private static int[] scout = {6, 7};
+	private int spriteId = 0;
+	private int[] jack = {0, 1};
+	private int[] igor = {2, 3};
+	private int[] pcmr = {4, 5};
+	private int[] scout = {6, 7};
 
 	// Movement
 	private float friction = 0.9f;
@@ -52,7 +54,7 @@ public class Player extends Entity {
 	private boolean moveWest = true;
 	
 	// Weapons
-	private ArrayList<AbstractWeapon> weapons;
+	private ArrayList<AbstractWeapon> weapons = new ArrayList<AbstractWeapon>();
 	private AbstractWeapon currentWeapon;
 	public boolean allowShooting;
 
@@ -69,10 +71,10 @@ public class Player extends Entity {
 	private GUIText beerText;
 	
 	public Player(int x, int y) {
-		super(SPRITE_ID, jack, x, y);
+		super(x, y, Vector2D.ZERO);
 		
-		weapons = new ArrayList<>();
-		setRandomPlayerModel();
+		sprite = new Sprite(spriteId, getRandomPlayerModel());
+		collider = new BoxCollider(this, width, height, "player");
 		
 		// Add pistol at the beginning
 		weapons.add(WeaponList.PISTOL);
@@ -106,13 +108,14 @@ public class Player extends Entity {
 		moneyText.style.color = new Color(255, 205, 85);
 		
 		beerText = new GUIText("" + beers, 
-				(MooseInvasion.WIDTH - 16)*MooseInvasion.X_SCALE, 
-				(MooseInvasion.HEIGHT - 3*16)*MooseInvasion.Y_SCALE, 
+				MooseInvasion.WIDTH - 20, 
+				MooseInvasion.HEIGHT - 8*5, 
 				"player-gui");
 	}
 	
 	@Override
 	public void tick(int ticks) {
+		this.ticks = ticks;
 		applyFriction();
 		currentWeapon.tick(x, y);
 		checkInput();
@@ -155,9 +158,6 @@ public class Player extends Entity {
 	 * 	When no keys are pressed we reduce speed, just like friction
 	 */
 	private void applyFriction() {
-		beerText.x = MooseInvasion.WIDTH - 20 - (beerText.text.length() * 7);
-		beerText.y = MooseInvasion.HEIGHT - 8*5;
-		
 		if(velocity.y < 0) {
 			velocity.y += 1.0/weight * friction;
 			if (velocity.y > 0)
@@ -264,26 +264,20 @@ public class Player extends Entity {
 	/**
 	 * 	Randomizes a player model
 	 */
-	private void setRandomPlayerModel() {
+	private int[] getRandomPlayerModel() {
 		int animation = GameRandom.nextInt(4);
 		switch(animation) {
-
 			// Temporary way of randomly getting a player character
 			case 0:
-				sprite.anim = jack;
-				break;
+				return jack;
 			case 1:
-				sprite.anim = igor;
-				break;
+				return igor;
 			case 2:
-				sprite.anim = pcmr;
-				break;
+				return pcmr;
 			case 3:
-				sprite.anim = scout;
-				break;
+				return scout;
 			default:
-				sprite.anim = jack;
-				break;
+				return jack;
 		}
 	}
 	
@@ -433,14 +427,16 @@ public class Player extends Entity {
 	/**
 	 *	@returns the collder x position
 	 */
-	public float getColX() {
+	@Override
+	public float getX() {
 		return x + offsetX;
 	}
 	
 	/**
 	 * 	@returns the collider y position
 	 */
-	public float getColY() {
+	@Override
+	public float getY() {
 		return y + offsetY;
 	}
 }
