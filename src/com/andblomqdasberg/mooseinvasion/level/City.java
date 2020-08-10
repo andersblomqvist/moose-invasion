@@ -117,9 +117,9 @@ public class City
 		for(BoxCollider c : colliders) {
 			if((type = c.AABBCollision(player)) != CollisionType.NONE) {
 				if(c.trigger)
-					player.onTriggerEnter(c.tag);
+					player.onTriggerEnter(c);
 				else
-					player.onCollisionEnter(type);
+					player.onCollisionEnter(c, type);
 			}
 		}
 		

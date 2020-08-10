@@ -42,16 +42,8 @@ public class Player extends AbstractEntity {
 	private int[] scout = {6, 7};
 
 	// Movement
-	private float friction = 0.9f;
-	private float weight = 10f;
-	private float maxSpeed = 2.0f;
-	private float accel = 1.8f;
-	
-	// Collision handlers
-	private boolean moveNorth = true;
-	private boolean moveSouth = true;
-	private boolean moveEast = true;
-	private boolean moveWest = true;
+	public PlayerMovement movement;
+	private float friction = 1f;
 	
 	// Weapons
 	private ArrayList<AbstractWeapon> weapons = new ArrayList<AbstractWeapon>();
@@ -75,6 +67,8 @@ public class Player extends AbstractEntity {
 		
 		sprite = new Sprite(spriteId, getRandomPlayerModel());
 		collider = new BoxCollider(this, width, height, "player");
+		
+		movement = new PlayerMovement();
 		
 		// Add pistol at the beginning
 		weapons.add(WeaponList.PISTOL);
@@ -116,10 +110,10 @@ public class Player extends AbstractEntity {
 	@Override
 	public void tick(int ticks) {
 		this.ticks = ticks;
-		applyFriction();
-		currentWeapon.tick(x, y);
 		checkInput();
-
+		currentWeapon.tick(x, y);
+		
+		velocity = movement.playerMove(velocity, friction);
 		x += velocity.x;
 		y += velocity.y;
 		
@@ -143,7 +137,7 @@ public class Player extends AbstractEntity {
 			if(ticksSinceLastBeer > beerDuration) {
 				ticksSinceLastBeer = 0;
 				AbstractWeapon.DAMAGE_INCREASE = false;
-				friction = 0.9f;
+				friction = 1f;
 				beer = false;
 				System.out.println(" > Feel sober again");
 			}
@@ -155,52 +149,10 @@ public class Player extends AbstractEntity {
 	}
 	
 	/**
-	 * 	When no keys are pressed we reduce speed, just like friction
-	 */
-	private void applyFriction() {
-		if(velocity.y < 0) {
-			velocity.y += 1.0/weight * friction;
-			if (velocity.y > 0)
-				velocity.y = 0;
-		} else {
-			velocity.y -= 1.0/weight * friction;
-			if (velocity.y < 0)
-				velocity.y = 0;
-		}
-		
-		if(velocity.x < 0) {
-			velocity.x += 1.0/weight * friction;
-			if (velocity.x > 0)
-				velocity.x = 0;
-		} else {
-			velocity.x -= 1.0/weight * friction;
-			if (velocity.x < 0)
-				velocity.x = 0;
-		}
-	}
-	
-	/**
 	 * 	Method for handling all input from the user, changes player velocity on directional keys
 	 * 	and fires weapon on left mouse click
 	 */
  	private void checkInput() {
- 		
-		if(InputHandler.up(false) && moveNorth)
-			if(velocity.y > -maxSpeed)
-				velocity.y -= accel/weight;
-		
-		if(InputHandler.down(false) && moveSouth)
-			if(velocity.y < maxSpeed)
-				velocity.y += accel/weight;
-
-		if(InputHandler.right(false) && moveEast)
-			if(velocity.x < maxSpeed)
-				velocity.x += accel/weight;
-		
-		if(InputHandler.left(false) && moveWest)
-			if(velocity.x > -maxSpeed)
-				velocity.x -= accel/weight;
-		
 		// Cycle weapon by pressing one single button instead
 		// of specifc weapon number button
 		if(InputHandler.cycleWeapon())
@@ -221,7 +173,6 @@ public class Player extends AbstractEntity {
 			else
 				consumeBeer();
 		}
-			
 	}
 
  	/**
@@ -311,34 +262,6 @@ public class Player extends AbstractEntity {
 		this.money += multiplier;
 		moneyText.text = "$"+String.valueOf(money);
 	}
-
-	/**
-	 * 	When player collides with a BoxCollider
-	 * 
-	 * 	@param type Where the collision happen
-	 */
-	public void onCollisionEnter(CollisionType type) {
-		switch(type) {
-    		case NORTH:
-    			moveSouth = false;
-    			velocity.y = 0;
-    		break;
-    		case SOUTH:
-    			moveNorth = false;
-    			velocity.y = 0;
-    		break;
-    		case EAST:
-    			moveWest = false;
-    			velocity.x = 0;
-    		break;
-    		case WEST:
-    			moveEast = false;
-    			velocity.x = 0;
-    		break;
-    		default:
-    			System.out.println("No supported collision type");
-		}
-	}
 	
 	/**
 	 * 	Consumes a beer which doubles the damage but also makes the character
@@ -364,33 +287,26 @@ public class Player extends AbstractEntity {
 		System.out.println(" > You are drunk from the beer!");
 	}
 	
-	/**
-	 * 	We left a collider we previously had contact with.
-	 * 	Here we want to reset the movement.
-	 */
-	public void onCollisionExit() {
-		moveNorth = true;
-		moveSouth = true;
-		moveEast = true;
-		moveWest = true;
-	}
-
-	/**
-	 * 	Called when players enters a trigger collider
-	 * 
-	 * 	@param tag name of the trigger
-	 */
-	public void onTriggerEnter(String tag) {
-		GameManager.sInstance.city.shopTrigger(tag, true);
+	@Override
+	public void onCollisionExit(BoxCollider b, CollisionType direction) {
+		movement.blockMovement(direction, false);
 	}
 	
-	/**
-	 * 	Called when player leaves a trigger
-	 * 
-	 * 	@param tag name of the trigger
-	 */
-	public void onTriggerExit(String tag) {
-		GameManager.sInstance.city.shopTrigger(tag, false);
+	@Override
+	public void onCollisionEnter(BoxCollider b, CollisionType type) {
+		movement.blockMovement(type, true);
+	}
+	
+	@Override
+	public void onTriggerEnter(BoxCollider b) {
+		if(inCity)
+			GameManager.sInstance.city.shopTrigger(b.tag, true);
+	}
+	
+	@Override
+	public void onTriggerExit(BoxCollider b) {
+		if(inCity)
+			GameManager.sInstance.city.shopTrigger(b.tag, false);
 	}
 
 	/**

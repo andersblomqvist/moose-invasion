@@ -226,8 +226,10 @@ public class GameManager {
         	entities.get(i).render(g);
         
         // Render special top particles
-        for(AbstractParticle p : specialParticles)
+        for(int i = 0; i < specialParticles.size(); i++) {
+        	AbstractParticle p = specialParticles.get(0);
         	p.render(g, gameTick);
+        }
         
         if(inCity)
         	city.renderTop(g);
@@ -243,6 +245,15 @@ public class GameManager {
     				MooseInvasion.RENDER_WIDTH,
     				MooseInvasion.RENDER_HEIGHT);
     	}
+        
+        /** @DEBUG */
+        g.setColor(Color.GREEN);
+        g.drawString(player.velocity.toString(), 10, 40);
+        g.drawString(player.movement.wishDir.toString(), 10, 80);
+        g.drawString("N:" + player.movement.north, 10, 120);
+        g.drawString("S:" + player.movement.south, 10, 160);
+        g.drawString("W:" + player.movement.west, 10, 200);
+        g.drawString("E:" + player.movement.east, 10, 240);
     }
     
     /**

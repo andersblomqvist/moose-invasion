@@ -8,13 +8,13 @@ package com.andblomqdasberg.mooseinvasion.util;
  */
 public class Vector2D {
 	
-	public static Vector2D ZERO = new Vector2D();
+	public static final Vector2D ZERO = new Vector2D();
 	
 	public float x, y;
 	
 	public Vector2D() {
-		x = 0;
-		y = 0;
+		x = 0f;
+		y = 0f;
 	}
 	
 	public Vector2D(float x, float y) {
@@ -36,5 +36,12 @@ public class Vector2D {
 
 	public float magnitude() {
 		return (float) Math.sqrt(this.x*this.x + this.y*this.y);
+	}
+	
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("(" + this.x + "," + this.y + ")");
+		return builder.toString();
 	}
 }

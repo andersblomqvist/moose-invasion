@@ -10,7 +10,7 @@ import com.andblomqdasberg.mooseinvasion.entity.player.Player;
 /**
  * 	Box collider.
  * 
- * 	Note. All entities should be triggers because they are not supposed to
+ * 	@NOTE All entities should be triggers because they are not supposed to
  * 	prevent any kinds of movement. Only static colliders should be solids.
  * 	
  * 	@author Anders Blomqvist
@@ -32,6 +32,8 @@ public class BoxCollider {
 	
 	// Track if this collider is colliding
 	public boolean colliding = false;
+	
+	public CollisionType direction = CollisionType.NONE;
 	
 	/**
 	 * 	Static collider
@@ -65,19 +67,6 @@ public class BoxCollider {
 	}
 	
 	/**
-	 * 	Moving collider
-	 * 
-	 * 	@param e Reference to moving entity
-	 * 	@param width
-	 * 	@param height
-	 */
-	public BoxCollider(AbstractEntity e, int width, int height) {
-		this.e = e;
-		this.width = width;
-		this.height = height;
-	}
-	
-	/**
 	 * 	Moving trigger
 	 * 
 	 * 	@param e Reference to moving entity
@@ -86,7 +75,9 @@ public class BoxCollider {
 	 * 	@param tag Name of trigger
 	 */
 	public BoxCollider(AbstractEntity e, int width, int height, String tag) {
-		this(e, width, height);
+		this.e = e;
+		this.width = width;
+		this.height = height;
 		this.tag = tag;
 		trigger = true;
 	}
@@ -112,17 +103,25 @@ public class BoxCollider {
 				return CollisionType.TRIGGER;
 			
 			// Check at which side the collision happen
-			if(p.getX() <= this.x - p.width + 2)
-				return CollisionType.WEST;
-			
-			if(p.getY() <= this.y - p.height + 2)
-				return CollisionType.NORTH;
-			
-			if(p.getY() + p.height >= this.y + height + p.height - 2)
-				return CollisionType.SOUTH;
-			
-			if(p.getX() + p.width >= this.x + width + p.width - 2)
+			if(p.getX() <= this.x - p.width + 2) {
+				direction = CollisionType.EAST;
 				return CollisionType.EAST;
+			}
+			
+			if(p.getY() <= this.y - p.height + 2) {
+				direction = CollisionType.SOUTH;
+				return CollisionType.SOUTH;
+			}
+			
+			if(p.getY() + p.height >= this.y + height + p.height - 2) {
+				direction = CollisionType.NORTH;
+				return CollisionType.NORTH;
+			}
+			
+			if(p.getX() + p.width >= this.x + width + p.width - 2) {
+				direction = CollisionType.WEST;
+				return CollisionType.WEST;
+			}
 			
 			return CollisionType.NONE;
 				
@@ -131,9 +130,9 @@ public class BoxCollider {
 			// which means a player have left
 			if(colliding) {
 				if(trigger)
-					p.onTriggerExit(tag);
+					p.onTriggerExit(this);
 				else
-					p.onCollisionExit();
+					p.onCollisionExit(this, direction);
 				colliding = false;
 			}
 			return CollisionType.NONE;
@@ -143,6 +142,8 @@ public class BoxCollider {
 	
 	/**
 	 * 	Check collision with another moving collider.
+	 * 
+	 * 	@NOTE Moving colliders are always triggers!
 	 * 
 	 * 	@param reference to collider
 	 * 	@return collition enum for what side
@@ -158,38 +159,16 @@ public class BoxCollider {
 			// We are now colliding
 			colliding = true;
 			b.colliding = true;
-			
-			// Send correct respond depending on what type of colliders
-			if(b.trigger)
-				e.onTriggerEnter(b);
-			else
-				e.onCollisionEnter(CollisionType.DEFAULT);
-			if(trigger)
-				b.e.onTriggerEnter(this);
-			else
-				b.e.onCollisionEnter(CollisionType.DEFAULT);
+		
+			e.onTriggerEnter(b);
+			b.e.onTriggerEnter(this);
 			
 			return CollisionType.DEFAULT;
 		} else {
 			// Handle when colliders leave each other.
 			if(colliding && b.colliding) {
-				if(trigger)
-					if(b.trigger) {
-						b.e.onTriggerExit(this);
-						e.onTriggerExit(b);
-					} else {
-						b.e.onTriggerExit(this);
-						e.onCollisionExit(b);
-					}
-				else {
-					if(b.trigger) {
-						e.onTriggerExit(b);
-						b.e.onCollisionExit(this);
-					} else {
-						b.e.onCollisionExit(this);
-						e.onCollisionExit(b);
-					}
-				}
+				b.e.onTriggerExit(this);
+				e.onTriggerExit(b);
 				colliding = false;
 				b.colliding = false;
 			}
@@ -204,9 +183,9 @@ public class BoxCollider {
 	public void render(Graphics g) {
 		g.setColor(Color.GREEN);
 		g.fillRect(
-				(int)e.getX()*MooseInvasion.X_SCALE, 
-				(int)e.getY()*MooseInvasion.Y_SCALE, 
-				width*MooseInvasion.X_SCALE, 
-				height*MooseInvasion.Y_SCALE);
+			(int)e.getX()*MooseInvasion.X_SCALE, 
+			(int)e.getY()*MooseInvasion.Y_SCALE, 
+			width*MooseInvasion.X_SCALE, 
+			height*MooseInvasion.Y_SCALE);
 	}
 }

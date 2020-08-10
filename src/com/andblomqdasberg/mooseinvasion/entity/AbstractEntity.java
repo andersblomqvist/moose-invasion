@@ -86,9 +86,9 @@ public abstract class AbstractEntity implements Comparable<AbstractEntity> {
         // collider.render(g);
 	}
 	
-	public void onCollisionEnter(CollisionType type) {}
+	public void onCollisionEnter(BoxCollider b, CollisionType direction) {}
 	
-	public void onCollisionExit(BoxCollider b) {}
+	public void onCollisionExit(BoxCollider b, CollisionType direction) {}
 	
 	public void onTriggerEnter(BoxCollider b) {}
 	
