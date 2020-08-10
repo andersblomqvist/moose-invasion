@@ -83,31 +83,16 @@ public abstract class AbstractEntity implements Comparable<AbstractEntity> {
                 null
         );
         
-        debugRender(g);
+        // collider.render(g);
 	}
 	
-	/**
-	 * 	Render BoxCollider box
-	 */
-	public void debugRender(Graphics g) {
-		collider.render(g);
-	}
+	public void onCollisionEnter(CollisionType type) {}
 	
-	public void onCollisionEnter(CollisionType type) {
-		System.out.println("Solid collision");
-	}
+	public void onCollisionExit(BoxCollider b) {}
 	
-	public void onCollisionExit(BoxCollider b) {
-		System.out.println("Left a solid collider");
-	}
+	public void onTriggerEnter(BoxCollider b) {}
 	
-	public void onTriggerEnter(BoxCollider b) {
-		System.out.println(collider.tag + ": Entered the trigger " + b.tag);
-	}
-	
-	public void onTriggerExit(BoxCollider b) {
-		System.out.println(collider.tag + ": Left the trigger " + b.tag);
-	}
+	public void onTriggerExit(BoxCollider b) {}
 	
 	/**
 	 * 	Remove this entity from GameManager entity list.

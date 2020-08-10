@@ -50,7 +50,6 @@ public class Moose extends EntityMonster
 		
 		// Set random x speed.
 		velocity.x = GameRandom.randomBetween(2, 4) / 10f;
-		System.out.println("Vel-x: " + velocity.x);
 		
 		damageTextList = new ArrayList<>();
 	}
@@ -108,12 +107,8 @@ public class Moose extends EntityMonster
 	
 	@Override
 	public void onTriggerEnter(BoxCollider b) {
-		System.out.println("moose: Entered the trigger: " + b.tag);
-		
 		if(b.tag == "projectile") {
-			System.out.println("Moose hit by projectile!");
 			Projectile p = (Projectile) b.e;
-			// Hit state, not dead yet
 			AudioPlayer.play("moose-hit.wav");
 			whiteHitOverlay();
 			health -= p.damage;
