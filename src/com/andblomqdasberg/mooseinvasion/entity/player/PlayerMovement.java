@@ -11,10 +11,10 @@ import com.andblomqdasberg.mooseinvasion.util.Vector2D;
  */
 public class PlayerMovement {
 
-	private float moveSpeed = 1.8f;
-	private float accel = 1f;
-	private float deccel = 0.1f;
-	private float friction = 0.2f;
+	private float moveSpeed = 1.6f;
+	private float accel = 0.25f;
+	private float deccel = 0.5f;
+	private float friction = 0.1f;
 	public boolean north = false;
 	public boolean south = false;
 	public boolean east = false;
@@ -63,7 +63,7 @@ public class PlayerMovement {
 		float drop = control * friction * cutOff;
 		float newSpeed = speed - drop;
 		
-		if(newSpeed < 0)
+		if(newSpeed < 0.1f)
 			newSpeed = 0;
 		if(speed > 0)
 			newSpeed /= speed;
