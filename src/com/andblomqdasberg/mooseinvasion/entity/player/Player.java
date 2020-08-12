@@ -8,15 +8,17 @@ import com.andblomqdasberg.mooseinvasion.GameManager;
 import com.andblomqdasberg.mooseinvasion.InputHandler;
 import com.andblomqdasberg.mooseinvasion.MooseInvasion;
 import com.andblomqdasberg.mooseinvasion.audio.AudioPlayer;
+import com.andblomqdasberg.mooseinvasion.collider.BoxCollider;
 import com.andblomqdasberg.mooseinvasion.collider.CollisionType;
-import com.andblomqdasberg.mooseinvasion.entity.Entity;
+import com.andblomqdasberg.mooseinvasion.entity.AbstractEntity;
 import com.andblomqdasberg.mooseinvasion.gui.GUIImage;
 import com.andblomqdasberg.mooseinvasion.gui.GUIText;
 import com.andblomqdasberg.mooseinvasion.particle.ParticleType;
 import com.andblomqdasberg.mooseinvasion.util.GameRandom;
+import com.andblomqdasberg.mooseinvasion.util.Sprite;
+import com.andblomqdasberg.mooseinvasion.util.Vector2D;
 import com.andblomqdasberg.mooseinvasion.weapon.AbstractWeapon;
 import com.andblomqdasberg.mooseinvasion.weapon.WeaponList;
-import com.andblomqdasberg.mooseinvasion.weapon.WeaponMelee;
 
 /**
  * 	Player entity
@@ -24,7 +26,7 @@ import com.andblomqdasberg.mooseinvasion.weapon.WeaponMelee;
  * 	@author Anders Blomqvist
  * 	@author David Åsberg
  */
-public class Player extends Entity {
+public class Player extends AbstractEntity {
 
 	// Player collision box
 	public int height = 11;
@@ -33,26 +35,18 @@ public class Player extends Entity {
 	public int offsetY = 4;
 	
 	// Sprites
-	private static int SPRITE_ID = 0;
-	private static int[] jack = {0, 1};
-	private static int[] igor = {2, 3};
-	private static int[] pcmr = {4, 5};
-	private static int[] scout = {6, 7};
+	private int spriteId = 0;
+	private int[] jack = {0, 1};
+	private int[] igor = {2, 3};
+	private int[] pcmr = {4, 5};
+	private int[] scout = {6, 7};
 
 	// Movement
-	private float friction = 0.9f;
-	private float weight = 10f;
-	private float maxSpeed = 2.0f;
-	private float accel = 1.8f;
-	
-	// Collision handlers
-	private boolean moveNorth = true;
-	private boolean moveSouth = true;
-	private boolean moveEast = true;
-	private boolean moveWest = true;
+	public PlayerMovement movement;
+	private float friction = 1f;
 	
 	// Weapons
-	private ArrayList<AbstractWeapon> weapons;
+	private ArrayList<AbstractWeapon> weapons = new ArrayList<AbstractWeapon>();
 	private AbstractWeapon currentWeapon;
 	public boolean allowShooting;
 
@@ -69,10 +63,12 @@ public class Player extends Entity {
 	private GUIText beerText;
 	
 	public Player(int x, int y) {
-		super(SPRITE_ID, jack, x, y);
+		super(x, y, Vector2D.ZERO);
 		
-		weapons = new ArrayList<>();
-		setRandomPlayerModel();
+		sprite = new Sprite(spriteId, getRandomPlayerModel());
+		collider = new BoxCollider(this, width, height, "player");
+		
+		movement = new PlayerMovement();
 		
 		// Add pistol at the beginning
 		weapons.add(WeaponList.PISTOL);
@@ -106,17 +102,18 @@ public class Player extends Entity {
 		moneyText.style.color = new Color(255, 205, 85);
 		
 		beerText = new GUIText("" + beers, 
-				(MooseInvasion.WIDTH - 16)*MooseInvasion.X_SCALE, 
-				(MooseInvasion.HEIGHT - 3*16)*MooseInvasion.Y_SCALE, 
+				MooseInvasion.WIDTH - 20, 
+				MooseInvasion.HEIGHT - 8*5, 
 				"player-gui");
 	}
 	
 	@Override
 	public void tick(int ticks) {
-		applyFriction();
-		currentWeapon.tick(x, y);
+		this.ticks = ticks;
 		checkInput();
-
+		currentWeapon.tick(x, y);
+		
+		velocity = movement.playerMove(velocity, friction);
 		x += velocity.x;
 		y += velocity.y;
 		
@@ -140,7 +137,7 @@ public class Player extends Entity {
 			if(ticksSinceLastBeer > beerDuration) {
 				ticksSinceLastBeer = 0;
 				AbstractWeapon.DAMAGE_INCREASE = false;
-				friction = 0.9f;
+				friction = 1f;
 				beer = false;
 				System.out.println(" > Feel sober again");
 			}
@@ -152,55 +149,10 @@ public class Player extends Entity {
 	}
 	
 	/**
-	 * 	When no keys are pressed we reduce speed, just like friction
-	 */
-	private void applyFriction() {
-		beerText.x = MooseInvasion.WIDTH - 20 - (beerText.text.length() * 7);
-		beerText.y = MooseInvasion.HEIGHT - 8*5;
-		
-		if(velocity.y < 0) {
-			velocity.y += 1.0/weight * friction;
-			if (velocity.y > 0)
-				velocity.y = 0;
-		} else {
-			velocity.y -= 1.0/weight * friction;
-			if (velocity.y < 0)
-				velocity.y = 0;
-		}
-		
-		if(velocity.x < 0) {
-			velocity.x += 1.0/weight * friction;
-			if (velocity.x > 0)
-				velocity.x = 0;
-		} else {
-			velocity.x -= 1.0/weight * friction;
-			if (velocity.x < 0)
-				velocity.x = 0;
-		}
-	}
-	
-	/**
 	 * 	Method for handling all input from the user, changes player velocity on directional keys
 	 * 	and fires weapon on left mouse click
 	 */
  	private void checkInput() {
- 		
-		if(InputHandler.up(false) && moveNorth)
-			if(velocity.y > -maxSpeed)
-				velocity.y -= accel/weight;
-		
-		if(InputHandler.down(false) && moveSouth)
-			if(velocity.y < maxSpeed)
-				velocity.y += accel/weight;
-
-		if(InputHandler.right(false) && moveEast)
-			if(velocity.x < maxSpeed)
-				velocity.x += accel/weight;
-		
-		if(InputHandler.left(false) && moveWest)
-			if(velocity.x > -maxSpeed)
-				velocity.x -= accel/weight;
-		
 		// Cycle weapon by pressing one single button instead
 		// of specifc weapon number button
 		if(InputHandler.cycleWeapon())
@@ -221,7 +173,6 @@ public class Player extends Entity {
 			else
 				consumeBeer();
 		}
-			
 	}
 
  	/**
@@ -264,26 +215,20 @@ public class Player extends Entity {
 	/**
 	 * 	Randomizes a player model
 	 */
-	private void setRandomPlayerModel() {
+	private int[] getRandomPlayerModel() {
 		int animation = GameRandom.nextInt(4);
 		switch(animation) {
-
 			// Temporary way of randomly getting a player character
 			case 0:
-				sprite.anim = jack;
-				break;
+				return jack;
 			case 1:
-				sprite.anim = igor;
-				break;
+				return igor;
 			case 2:
-				sprite.anim = pcmr;
-				break;
+				return pcmr;
 			case 3:
-				sprite.anim = scout;
-				break;
+				return scout;
 			default:
-				sprite.anim = jack;
-				break;
+				return jack;
 		}
 	}
 	
@@ -317,34 +262,6 @@ public class Player extends Entity {
 		this.money += multiplier;
 		moneyText.text = "$"+String.valueOf(money);
 	}
-
-	/**
-	 * 	When player collides with a BoxCollider
-	 * 
-	 * 	@param type Where the collision happen
-	 */
-	public void onCollisionEnter(CollisionType type) {
-		switch(type) {
-    		case NORTH:
-    			moveSouth = false;
-    			velocity.y = 0;
-    		break;
-    		case SOUTH:
-    			moveNorth = false;
-    			velocity.y = 0;
-    		break;
-    		case EAST:
-    			moveWest = false;
-    			velocity.x = 0;
-    		break;
-    		case WEST:
-    			moveEast = false;
-    			velocity.x = 0;
-    		break;
-    		default:
-    			System.out.println("No supported collision type");
-		}
-	}
 	
 	/**
 	 * 	Consumes a beer which doubles the damage but also makes the character
@@ -370,33 +287,26 @@ public class Player extends Entity {
 		System.out.println(" > You are drunk from the beer!");
 	}
 	
-	/**
-	 * 	We left a collider we previously had contact with.
-	 * 	Here we want to reset the movement.
-	 */
-	public void onCollisionExit() {
-		moveNorth = true;
-		moveSouth = true;
-		moveEast = true;
-		moveWest = true;
-	}
-
-	/**
-	 * 	Called when players enters a trigger collider
-	 * 
-	 * 	@param tag name of the trigger
-	 */
-	public void onTriggerEnter(String tag) {
-		GameManager.sInstance.city.shopTrigger(tag, true);
+	@Override
+	public void onCollisionExit(BoxCollider b, CollisionType direction) {
+		movement.blockMovement(direction, false);
 	}
 	
-	/**
-	 * 	Called when player leaves a trigger
-	 * 
-	 * 	@param tag name of the trigger
-	 */
-	public void onTriggerExit(String tag) {
-		GameManager.sInstance.city.shopTrigger(tag, false);
+	@Override
+	public void onCollisionEnter(BoxCollider b, CollisionType type) {
+		movement.blockMovement(type, true);
+	}
+	
+	@Override
+	public void onTriggerEnter(BoxCollider b) {
+		if(inCity)
+			GameManager.sInstance.city.shopTrigger(b.tag, true);
+	}
+	
+	@Override
+	public void onTriggerExit(BoxCollider b) {
+		if(inCity)
+			GameManager.sInstance.city.shopTrigger(b.tag, false);
 	}
 
 	/**
@@ -433,14 +343,16 @@ public class Player extends Entity {
 	/**
 	 *	@returns the collder x position
 	 */
-	public float getColX() {
+	@Override
+	public float getX() {
 		return x + offsetX;
 	}
 	
 	/**
 	 * 	@returns the collider y position
 	 */
-	public float getColY() {
+	@Override
+	public float getY() {
 		return y + offsetY;
 	}
 }

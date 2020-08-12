@@ -2,7 +2,7 @@ package com.andblomqdasberg.mooseinvasion.level;
 
 import java.util.ArrayList;
 
-import com.andblomqdasberg.mooseinvasion.entity.Entity;
+import com.andblomqdasberg.mooseinvasion.entity.AbstractEntity;
 import com.andblomqdasberg.mooseinvasion.util.GameRandom;
 
 /**
@@ -17,12 +17,12 @@ import com.andblomqdasberg.mooseinvasion.util.GameRandom;
 public class LevelWave {
 	public int id;
 	public int duration;
-	public ArrayList<Entity> entities;
+	public ArrayList<AbstractEntity> entities;
 	
 	public LevelWave(int id) {
 		this.id = id;
 		this.duration = 0;
-		this.entities = new ArrayList<Entity>();
+		this.entities = new ArrayList<AbstractEntity>();
 	}
 
 	/**
@@ -32,9 +32,9 @@ public class LevelWave {
 	 * 
 	 * 	@return reference to what type of entity to spawn
 	 */
-	public Entity spawnEntity() {
+	public AbstractEntity spawnEntity() {
 		int randomIndex = GameRandom.nextInt(entities.size());
-		Entity e = entities.get(randomIndex);
+		AbstractEntity e = entities.get(randomIndex);
 		entities.remove(randomIndex);
 		return e;
 	}

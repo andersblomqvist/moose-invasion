@@ -1,8 +1,6 @@
 package com.andblomqdasberg.mooseinvasion.weapon;
 
-import com.andblomqdasberg.mooseinvasion.GameManager;
 import com.andblomqdasberg.mooseinvasion.audio.AudioPlayer;
-import com.andblomqdasberg.mooseinvasion.entity.Projectile;
 
 public class WeaponMelee extends AbstractWeapon {
 
@@ -17,8 +15,6 @@ public class WeaponMelee extends AbstractWeapon {
 	public void shoot(float x, float y) {
 		super.shoot(x, y);
 		System.out.println("Melee weapon.");
-		GameManager.sInstance.spawnEntity(
-				new Projectile(x+1, y, damage, false));
 		AudioPlayer.play("weapon-melee-swoosh.wav");
 	}
 }
