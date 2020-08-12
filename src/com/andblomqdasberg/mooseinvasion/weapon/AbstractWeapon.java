@@ -1,12 +1,15 @@
 package com.andblomqdasberg.mooseinvasion.weapon;
 
 import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Image;
 
 import com.andblomqdasberg.mooseinvasion.InputHandler;
 import com.andblomqdasberg.mooseinvasion.MooseInvasion;
 import com.andblomqdasberg.mooseinvasion.audio.AudioPlayer;
 import com.andblomqdasberg.mooseinvasion.gui.GUIText;
 import com.andblomqdasberg.mooseinvasion.util.GameRandom;
+import com.andblomqdasberg.mooseinvasion.util.Sprite;
 
 /**
  * 	Abstract class for representing base functionalities
@@ -40,6 +43,9 @@ public abstract class AbstractWeapon {
 	
 	private int baseDamage;
 	private int damageIncrease;
+	
+	protected Sprite sprite;
+	private int offsetX = 0;
 	
 	/**
 	 * 	Init weapon values
@@ -89,16 +95,21 @@ public abstract class AbstractWeapon {
 	 * 	@param y player position
 	 */
 	public void tick(float x, float y) {
-		if(InputHandler.shoot(false) && ALLOW_SHOOTING) {
-			if(ticksSinceLastShot > fireRate) {
+		if(ticksSinceLastShot > fireRate) {
+			if(InputHandler.shoot(false) && ALLOW_SHOOTING) {
 				ticksSinceLastShot = 0;
 				if(ammo > 0) {
 					shoot(x, y);
+					offsetX = 1;	// Add recoil
 					ammo--;
 				} else if(melee)
 					shoot(x, y);
 			}
 		}
+		
+		// Reset recoil
+		if(ticksSinceLastShot > fireRate / 2) 
+			offsetX = 0;
 		
 		if(weaponText != null) {
 			weaponText.y -= 1f;
@@ -109,6 +120,24 @@ public abstract class AbstractWeapon {
 		
 		ticksSinceLastShot++;
 		ticksSinceTextActivated++;
+	}
+	
+	/**
+	 * 	Render weapon image	
+	 */
+	public void render(Graphics g, int ticks, float x, float y) {
+		int frame = ticks / 15 % sprite.anim.length;
+        Image img = sprite.img[sprite.anim[frame]];
+        if(ticks / 15 % 2 == 0)
+        	y -= 1;
+        	
+        g.drawImage(img,
+                (int)(x+offsetX)*MooseInvasion.X_SCALE,
+                (int)y*MooseInvasion.Y_SCALE,
+                MooseInvasion.X_SCALE*MooseInvasion.SPRITE_X_SIZE,
+                MooseInvasion.Y_SCALE*MooseInvasion.SPRITE_Y_SIZE,
+                null
+        );
 	}
 	
 	/**
@@ -128,7 +157,7 @@ public abstract class AbstractWeapon {
 	/**
 	 * 	Override weapon level up.
 	 * 
-	 * 	This method has to be called at the end of the override so we get updated
+	 * 	@NOTE This method has to be called at the end of the override so we get updated
 	 * 	damage values.
 	 */
 	public void levelUp() {
@@ -152,6 +181,9 @@ public abstract class AbstractWeapon {
 				break;
 			case 2:
 				AudioPlayer.play("weapon-uzi-1.wav");
+				break;
+			case 3:
+				AudioPlayer.play("weapon-melee-swoosh.wav");
 				break;
 		}
 	}

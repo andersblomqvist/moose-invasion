@@ -15,7 +15,7 @@ import com.andblomqdasberg.mooseinvasion.util.Vector2D;
  */
 public abstract class AbstractParticle {
 	
-	public float x, y, lifetime;
+	public float x, y;
 	public Vector2D velocity;
 	
 	protected boolean animationFinished = false;
@@ -26,6 +26,9 @@ public abstract class AbstractParticle {
 	private int frame = 0;
 	private int frameTick = 0;
 	private Image img;
+	
+	public float lifeTime = 0;
+	public float time = 0;
 	
 	public AbstractParticle() {}
 	
@@ -46,6 +49,9 @@ public abstract class AbstractParticle {
 	}
 	
 	public void animationTick() {
+		if(lifeTime != 0)
+			time++;
+		
 		if(frame != sprite.lastFrame())
 			frameTick++;
 		

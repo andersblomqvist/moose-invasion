@@ -17,7 +17,6 @@ public class BeerParticle extends AbstractParticle {
 	public BeerParticle(float x, float y) {
 		this.x = x;
 		this.y = y;
-		this.lifetime = 0;
 		this.velocity = new Vector2D(0, speed);
 		
 		this.sprite = new Sprite(
@@ -26,11 +25,12 @@ public class BeerParticle extends AbstractParticle {
 				Assets.sInstance.particles[spriteId]);
 		
 		sprite.animationSpeed = 4;
+		
+		lifeTime = 15f;
 	}
 	
 	@Override
 	public void tick() {
-		lifetime++;
 		this.y -= velocity.y;
 	}
 }

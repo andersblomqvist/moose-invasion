@@ -19,6 +19,7 @@ public class BoxCollider {
 
 	// Static x and y position
 	public int x, y;
+	public boolean isStatic;
 	
 	// Dimensions
 	public int width, height;
@@ -48,6 +49,7 @@ public class BoxCollider {
 		this.y = y;
 		this.width = width;
 		this.height = height;
+		isStatic = true;
 	}
 	
 	/**
@@ -64,6 +66,7 @@ public class BoxCollider {
 		this(x, y, width, height);
 		this.tag = tag;
 		trigger = true;
+		isStatic = true;
 	}
 	
 	/**
@@ -80,6 +83,7 @@ public class BoxCollider {
 		this.height = height;
 		this.tag = tag;
 		trigger = true;
+		isStatic = false;
 	}
 
 	/**
@@ -87,7 +91,7 @@ public class BoxCollider {
 	 * 	direction the collision happen to prevent movement.
 	 * 
 	 * 	@param p Player reference
-	 * 	@return collition type enum for what side
+	 * 	@return CollisionType enum for what side
 	 */
 	public CollisionType AABBCollision(Player p) {
 		
@@ -141,36 +145,59 @@ public class BoxCollider {
 	}
 	
 	/**
-	 * 	Check collision with another moving collider.
+	 * 	Check collision with another BoxCollider
 	 * 
 	 * 	@NOTE Moving colliders are always triggers!
 	 * 
 	 * 	@param reference to collider
-	 * 	@return collition enum for what side
+	 * 	@return CollisionType enum value
 	 */
 	public CollisionType AABBCollision(BoxCollider b) {
-		if(e.getX() <= b.e.getX() + b.width && e.getX() + width >= b.e.getX() &&
-		   e.getY() <= b.e.getY() + b.height && e.getY() + height >= b.e.getY()) {
-			
-			// If we are already colliding - leave
-			if(colliding && b.colliding)
+		if(isStatic) {
+			if(x <= b.e.getX() + b.width && x + width >= b.e.getX() &&
+			   y <= b.e.getY() + b.height && y + height >= b.e.getY()) {
+				
+				// If we are already colliding - leave
+				if(colliding && b.colliding)
+					return CollisionType.DEFAULT;
+				
+				// We are now colliding
+				colliding = true;
+				b.colliding = true;
+				b.e.onTriggerEnter(this);
+				
 				return CollisionType.DEFAULT;
-			
-			// We are now colliding
-			colliding = true;
-			b.colliding = true;
-		
-			e.onTriggerEnter(b);
-			b.e.onTriggerEnter(this);
-			
-			return CollisionType.DEFAULT;
+			} else {
+				// Handle when colliders leave each other.
+				if(colliding && b.colliding) {
+    				b.e.onTriggerExit(this);
+					colliding = false;
+					b.colliding = false;
+				}
+			}
 		} else {
-			// Handle when colliders leave each other.
-			if(colliding && b.colliding) {
-				b.e.onTriggerExit(this);
-				e.onTriggerExit(b);
-				colliding = false;
-				b.colliding = false;
+			if(e.getX() <= b.e.getX() + b.width && e.getX() + width >= b.e.getX() &&
+			   e.getY() <= b.e.getY() + b.height && e.getY() + height >= b.e.getY()) {
+				
+				// If we are already colliding - leave
+				if(colliding && b.colliding)
+					return CollisionType.DEFAULT;
+				
+				// We are now colliding
+				colliding = true;
+				b.colliding = true;
+				e.onTriggerEnter(b);
+				b.e.onTriggerEnter(this);
+				
+				return CollisionType.DEFAULT;
+			} else {
+				// Handle when colliders leave each other.
+				if(colliding && b.colliding) {
+    				b.e.onTriggerExit(this);
+    				e.onTriggerExit(b);
+					colliding = false;
+					b.colliding = false;
+				}
 			}
 		}
 		

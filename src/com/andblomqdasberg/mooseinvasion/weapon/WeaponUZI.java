@@ -1,8 +1,10 @@
 package com.andblomqdasberg.mooseinvasion.weapon;
 
 import com.andblomqdasberg.mooseinvasion.GameManager;
+import com.andblomqdasberg.mooseinvasion.audio.AudioPlayer;
 import com.andblomqdasberg.mooseinvasion.entity.Projectile;
 import com.andblomqdasberg.mooseinvasion.particle.ParticleType;
+import com.andblomqdasberg.mooseinvasion.util.Sprite;
 
 /**
  * 	Carbine weapon, main assault rifle
@@ -18,6 +20,8 @@ public class WeaponUZI extends AbstractWeapon {
 	 */
 	public WeaponUZI(int id, int damage, int ammo, int fireRate, String name, boolean isMelee) {
 		super(id, damage, ammo, fireRate, name, isMelee);
+		
+		sprite = new Sprite(1, new int[] {id});
 	}
 	
 	@Override
@@ -27,6 +31,12 @@ public class WeaponUZI extends AbstractWeapon {
         GameManager.sInstance.spawnEntity(
         		new Projectile(x+1, y, damage, penetrationLight, false));
         playSound();
+	}
+	
+	@Override
+	public void activate(float x, float y) {
+		super.activate(x, y);
+		AudioPlayer.play("weapon-ammo-pickup.wav");
 	}
 	
 	@Override

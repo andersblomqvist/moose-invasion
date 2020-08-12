@@ -1,6 +1,7 @@
 package com.andblomqdasberg.mooseinvasion.entity.player;
 
 import java.awt.Color;
+import java.awt.Graphics;
 import java.util.ArrayList;
 
 import com.andblomqdasberg.mooseinvasion.Assets;
@@ -48,6 +49,7 @@ public class Player extends AbstractEntity {
 	// Weapons
 	private ArrayList<AbstractWeapon> weapons = new ArrayList<AbstractWeapon>();
 	private AbstractWeapon currentWeapon;
+	private int weaponIndex;
 	public boolean allowShooting;
 
 	// Misc
@@ -67,13 +69,13 @@ public class Player extends AbstractEntity {
 		
 		sprite = new Sprite(spriteId, getRandomPlayerModel());
 		collider = new BoxCollider(this, width, height, "player");
-		
 		movement = new PlayerMovement();
 		
 		// Add pistol at the beginning
 		weapons.add(WeaponList.PISTOL);
 		currentWeapon = weapons.get(0);
 		currentWeapon.activate(x, y);
+		weaponIndex = 0;
 		
 		ammoText = new GUIText("", 0, 
 				MooseInvasion.HEIGHT-MooseInvasion.SPRITE_Y_SIZE/2, "player-gui");
@@ -148,6 +150,34 @@ public class Player extends AbstractEntity {
 		updateGUIText();
 	}
 	
+	@Override
+	public void render(Graphics g) {
+		super.render(g);
+		currentWeapon.render(g, ticks, x, y);
+	}
+	
+	@Override
+	public void onCollisionExit(BoxCollider b, CollisionType direction) {
+		movement.blockMovement(direction, false);
+	}
+	
+	@Override
+	public void onCollisionEnter(BoxCollider b, CollisionType type) {
+		movement.blockMovement(type, true);
+	}
+	
+	@Override
+	public void onTriggerEnter(BoxCollider b) {
+		if(inCity)
+			GameManager.sInstance.city.shopTrigger(b.tag, true);
+	}
+	
+	@Override
+	public void onTriggerExit(BoxCollider b) {
+		if(inCity)
+			GameManager.sInstance.city.shopTrigger(b.tag, false);
+	}
+	
 	/**
 	 * 	Method for handling all input from the user, changes player velocity on directional keys
 	 * 	and fires weapon on left mouse click
@@ -160,12 +190,12 @@ public class Player extends AbstractEntity {
 		
 		if(InputHandler.num1())
 			directSwitchToWeapon(0);
-		
 		if(InputHandler.num2() && weapons.size() > 1)
 			directSwitchToWeapon(1);
-		
 		if(InputHandler.num3() && weapons.size() > 2)
 			directSwitchToWeapon(2);
+		if(InputHandler.num4() && weapons.size() > 3)
+			directSwitchToWeapon(3);
 		
 		if(InputHandler.consume()) {
 			if(inCity)
@@ -181,18 +211,19 @@ public class Player extends AbstractEntity {
  	 * 	loops back to 0 again.
  	 */
  	private void cycleWeapon() {
- 		AudioPlayer.play("weapon-ammo-pickup.wav");
- 		if(currentWeapon.id < weapons.size() - 1) {
+ 		if(weaponIndex < weapons.size() - 1) {
  			// Not at the end yet, go forward.
  			currentWeapon.deactivate();
- 			currentWeapon = weapons.get(currentWeapon.id + 1);
+ 			currentWeapon = weapons.get(weaponIndex + 1);
  			currentWeapon.activate(x, y);
+ 			weaponIndex++;
  		}
  		else {
  			// At the end, go back to beginning
  			currentWeapon.deactivate();
  			currentWeapon = weapons.get(0);
  			currentWeapon.activate(x, y);
+ 			weaponIndex = 0;
  		}
  	}
  	
@@ -201,14 +232,14 @@ public class Player extends AbstractEntity {
  	 * 
  	 * 	@param weaponID ID of weapon which is the slot in weapon list
  	 */
- 	private void directSwitchToWeapon(int weaponID) {
+ 	private void directSwitchToWeapon(int weaponIndex) {
  		// Check if have the weapon first and if we dont hold it already
- 		if(weapons.get(weaponID) != null && currentWeapon.id != weaponID) {
+ 		if(weapons.get(weaponIndex) != null && this.weaponIndex != weaponIndex) {
  			// Do switch
- 			AudioPlayer.play("weapon-ammo-pickup.wav");
  			currentWeapon.deactivate();
- 			currentWeapon = weapons.get(weaponID);
+ 			currentWeapon = weapons.get(weaponIndex);
  			currentWeapon.activate(x, y);
+ 			this.weaponIndex = weaponIndex;
  		}
  	}
  	
@@ -216,6 +247,8 @@ public class Player extends AbstractEntity {
 	 * 	Randomizes a player model
 	 */
 	private int[] getRandomPlayerModel() {
+		return jack;
+		/*
 		int animation = GameRandom.nextInt(4);
 		switch(animation) {
 			// Temporary way of randomly getting a player character
@@ -230,6 +263,7 @@ public class Player extends AbstractEntity {
 			default:
 				return jack;
 		}
+		*/
 	}
 	
 	/**
@@ -285,28 +319,6 @@ public class Player extends AbstractEntity {
 		ticksSinceLastBeer = 0;
 		beers -= 1;
 		System.out.println(" > You are drunk from the beer!");
-	}
-	
-	@Override
-	public void onCollisionExit(BoxCollider b, CollisionType direction) {
-		movement.blockMovement(direction, false);
-	}
-	
-	@Override
-	public void onCollisionEnter(BoxCollider b, CollisionType type) {
-		movement.blockMovement(type, true);
-	}
-	
-	@Override
-	public void onTriggerEnter(BoxCollider b) {
-		if(inCity)
-			GameManager.sInstance.city.shopTrigger(b.tag, true);
-	}
-	
-	@Override
-	public void onTriggerExit(BoxCollider b) {
-		if(inCity)
-			GameManager.sInstance.city.shopTrigger(b.tag, false);
 	}
 
 	/**

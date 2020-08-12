@@ -9,6 +9,7 @@ import com.andblomqdasberg.mooseinvasion.MooseInvasion;
 import com.andblomqdasberg.mooseinvasion.audio.AudioPlayer;
 import com.andblomqdasberg.mooseinvasion.collider.BoxCollider;
 import com.andblomqdasberg.mooseinvasion.decoration.DecorationType;
+import com.andblomqdasberg.mooseinvasion.entity.MeleeHit;
 import com.andblomqdasberg.mooseinvasion.entity.Projectile;
 import com.andblomqdasberg.mooseinvasion.gui.GUIText;
 import com.andblomqdasberg.mooseinvasion.particle.ParticleType;
@@ -109,25 +110,37 @@ public class Moose extends EntityMonster
 	public void onTriggerEnter(BoxCollider b) {
 		if(b.tag == "projectile") {
 			Projectile p = (Projectile) b.e;
-			AudioPlayer.play("moose-hit.wav");
-			whiteHitOverlay();
 			health -= p.damage;
-			GameManager.sInstance.spawnParticles(ParticleType.BLOOD, 4, x, y);
-
 			addDamageText(p.damage);
-			
-			// Leave if health is not zero
-			if(health > 0)
-				return;
-			
-			// Set to dead state
-			AudioPlayer.play("moose-splash.wav");
-			GameManager.sInstance.spawnParticles(ParticleType.BLOOD_AND_MEAT, 1, x, y);
-			GameManager.sInstance.onEntityKilled();
-			sprite.anim = deathAnim;
-			velocity.y = 0;
-			dead = true;
+			onDamageHit();
 		}
+		if(b.tag == "melee") {
+			MeleeHit hit = (MeleeHit) b.e;
+			health -= hit.damage;
+			addDamageText(hit.damage);
+			onDamageHit();
+		}
+	}
+	
+	/**
+	 * 	Do the things needed when we get hit.
+	 */
+	private void onDamageHit() {
+		AudioPlayer.play("moose-hit.wav");
+		whiteHitOverlay();
+		GameManager.sInstance.spawnParticles(ParticleType.BLOOD, 4, x, y);
+		
+		// Leave if health is not zero
+		if(health > 0)
+			return;
+		
+		// Set to dead state
+		AudioPlayer.play("moose-splash.wav");
+		GameManager.sInstance.spawnParticles(ParticleType.BLOOD_AND_MEAT, 1, x, y);
+		GameManager.sInstance.onEntityKilled();
+		sprite.anim = deathAnim;
+		velocity.y = 0;
+		dead = true;
 	}
 	
 	/**

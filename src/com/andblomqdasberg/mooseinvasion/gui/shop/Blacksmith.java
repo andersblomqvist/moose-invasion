@@ -4,6 +4,7 @@ import java.awt.Color;
 
 import com.andblomqdasberg.mooseinvasion.audio.AudioPlayer;
 import com.andblomqdasberg.mooseinvasion.gui.GUIText;
+import com.andblomqdasberg.mooseinvasion.weapon.WeaponList;
 
 /**
  * 	Blacksmith store.
@@ -17,7 +18,7 @@ public class Blacksmith extends GUIShop {
 	
 	public Blacksmith() {
 		
-		main.addText("KNUCKLES", 0);
+		main.addText("Knife", 0);
 		main.addText("$99", 2);
 		
 		tabs.add(main);
@@ -44,8 +45,7 @@ public class Blacksmith extends GUIShop {
 		moneyLost.add(new GUIText("-"+money,270,25,"").color(Color.RED));
 		
 		switch(item) {
-			case "KNUCKLES":
-				System.out.println("Bought knuckles.");
+			case "Knife":
 				activeTab.money.get(currentOption).text = "SOLD";
 				player.buyWeapon(item);
 				break;
