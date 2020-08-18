@@ -3,10 +3,6 @@
 	
 STADEN
 ========================
-Säljare:
- - Player gear?
- - Misc shop (kul grejer typ)
- 
  
 VAPEN
 ========================
@@ -24,17 +20,14 @@ VAPEN
 
 ENEMIES
 ========================
-- En slö björn
 - En snabb varg
 - Andra djur från skogen?
-- Random hastighet för moose, så alla inte beter sig exakt lika
 
 SOUNDS
 =======================
 - Footstep sounds
 - Round start sound
 - Random moose sound
-- Error sound in shop
 - People screem/dying when moose goes into the village
 
 MISC

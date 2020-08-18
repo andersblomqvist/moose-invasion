@@ -4,7 +4,6 @@ import java.awt.Color;
 
 import com.andblomqdasberg.mooseinvasion.audio.AudioPlayer;
 import com.andblomqdasberg.mooseinvasion.gui.GUIText;
-import com.andblomqdasberg.mooseinvasion.weapon.WeaponList;
 
 /**
  * 	Blacksmith store.

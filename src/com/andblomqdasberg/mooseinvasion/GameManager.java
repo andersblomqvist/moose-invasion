@@ -119,6 +119,7 @@ public class GameManager {
      */
     public void spawnEntity(AbstractEntity e) {
 		entities.add(e);
+		e.onEnabled();
     }
     
     /**
@@ -251,6 +252,14 @@ public class GameManager {
         for(int i = 0; i < guiPlayer.size(); i++)
         	guiPlayer.get(i).render(g);
         
+
+        // Render LEVEL GUI elements when not in city
+        for(int i = 0; i < guiLevel.size(); i++) {
+        	if(!player.inCity)
+        		guiLevel.get(i).render(g);
+        }
+        	
+        
         // Game over state black overlay
         if(gameState == GameState.GAME_OVER) {
     		g.setColor(new Color(0,0,0,100));
@@ -259,7 +268,7 @@ public class GameManager {
     				MooseInvasion.RENDER_HEIGHT);
     	}
         
-        /** @DEBUG */
+        /** @DEBUG 
         g.setColor(Color.GREEN);
         g.drawString(player.velocity.toString(), 10, 40);
         g.drawString(player.movement.wishDir.toString(), 10, 80);
@@ -267,6 +276,7 @@ public class GameManager {
         g.drawString("S:" + player.movement.south, 10, 160);
         g.drawString("W:" + player.movement.west, 10, 200);
         g.drawString("E:" + player.movement.east, 10, 240);
+        */
     }
     
     /**
@@ -277,8 +287,19 @@ public class GameManager {
     {
         for(int i = 0; i < entities.size(); i++) {
         	AbstractEntity e = entities.get(i);
-            if (e.alive)
-                e.tick(ticks);
+        	if(e.alive) {
+        		e.tick(ticks);
+        		
+        		// If a mob is dead and the corpse should remain we want to
+        		// move it to deadEntity list inside level.
+        		if(e instanceof EntityMonster) {
+        			EntityMonster em = (EntityMonster) e;
+        			if(em.finalDead && em.remainCorpse) {
+        				level.addDeadEntity(em);
+        				entities.remove(i);
+        			}
+        		}
+        	}
             else
             	entities.remove(i);
         }

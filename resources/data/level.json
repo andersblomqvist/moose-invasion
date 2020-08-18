@@ -4,25 +4,42 @@
 		"wave1": {
 			"entries": [
 				{
-					"entity": "moose",
-					"count": "15"
+					"entity": "wolf",
+					"count": "5"
 				}
 			],
-			"duration": "5"
+			"duration": "10"
 		},
 		"wave2": {
 			"entries": [
 				{
 					"entity": "moose",
+					"count": "15"
+				},
+				{
+					"entity": "wolf",
+					"count": "5"
+				},
+				{
+					"entity": "bear",
 					"count": "1"
 				}
 			],
-			"duration": "1"
+			"duration": "33"
 		},
 		"wave3": {
 			"entries": [
 				{
-					"entity": "moose",
+					"entity": "bear",
+					"count": "1"
+				}
+			],
+			"duration": "1"	
+		},
+		"wave4": {
+			"entries": [
+				{
+					"entity": "bear",
 					"count": "1"
 				}
 			],
@@ -35,7 +52,7 @@
 			"entries": [
 				{
 					"entity": "moose",
-					"count": "1"
+					"count": "5"
 				}
 			],
 			"duration": "1"
@@ -44,7 +61,7 @@
 			"entries": [
 				{
 					"entity": "moose",
-					"count": "1"
+					"count": "5"
 				}
 			],
 			"duration": "1"
@@ -53,7 +70,7 @@
 			"entries": [
 				{
 					"entity": "moose",
-					"count": "1"
+					"count": "5"
 				}
 			],
 			"duration": "1"	

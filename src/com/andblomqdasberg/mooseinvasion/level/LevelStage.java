@@ -38,6 +38,13 @@ public class LevelStage {
 			new ArrayList<AbstractDecoration>();
 	
 	/**
+	 * 	List with entities which have died but we still want to render the
+	 * 	last dead frame.
+	 */
+	public ArrayList<AbstractEntity> deadEntities =
+			new ArrayList<AbstractEntity>();
+	
+	/**
 	 * 	Particles
 	 */
 	public ArrayList<AbstractParticle> particles = 

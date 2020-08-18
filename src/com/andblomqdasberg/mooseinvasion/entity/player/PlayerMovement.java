@@ -12,9 +12,9 @@ import com.andblomqdasberg.mooseinvasion.util.Vector2D;
 public class PlayerMovement {
 
 	private float moveSpeed = 1.6f;
-	private float accel = 0.25f;
+	private float accel = 0.26f;
 	private float deccel = 0.5f;
-	private float friction = 0.1f;
+	private float friction = 0.15f;
 	public boolean north = false;
 	public boolean south = false;
 	public boolean east = false;
@@ -57,6 +57,11 @@ public class PlayerMovement {
 		return velocity;
 	}
 	
+	/**
+	 * 	Reduces the velocity
+	 * 	
+	 * 	@param cutOff Ranging from 0-1 where 0 is like ice and 1 normal.
+	 */
 	public Vector2D applyFriction(Vector2D velocity, float cutOff) {
 		float speed = velocity.magnitude();
 		float control = speed < deccel ? deccel : speed;

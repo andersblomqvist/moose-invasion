@@ -2,6 +2,8 @@ package com.andblomqdasberg.mooseinvasion.util;
 
 import java.util.Random;
 
+import com.andblomqdasberg.mooseinvasion.MooseInvasion;
+
 /**
  * 	Static helper class for random methods
  */
@@ -34,5 +36,12 @@ public class GameRandom
 	 */
 	public static int randomBetween(int min, int max) {
 		return random.nextInt((max - min) + 1) + min;
+	}
+
+	/**
+	 * 	@returns a random y-value within the Window height
+	 */
+	public static float getRandomY() {
+		return (float) GameRandom.nextInt(MooseInvasion.HEIGHT-16);
 	}
 }

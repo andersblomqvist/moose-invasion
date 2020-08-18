@@ -9,6 +9,7 @@ import com.andblomqdasberg.mooseinvasion.InputHandler;
 import com.andblomqdasberg.mooseinvasion.MooseInvasion;
 import com.andblomqdasberg.mooseinvasion.decoration.AbstractDecoration;
 import com.andblomqdasberg.mooseinvasion.decoration.DecorationType;
+import com.andblomqdasberg.mooseinvasion.entity.AbstractEntity;
 import com.andblomqdasberg.mooseinvasion.entity.player.Player;
 import com.andblomqdasberg.mooseinvasion.gui.GUIImage;
 import com.andblomqdasberg.mooseinvasion.gui.GUIText;
@@ -17,7 +18,6 @@ import com.andblomqdasberg.mooseinvasion.particle.AmmoParticle;
 import com.andblomqdasberg.mooseinvasion.particle.BeerGlassParticle;
 import com.andblomqdasberg.mooseinvasion.particle.BloodAndMeatParticle;
 import com.andblomqdasberg.mooseinvasion.particle.BloodParticle;
-import com.andblomqdasberg.mooseinvasion.particle.MeleeSwingParticle;
 import com.andblomqdasberg.mooseinvasion.particle.ParticleType;
 
 /**
@@ -135,14 +135,15 @@ public class Level {
 			if(spawnsLeft > 0) {
 				GameManager.sInstance.spawnEntity(currentWave.spawnEntity());
 				spawnsLeft--;
+				System.out.println("Spawned an entity! Left: " + spawnsLeft);
 			}
 		}
 		
-		
-		for(AbstractParticle p : stage.particles) {
+		for(int i = 0; i < stage.particles.size(); i++) {
+			AbstractParticle p = stage.particles.get(i);
 			p.tick();
 			p.animationTick();
-		}	
+		}
 		
 		ticksSinceLastSpawn++;
 	}
@@ -174,9 +175,10 @@ public class Level {
 			d.render(g, ticks);
 		}
 		
-        // Render GUI elements
-        for(int i = 0; i < GameManager.sInstance.guiLevel.size(); i++)
-        	GameManager.sInstance.guiLevel.get(i).render(g);
+		for(int i = 0; i < stage.deadEntities.size(); i++) {
+			AbstractEntity e = stage.deadEntities.get(i);
+			e.render(g);
+		}
 	}
 	
 	/**
@@ -365,5 +367,17 @@ public class Level {
     		default:
     			break;
     	}
+	}
+	
+	/**
+	 * 	Adds a dead entity to this list
+	 */
+	public void addDeadEntity(AbstractEntity e) {
+		if(!e.dead) {
+			System.out.println("Tried to add a living entity to dead entities!");
+			return;
+		}
+		
+		stage.deadEntities.add(e);
 	}
 }

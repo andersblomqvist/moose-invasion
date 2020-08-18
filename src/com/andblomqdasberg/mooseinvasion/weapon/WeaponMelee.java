@@ -5,7 +5,7 @@ import com.andblomqdasberg.mooseinvasion.audio.AudioPlayer;
 import com.andblomqdasberg.mooseinvasion.collider.BoxCollider;
 import com.andblomqdasberg.mooseinvasion.collider.CollisionType;
 import com.andblomqdasberg.mooseinvasion.entity.AbstractEntity;
-import com.andblomqdasberg.mooseinvasion.entity.MeleeHit;
+import com.andblomqdasberg.mooseinvasion.entity.damage.MeleeHit;
 import com.andblomqdasberg.mooseinvasion.entity.monster.EntityMonster;
 import com.andblomqdasberg.mooseinvasion.particle.ParticleType;
 import com.andblomqdasberg.mooseinvasion.util.Sprite;

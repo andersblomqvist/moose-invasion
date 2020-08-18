@@ -34,6 +34,9 @@ public class BoxCollider {
 	// Track if this collider is colliding
 	public boolean colliding = false;
 	
+	// Enable / Disable the collider
+	public boolean enabled = true;
+	
 	public CollisionType direction = CollisionType.NONE;
 	
 	/**
@@ -95,6 +98,9 @@ public class BoxCollider {
 	 */
 	public CollisionType AABBCollision(Player p) {
 		
+		if(!enabled)
+			return CollisionType.NONE;
+		
 		// Do AABB detect
 		if(this.x <= p.getX() + p.width && this.x + width >= p.getX() &&
 			this.y <= p.getY() + p.height && this.y + height >= p.getY()) {
@@ -153,6 +159,11 @@ public class BoxCollider {
 	 * 	@return CollisionType enum value
 	 */
 	public CollisionType AABBCollision(BoxCollider b) {
+		
+		// Leave if either of the colliders are not enabled
+		if(!enabled || !b.enabled)
+			return CollisionType.NONE;
+		
 		if(isStatic) {
 			if(x <= b.e.getX() + b.width && x + width >= b.e.getX() &&
 			   y <= b.e.getY() + b.height && y + height >= b.e.getY()) {

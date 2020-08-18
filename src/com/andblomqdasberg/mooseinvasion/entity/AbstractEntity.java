@@ -32,6 +32,13 @@ public abstract class AbstractEntity implements Comparable<AbstractEntity> {
 	public float x, y;
 	public Vector2D velocity;
 	public BoxCollider collider;
+	public int height;
+	public int width;
+	public int offsetX;
+	public int offsetY;
+	
+	// Dead but still want to be treated as a normal entity
+	public boolean dead = false;
 	
 	// Are we visible for the renderer?
 	public boolean visible = true;
@@ -39,6 +46,15 @@ public abstract class AbstractEntity implements Comparable<AbstractEntity> {
 	protected Sprite sprite;
 	
 	public int ticks;
+	
+	/**
+	 * 	Default constructor. x, y and velocity set to 0.
+	 */
+	public AbstractEntity() {
+		x = 0;
+		y = 0;
+		velocity = new Vector2D();
+	}
 	
 	/**
 	 * 	Create a new entity with specified position and velocity
@@ -95,6 +111,11 @@ public abstract class AbstractEntity implements Comparable<AbstractEntity> {
 	public void onTriggerExit(BoxCollider b) {}
 	
 	/**
+	 * 	Called when an entity spawns from the Game Manager (not player)
+	 */
+	public void onEnabled() {}
+	
+	/**
 	 * 	Remove this entity from GameManager entity list.
 	 */
 	public void destroy() {
@@ -106,6 +127,11 @@ public abstract class AbstractEntity implements Comparable<AbstractEntity> {
 	 */
 	@Override
 	public int compareTo(AbstractEntity e) {
+		if(dead)
+			return -1;
+		else if(e.dead)
+			return 1;
+		
 		if(this.y > e.y)
 			return 1;
 		else if(this.y == e.y)

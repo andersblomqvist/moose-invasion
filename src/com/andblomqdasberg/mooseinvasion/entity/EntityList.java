@@ -1,6 +1,8 @@
 package com.andblomqdasberg.mooseinvasion.entity;
 
+import com.andblomqdasberg.mooseinvasion.entity.monster.Bear;
 import com.andblomqdasberg.mooseinvasion.entity.monster.Moose;
+import com.andblomqdasberg.mooseinvasion.entity.monster.Wolf;
 
 /**
  * 	List of all the entities in the game
@@ -19,6 +21,10 @@ public class EntityList {
 		switch(entity) {
 			case "moose":
 				return new Moose();
+			case "bear":
+				return new Bear();
+			case "wolf":
+				return new Wolf();
 			default:
 				return null;
 		}

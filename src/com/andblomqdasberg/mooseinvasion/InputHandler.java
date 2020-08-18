@@ -33,6 +33,7 @@ public class InputHandler implements KeyListener, MouseListener {
     	public static final int ARROW_LEFT = 37;
     	
     	public static final int SPACE = 32;
+    	public static final int SHIFT = 16;
     	public static final int ESC = 27;
     	public static final int R = 82;
     	public static final int Q = 81;
@@ -53,22 +54,10 @@ public class InputHandler implements KeyListener, MouseListener {
         frame.addMouseListener(this);
 	}
 	
-	/**
-	 * 	Key actions
+	/** ======================================================================
+	 * 	
+	 * 		MOVEMENT DIRECTIONS
 	 */
-	
-	public static boolean shoot(boolean preventHold) {
-		if(preventHold) {
-			if(keysPressed.contains(Keys.SPACE) || keysPressed.contains(Keys.MOUSE1)) {
-				keysPressed.remove(Keys.MOUSE1);
-				keysPressed.remove(Keys.SPACE);
-				return true;
-			} else
-				return false;
-		} else {
-			return keysPressed.contains(Keys.SPACE) || keysPressed.contains(Keys.MOUSE1);	
-		}
-	}
 	
 	public static boolean up(boolean preventHold) {
 		if(preventHold) {
@@ -122,6 +111,24 @@ public class InputHandler implements KeyListener, MouseListener {
 		}
 	}
 	
+	/** ======================================================================
+	 * 	
+	 * 		ACTIONS
+	 */
+	
+	public static boolean shoot(boolean preventHold) {
+		if(preventHold) {
+			if(keysPressed.contains(Keys.SPACE) || keysPressed.contains(Keys.MOUSE1)) {
+				keysPressed.remove(Keys.MOUSE1);
+				keysPressed.remove(Keys.SPACE);
+				return true;
+			} else
+				return false;
+		} else {
+			return keysPressed.contains(Keys.SPACE) || keysPressed.contains(Keys.MOUSE1);	
+		}
+	}
+	
 	public static boolean exit() {
 		if(keysPressed.contains(Keys.ESC)) {
 			keysPressed.remove(Keys.ESC);
@@ -166,6 +173,19 @@ public class InputHandler implements KeyListener, MouseListener {
 		return false;
 	}
 
+	public static boolean dash() {
+		if(keysPressed.contains(Keys.SHIFT)) {
+			keysPressed.remove(Keys.SHIFT);
+			return true;
+		}
+		return false;
+	}
+	
+	/** ======================================================================
+	 * 	
+	 * 		NUMBERS
+	 */
+	
 	public static boolean num1() {
 		if(keysPressed.contains(Keys.ONE)) {
 			keysPressed.remove(Keys.ONE);
@@ -197,6 +217,11 @@ public class InputHandler implements KeyListener, MouseListener {
 		}
 		return false;
 	}
+	
+	/** ======================================================================
+	 * 	
+	 * 		MOUSE & misc
+	 */
 	
 	@Override
 	public void mousePressed(MouseEvent e) {

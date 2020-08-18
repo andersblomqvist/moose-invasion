@@ -1,4 +1,4 @@
-package com.andblomqdasberg.mooseinvasion.entity;
+package com.andblomqdasberg.mooseinvasion.entity.damage;
 
 import com.andblomqdasberg.mooseinvasion.GameManager;
 import com.andblomqdasberg.mooseinvasion.MooseInvasion;
@@ -14,22 +14,15 @@ import java.awt.*;
  * 
  * 	@author Anders Blomqvist
  */
-public class Projectile extends AbstractEntity
+public class Projectile extends EntityDamage
 {
 	private static float speedX = -7f;
 	
 	private int spriteId = 2;
 	
-	// Projectile damage
-	public int damage;
+	// Projectile specs
 	public boolean penetrationLight = false;	// Only penetrade 1 mob
 	public boolean penetrationFull = false;		// No stop
-	
-	// Collision sizes
-	public int width = 6;
-	public int height = 2;
-	public int offsetX = 3;
-	public int offsetY = 8;
 	
 	// Which index this projectile have in GameManager list
 	// Used for removal when collision with moose.
@@ -40,6 +33,12 @@ public class Projectile extends AbstractEntity
 	
 	public Projectile(float x, float y) {
 		super(x, y, new Vector2D(speedX, 0));
+		
+		width = 6;
+		height = 2;
+		offsetX = 3;
+		offsetY = 8;
+		
 		sprite = new Sprite(spriteId, new int[] {});
 		collider = new BoxCollider(this, width, height, "projectile");
 	}
@@ -113,6 +112,5 @@ public class Projectile extends AbstractEntity
 	@Override
 	public float getY() {
 		return y + offsetY;
-	}
-	
+	}	
 }

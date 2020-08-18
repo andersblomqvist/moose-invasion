@@ -28,12 +28,6 @@ import com.andblomqdasberg.mooseinvasion.weapon.WeaponList;
  * 	@author David Åsberg
  */
 public class Player extends AbstractEntity {
-
-	// Player collision box
-	public int height = 11;
-	public int width = 8;
-	public int offsetX = 5;
-	public int offsetY = 4;
 	
 	// Sprites
 	private int spriteId = 0;
@@ -66,6 +60,11 @@ public class Player extends AbstractEntity {
 	
 	public Player(int x, int y) {
 		super(x, y, Vector2D.ZERO);
+		
+		height = 11;
+		width = 8;
+		offsetX = 5;
+		offsetY = 4;
 		
 		sprite = new Sprite(spriteId, getRandomPlayerModel());
 		collider = new BoxCollider(this, width, height, "player");
@@ -197,6 +196,10 @@ public class Player extends AbstractEntity {
 		if(InputHandler.num4() && weapons.size() > 3)
 			directSwitchToWeapon(3);
 		
+		if(InputHandler.dash()) {
+			// TODO implement dash
+		}
+		
 		if(InputHandler.consume()) {
 			if(inCity)
 				AudioPlayer.play("misc-error-2.wav");
@@ -247,8 +250,6 @@ public class Player extends AbstractEntity {
 	 * 	Randomizes a player model
 	 */
 	private int[] getRandomPlayerModel() {
-		return jack;
-		/*
 		int animation = GameRandom.nextInt(4);
 		switch(animation) {
 			// Temporary way of randomly getting a player character
@@ -263,7 +264,6 @@ public class Player extends AbstractEntity {
 			default:
 				return jack;
 		}
-		*/
 	}
 	
 	/**
@@ -338,7 +338,6 @@ public class Player extends AbstractEntity {
 	public void buyAmmo(String weapon, String ammo) {
 		AbstractWeapon w = WeaponList.getWeaponByName(weapon);
 		w.ammo += Integer.parseInt(ammo);
-		System.out.println("added ammo");
 	}
 
 	/**

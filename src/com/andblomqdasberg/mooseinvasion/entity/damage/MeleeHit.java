@@ -1,4 +1,4 @@
-package com.andblomqdasberg.mooseinvasion.entity;
+package com.andblomqdasberg.mooseinvasion.entity.damage;
 
 import com.andblomqdasberg.mooseinvasion.util.Vector2D;
 
@@ -6,11 +6,9 @@ import com.andblomqdasberg.mooseinvasion.util.Vector2D;
  * 	When a melee weapon hits we create this entity and connects it to the
  * 	BoxCollider so monsters can access its damage.
  * 
- * 	@author Anders
+ * 	@author Anders Blomqvist
  */
-public class MeleeHit extends AbstractEntity {
-
-	public int damage;
+public class MeleeHit extends EntityDamage {
 	
 	public MeleeHit(float x, float y, Vector2D velocity) {
 		super(x, y, velocity);
