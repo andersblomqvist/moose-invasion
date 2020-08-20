@@ -10,4 +10,5 @@ public enum ParticleType {
 	BEER,
 	BEER_GLASS,
 	MELEE_SWING,
+	DASH,
 }

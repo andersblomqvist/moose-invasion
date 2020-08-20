@@ -17,10 +17,8 @@ import com.andblomqdasberg.mooseinvasion.level.City;
 import com.andblomqdasberg.mooseinvasion.level.Level;
 import com.andblomqdasberg.mooseinvasion.level.LevelLoader;
 import com.andblomqdasberg.mooseinvasion.particle.AbstractParticle;
-import com.andblomqdasberg.mooseinvasion.particle.BeerParticle;
 import com.andblomqdasberg.mooseinvasion.particle.MeleeSwingParticle;
 import com.andblomqdasberg.mooseinvasion.particle.ParticleType;
-import com.andblomqdasberg.mooseinvasion.util.GameRandom;
 import com.andblomqdasberg.mooseinvasion.util.GameState;
 import com.andblomqdasberg.mooseinvasion.weapon.AbstractWeapon;
 
@@ -132,19 +130,11 @@ public class GameManager {
      *  @param y
      */
     public void spawnParticles(ParticleType type, int amount, float x, float y) {
-    	if(type == ParticleType.BEER) {
-    		for(int i = 0; i < amount; i++)
-	    		specialParticles.add(new BeerParticle(x + GameRandom.randomBetween(-2, 5), y+7));
-	    		
-    		return;
-    	}
-    		
     	if(type == ParticleType.MELEE_SWING) {
     		specialParticles.add(new MeleeSwingParticle(x, y));
     		return;
     	}
-    		
-    		
+    	
     	level.spawnParticle(type, amount, x, y);
 	}
     
@@ -201,7 +191,7 @@ public class GameManager {
 				p.x = player.x - 2;
 				p.y = player.y;
 			}
-        	p.tick();
+        	p.tick(ticks);
         	p.animationTick();
         	if(p.time > p.lifeTime)
         		specialParticles.remove(i);

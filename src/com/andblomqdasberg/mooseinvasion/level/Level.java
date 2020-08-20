@@ -16,8 +16,10 @@ import com.andblomqdasberg.mooseinvasion.gui.GUIText;
 import com.andblomqdasberg.mooseinvasion.particle.AbstractParticle;
 import com.andblomqdasberg.mooseinvasion.particle.AmmoParticle;
 import com.andblomqdasberg.mooseinvasion.particle.BeerGlassParticle;
+import com.andblomqdasberg.mooseinvasion.particle.BeerParticle;
 import com.andblomqdasberg.mooseinvasion.particle.BloodAndMeatParticle;
 import com.andblomqdasberg.mooseinvasion.particle.BloodParticle;
+import com.andblomqdasberg.mooseinvasion.particle.DashParticle;
 import com.andblomqdasberg.mooseinvasion.particle.ParticleType;
 
 /**
@@ -141,7 +143,7 @@ public class Level {
 		
 		for(int i = 0; i < stage.particles.size(); i++) {
 			AbstractParticle p = stage.particles.get(i);
-			p.tick();
+			p.tick(ticks);
 			p.animationTick();
 		}
 		
@@ -363,6 +365,14 @@ public class Level {
     			break;
     		case BEER_GLASS:
     			stage.particles.add(new BeerGlassParticle(x, y));
+    			break;
+    		case BEER:
+    			for(int i = 0; i < amount; i++)
+    	    		stage.particles.add(new BeerParticle(x, y));
+    			break;
+    		case DASH:
+    			for(int i = 0; i < amount; i++)
+    	    		stage.particles.add(new DashParticle(x, y));
     			break;
     		default:
     			break;

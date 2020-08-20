@@ -37,7 +37,7 @@ public class AmmoParticle extends AbstractParticle {
 	 * 	Parabola flying
 	 */
 	@Override
-	public void tick() {
+	public void tick(int ticks) {
 		if(this.y < ground) {
 			velocity.y += gravity;
 		}

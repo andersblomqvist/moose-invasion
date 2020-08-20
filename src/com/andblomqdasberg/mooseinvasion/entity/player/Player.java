@@ -104,7 +104,7 @@ public class Player extends AbstractEntity {
 		
 		beerText = new GUIText("" + beers, 
 				MooseInvasion.WIDTH - 20, 
-				MooseInvasion.HEIGHT - 8*5, 
+				MooseInvasion.HEIGHT - 8*5,
 				"player-gui");
 	}
 	
@@ -114,7 +114,7 @@ public class Player extends AbstractEntity {
 		checkInput();
 		currentWeapon.tick(x, y);
 		
-		velocity = movement.playerMove(velocity, friction);
+		velocity = movement.playerMove(x, y, velocity, friction);
 		x += velocity.x;
 		y += velocity.y;
 		
@@ -129,7 +129,7 @@ public class Player extends AbstractEntity {
 			y = MooseInvasion.HEIGHT-16;
 		
 		if(beer) {
-			if(ticks % 5 == 0)
+			if(ticks % 15 == 0)
 				GameManager.sInstance.spawnParticles(ParticleType.BEER, 1, x, y);
 			
 			if(ticksSinceLastBeer == 60)
@@ -153,6 +153,31 @@ public class Player extends AbstractEntity {
 	public void render(Graphics g) {
 		super.render(g);
 		currentWeapon.render(g, ticks, x, y);
+		
+		// Reloading dash bar
+		/*
+		if(movement.dashCooldownTick < movement.dashCooldown && !inCity) {
+			
+			// Get percentage on cooldown
+			int t = movement.dashCooldownTick;
+			int d = movement.dashCooldown;
+			float p = (float)t / (float)d;
+			
+			g.setColor(new Color(0, 0, 0, 90));
+			g.fillRect(
+					(int)(x+15)*MooseInvasion.X_SCALE, 
+					(int)(y)*MooseInvasion.Y_SCALE, 
+					(int)(3*MooseInvasion.X_SCALE), 
+					16*MooseInvasion.Y_SCALE);
+			
+			g.setColor(Color.WHITE);
+			g.fillRect(
+					(int)(x+15)*MooseInvasion.X_SCALE, 
+					(int)(y+16)*MooseInvasion.Y_SCALE, 
+					(int)(3*MooseInvasion.X_SCALE), 
+					(int)(-p*16*MooseInvasion.Y_SCALE));
+		}
+		*/
 	}
 	
 	@Override
@@ -196,9 +221,11 @@ public class Player extends AbstractEntity {
 		if(InputHandler.num4() && weapons.size() > 3)
 			directSwitchToWeapon(3);
 		
-		if(InputHandler.dash()) {
-			// TODO implement dash
-		}
+		if(InputHandler.dash())
+			if(inCity)
+				AudioPlayer.play("misc-error-2.wav");
+			else
+				movement.dash();
 		
 		if(InputHandler.consume()) {
 			if(inCity)

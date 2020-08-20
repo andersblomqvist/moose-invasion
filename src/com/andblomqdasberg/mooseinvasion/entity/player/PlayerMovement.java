@@ -1,7 +1,10 @@
 package com.andblomqdasberg.mooseinvasion.entity.player;
 
+import com.andblomqdasberg.mooseinvasion.GameManager;
 import com.andblomqdasberg.mooseinvasion.InputHandler;
+import com.andblomqdasberg.mooseinvasion.audio.AudioPlayer;
 import com.andblomqdasberg.mooseinvasion.collider.CollisionType;
+import com.andblomqdasberg.mooseinvasion.particle.ParticleType;
 import com.andblomqdasberg.mooseinvasion.util.Vector2D;
 
 /**
@@ -11,16 +14,30 @@ import com.andblomqdasberg.mooseinvasion.util.Vector2D;
  */
 public class PlayerMovement {
 
+	// Player input vector. Rangin from (-1, 0, 1) in x and y 
+	// 	where:
+	// 	   -1 is up
+	//  	0 is nothing
+	//  	1 is down
+	public Vector2D wishDir = new Vector2D();
+	
 	private float moveSpeed = 1.6f;
 	private float accel = 0.26f;
 	private float deccel = 0.5f;
 	private float friction = 0.15f;
+	
 	public boolean north = false;
 	public boolean south = false;
 	public boolean east = false;
 	public boolean west = false;
 	
-	public Vector2D wishDir = new Vector2D();
+	private boolean dash = false;
+	private float dashSpeed = 6f;
+	private int dashTick = 0;
+	private int dashDuration = 5;
+	
+	public int dashCooldown = 90;
+	public int dashCooldownTick = 0;
 	
 	/**
 	 * 	Handles the player input and applies movement to vector
@@ -30,7 +47,27 @@ public class PlayerMovement {
 	 * 						   0 is like ice.
 	 * 	@returns the new velocity vector
 	 */
-	public Vector2D playerMove(Vector2D velocity, float appliedFriction) {
+	public Vector2D playerMove(float x, float y, Vector2D velocity, float appliedFriction) {
+		
+		// Check first if we should be dashing.
+		if(dash) {
+			if(dashTick > dashDuration) {
+				dash = false;
+				dashCooldownTick = 0;
+				GameManager.sInstance.spawnParticles(ParticleType.DASH, 1, x, y);
+			}
+			else {
+				velocity.x = dashSpeed * wishDir.x;
+				velocity.y = dashSpeed * wishDir.y;
+				dashTick++;
+				GameManager.sInstance.spawnParticles(ParticleType.DASH, 1, x, y);
+				return velocity;
+			}
+		}
+		
+		dashCooldownTick++;
+		
+		// Get user input direction
 		wishDir.x = getInputX();
 		wishDir.y = getInputY();
 		
@@ -74,6 +111,25 @@ public class PlayerMovement {
 			newSpeed /= speed;
 		
 		return velocity.mul(newSpeed);
+	}
+	
+	/**
+	 * 	Increases movement for a very short period of time in current wish dir
+	 * 	direction.
+	 */
+	public void dash() {
+		// Leave if we are already dashing or if not ready yet
+		if(dash || dashCooldownTick < dashCooldown)
+			return;
+		
+		// Dont waste a dash when standing still
+		if(wishDir.magnitude() == 0)
+			return;
+		
+		AudioPlayer.play("entity-player-dash.wav");
+		
+		dash = true;
+		dashTick = 0;
 	}
 	
 	/**
@@ -146,5 +202,13 @@ public class PlayerMovement {
     			return north == true ? 0 : -1;
     		else
     			return 0;
+	}
+	
+	public int getDashCooldownTick() {
+		return dashCooldownTick;
+	}
+	
+	public int getDashCooldown() {
+		return dashCooldown;
 	}
 }

@@ -40,7 +40,7 @@ public abstract class AbstractParticle {
 				GameRandom.nextInt(2*maxSpeed) - maxSpeed);
 	}
 	
-	public void tick() {
+	public void tick(int ticks) {
 		velocity.x *= 0.85;
 		velocity.y *= 0.7;
 		

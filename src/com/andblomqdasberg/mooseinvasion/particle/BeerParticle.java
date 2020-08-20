@@ -1,8 +1,8 @@
 package com.andblomqdasberg.mooseinvasion.particle;
 
 import com.andblomqdasberg.mooseinvasion.Assets;
+import com.andblomqdasberg.mooseinvasion.util.GameRandom;
 import com.andblomqdasberg.mooseinvasion.util.Sprite;
-import com.andblomqdasberg.mooseinvasion.util.Vector2D;
 
 /**
  * 	Partile which shows ontop of the player when a beer is consumed.	
@@ -12,25 +12,28 @@ import com.andblomqdasberg.mooseinvasion.util.Vector2D;
 public class BeerParticle extends AbstractParticle {
 	
 	private int spriteId = 4;
-	private float speed = 1;
 	
 	public BeerParticle(float x, float y) {
-		this.x = x;
-		this.y = y;
-		this.velocity = new Vector2D(0, speed);
-		
+		super(x, y);
 		this.sprite = new Sprite(
 				spriteId, 
 				new int[] {0, 1, 2, 3},
 				Assets.sInstance.particles[spriteId]);
 		
-		sprite.animationSpeed = 4;
+		sprite.animationSpeed = 10;
+		lifeTime = GameRandom.randomBetween(2, 4) * 10;
 		
-		lifeTime = 15f;
+		x = GameRandom.randomBetween((int)x - 8,(int)x + 16);
+		velocity.x = GameRandom.randomBetween(-4, 4) / 10f;
+		velocity.y = -0.4f;
 	}
 	
 	@Override
-	public void tick() {
-		this.y -= velocity.y;
+	public void tick(int ticks) {
+		if(ticks % 30 == 0)
+    		velocity.x = GameRandom.randomBetween(-4, 4) / 10f;
+		
+		this.x += velocity.x;
+		this.y += velocity.y;
 	}
 }
